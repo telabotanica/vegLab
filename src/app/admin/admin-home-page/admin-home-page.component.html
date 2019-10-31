@@ -1,0 +1,31 @@
+<div class="admin-container">
+  <div class="sidenav-menu">
+    <mat-accordion>
+      <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Utilisateurs
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <button mat-button>Liste</button>
+          <button mat-button>Gérer</button>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Métadonnées
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <button mat-button (click)="router.navigate(['/admin/metadata-test'])">Tester</button>
+          <button mat-button (click)="router.navigate(['/admin/metadata-manager'])">Gérer</button>
+      </mat-expansion-panel>
+
+
+    </mat-accordion>
+  </div>
+
+  <div class="admin-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

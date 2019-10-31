@@ -1,0 +1,46 @@
+<h3 mat-dialog-title>Inclure les relevés sans métadonnées</h3>
+<div mat-dialog-content>
+  <p>Lorsque vous utilisez un ou plusieurs filtres sur les métadonnées, vous pouvez choisir d'inclure ou non les relevés pour lesquels ces métadonnées n'ont pas été renseignées.</p>
+  
+  <br />
+  
+  <p>Exemple : vous souhaitez filtrer les relevés avec :</p>
+
+  <ul>
+    <li>un recouvrement compris entre 0 et 50%</li>
+    <li>ET une aire inférieure à 10 mètres carrés</li>
+  </ul>
+
+  <p>Dans ce cas, l'option vous permet de choisir si vous souhaitez inclure les relevés pour lesquels ni le recouvrement ni l'aire ne sont renseignés :</p>
+
+  <div class="compare-options" style="display: flex; flex-direction: row; flex-wrap: nowrap;">
+    <div class="left" style="border-right: 1px solid gray; padding-right: 10px; text-align: center; flex: 1;">
+      <div class="title"><b>Option activée</b></div>
+      <div class="content">
+        <p>Les relevés ont</p>
+        <ul>
+          <li>un recouvrement compris entre 0 et 50%</li>
+          <li>ET une aire inférieure à 10 mètres carrés</li>
+        </ul>
+        <p>OU</p>
+        <p>N'ont pas de données renseignées pour ces l'une ou l'autre de ces métadonnées</p>
+      </div>
+    </div>
+    <div class="right" style="padding-left: 10px; text-align: center; flex: 1;">
+      <div class="title"><b>Option désactivée</b></div>
+      <div class="content">
+        <p>Les relevés ont</p>
+        <ul>
+          <li>un recouvrement compris entre 0 et 50%</li>
+          <li>ET une aire inférieure à 10 mètres carrés</li>
+        </ul>
+        <p>&nbsp;</p>
+        <p><i>Les relevés ne présentants aucune donnée de recouvrement ni d'aire sont ignorés.</i></p>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div mat-dialog-actions>
+  <button mat-button [matDialogClose]="" cdkFocusInitial>Fermer</button>
+</div>

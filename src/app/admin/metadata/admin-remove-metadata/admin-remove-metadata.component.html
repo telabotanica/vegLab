@@ -1,0 +1,10 @@
+<h2>Supprimer une métadonnée</h2>
+<mat-card class="delete-card">
+  <p><b>Vous allez supprimer la métadonnée "{{ metadata.fieldId }}"</b></p>
+  <div *ngIf="!isLoadingOccurrenceMetadataValues && loadedOccurrenceMetadataValuesComplete">
+    <p>Cette métadonnée est utilisée dans <b>{{ metadataOccurrencesValues['hydra:totalItems'] }}</b> occurrence(s).</p>
+    <p>La supprimer entraine également la <b>suppression de {{ metadataOccurrencesValues['hydra:totalItems'] }} donnée(s) associée(s).</b> </p>
+  </div>
+  <button mat-flat-button color="warn" (click)=deleteMetadata() [disabled]="isLoadingOccurrenceMetadataValues || !loadedOccurrenceMetadataValuesComplete">Confirmer</button>
+  <button mat-flat-button color="primary" (click)=abort()>Annuler</button>
+</mat-card>

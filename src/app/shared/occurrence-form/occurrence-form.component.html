@@ -1,0 +1,162 @@
+<form [formGroup]="occurrenceForm" (keyDown.enter)="formKeydownEnter($event)">
+  <h1>Créer un nouveau relevé</h1>
+  <mat-horizontal-stepper>
+    
+      <!-- 1 Observer, Date & location-->
+      <mat-step completed="true">
+        <ng-template matStepLabel>Auteur, date et lieu</ng-template>
+        
+        <div class="observer-date-fields">
+          <!-- Observer -->
+          <mat-form-field>
+            <input matInput formControlName="observer" placeholder="Observateur" id="observer">
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput formControlName="observerInstitution" placeholder="Organisation" id="observerInstitution">
+          </mat-form-field>
+
+          <!-- Date -->
+          <mat-form-field (click)="dateObservedPicker.open()">
+            <input matInput readonly [matDatepicker]="dateObservedPicker" formControlName="dateObserved" [max]="maxOccurrenceDate" (click)="dateObservedPicker.open()" placeholder="Date d'observation" id="dateObserved">
+            <mat-datepicker-toggle matSuffix [for]="dateObservedPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dateObservedPicker disabled="false"></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <!-- Location -->
+        <tb-geoloc-map
+          [height]="'400px'"
+          [showLatLngElevationInputs]="false"
+          [layersToAdd]="mapLayers"
+          elevationProvider="mapQuest"
+          mapQuestApiKey="ApIFfQWsb8jW6bkYDD2i0Sq5BD9moJ3l"
+          (location)="addLocation($event)">
+        </tb-geoloc-map>
+      </mat-step>
+
+      <!-- 2 Metadata (photos + metadata) -->
+      <mat-step>
+        <ng-template matStepLabel>Photos & métadonnées</ng-template>
+        <!-- Add metadata -->
+        <mat-form-field style="width: 100%;">
+          <input matInput placeholder="Ajouter une métadonnée" aria-label="Ajouter une métadonnée" [matAutocomplete]="metadataauto" formControlName="addMetadataInput">
+          <mat-autocomplete #metadataauto="matAutocomplete" (optionSelected)="addMetadata($event)" [displayWith]="displayMetadataAutocomplete">
+            <mat-option *ngFor="let metadata of filteredMetadatas | async" [value]="metadata">
+              <span>{{metadata.fieldId}}</span>
+              <span *ngIf="metadata.extendedFieldTranslations.length > 0 && metadata.extendedFieldTranslations[0].description"> | <small>{{ metadata.extendedFieldTranslations[0].description }}<span *ngIf="metadata.unit"> ({{ metadata.unit }})</span></small></span>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <!-- Metadata list -->
+        <div class="metadatas">
+          <div class="metadata-item" *ngFor="let metadataContext of metadatas">
+            <vl-metadata-input [metadata]="metadataContext.metadata" [control]="metadataContext.control"></vl-metadata-input>
+            <button mat-icon-button class="button-light-gray" [matMenuTriggerFor]="removeMetadataMenu"><mat-icon>more_vert</mat-icon></button>
+            <mat-menu #removeMetadataMenu="matMenu">
+              <button (click)="removeMetadata(metadataContext)" mat-menu-item>
+                <mat-icon>delete</mat-icon>
+                <span>Supprimer cette métadonnée</span>
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+        <!-- Photos -->
+        <tb-dropfile-box
+          label="Glissez vos photos ici"
+          labelHelp="Fichiers Jpeg et Png de 3 Mo maximum"
+          [allowedFileTypes]="allowedPhotoTypes"
+          showTable="false"
+          showThumbnails="true"
+          (uploadedFiles)="uploadedPhotosEvent($event)"
+          uploadTbPhotoFiles="true"
+          maxImageFileSize="3000">
+        </tb-dropfile-box>
+      </mat-step>
+
+      <!-- 3 Occurrence -->
+      <mat-step>
+        <ng-template matStepLabel>Relevé</ng-template>
+        <!-- Level -->
+        <mat-form-field>
+          <mat-select formControlName="level" (selectionChange)="levelChange(levelSelect.value)" placeholder="Méthodologie" #levelSelect>
+            <mat-option value="synusy">relevé synusial</mat-option>
+            <mat-option value="microcenosis">relevé sigmatiste</mat-option>
+            <mat-option value="null" disabled>relevé paysager</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!-- Repo -->
+        <mat-form-field>
+          <mat-select formControlName="repo" (selectionChange)="resetTaxoInput()" placeholder="Référentiel" #repoSelect>
+            <mat-option value="bdtfx">BDTFX</mat-option>
+            <mat-option value="baseflor">baseflor</mat-option>
+            <mat-option value="taxref" disabled>TAXREF</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Cited occurrence -->
+        <tb-tsb-search-box
+          [level]="occurrenceForm.controls.level.value"
+          placeholder="Syntaxon cité"
+          [autoResetWhenSelected]="false"
+          (newData)="citedSyntaxonChange($event)">
+        </tb-tsb-search-box>
+
+        <!-- Children occurrences inputs -->
+        <div class="inline-form">
+          <mat-form-field class="layer">
+            <mat-select #layerValue formControlName="layer" (selectionChange)="layerChange(layerValue.value)" [disabled]="!userCanChangeLayers()" placeholder="Strate">
+              <mat-option *ngFor="let l of layerList" [value]="l.name">{{ l.name }} : {{ l.description }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <tb-tsb-search-box
+            #tsboccurrence
+            [tbRepositoriesConfig]="tbRepositoriesConfig"
+            class="taxo-input"
+            level="idiotaxon"
+            placeholder="Ajouter une espèce"
+            [reset]="_resetTaxoInput"
+            [fixedRepository]="'bdtfx'"
+            [autoResetWhenSelected]="false"
+            [showRepositoryInput]="false"
+            (newData)="addTaxa($event)">
+          </tb-tsb-search-box>
+
+          <mat-form-field class="coef">
+            <input matInput #coef formControlName="coef" (keyDown.enter)="addCoef(coef.value)" placeholder="coef">
+          </mat-form-field>
+        </div>
+
+        <!-- Data view -->
+        <div class="occurrences-table" *ngIf="occurrences.length > 0">
+          <table class="table table-sm">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col" class="layer">Strate</th>
+                <th scope="col" class="taxa">Taxon</th>
+                <th scope="col" class="coef">Coef.</th>
+                <th scope="col" class="actions"> </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let occ of getOccurrences()">
+                <td>{{ occ.layer }}</td>
+                <td>{{ occ.taxa.name }}</td>
+                <td>{{ occ.coef }}</td>
+                <td (click)="deleteOccurrence(occ)">X</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+      </mat-step>
+    
+  </mat-horizontal-stepper>
+  <mat-toolbar class="bottom-action-bar">
+    <mat-progress-bar *ngIf="isSendingOccurrence" mode="indeterminate"></mat-progress-bar>
+    <div class="action-buttons">
+      <button mat-flat-button color="primary" [disabled]="!isFormValid()" (click)="bindOccurrenceToSend()">Enregistrer</button>
+      <button mat-stroked-button color="primary" [disabled]="!isFormValid()">Enregistrer et ajouter au tableau</button>
+    </div>
+  </mat-toolbar>
+</form>

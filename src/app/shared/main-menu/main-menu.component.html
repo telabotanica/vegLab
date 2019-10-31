@@ -1,0 +1,17 @@
+<mat-toolbar>
+  <mat-toolbar-row>
+    <a class="navbar-brand" [routerLink]="['/']">VegLab<span class="ws">{{ currentWorkspace }}</span></a>
+    <mat-toolbar>
+
+      <ng-container *ngFor="let menuItem of menuTree">
+        <button mat-menu-item [matMenuTriggerFor]="sub_menu" style="width: auto !important;">{{ menuItem.label }}</button>
+        <mat-menu #sub_menu="matMenu">
+            <button mat-menu-item *ngFor="let subItem of menuItem.children" (click)="goTaPage(subItem.path)">{{ subItem.label }}</button>
+        </mat-menu>
+      </ng-container>
+
+    </mat-toolbar>
+    <span class="spacer"></span>
+    <vl-auth></vl-auth>
+  </mat-toolbar-row>
+</mat-toolbar>

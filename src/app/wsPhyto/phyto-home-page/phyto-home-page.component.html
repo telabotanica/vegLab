@@ -1,0 +1,119 @@
+<div id="ws-phyto-container">
+  <div class="header">
+    <h1>VegLab<small> / phytosociologie</small></h1>
+    <a routerLink="/phyto/app"><button mat-raised-button>Commencer</button></a>
+  </div>
+
+  <div fxLayout="row" class="content">
+    <div fxFlex="15%" class="column-spacer"></div>
+
+    <div fxFlex>
+      <div fxLayout="row" fxLayoutAlign="center start" fxLayoutGap="40px">
+        <div class="left-content">
+          <h2>Présentation</h2>
+          <p>Cette interface vous permet de créer, de manipuler, de visualiser et de partager des tableaux phytosociologiques.</p>
+          <div class="functionality">
+            <div class="icon"><mat-icon>search</mat-icon></div>
+            <div class="text">
+              <p>
+                Recherchez un relevé ou un tableau grâce aux multiples filtres disponibles : présence ou absence d'espèce, végétation,
+                auteur, date, référence bibliographique, localisation géographique ainsi que l'ensemble des métadonnées disponibles.
+              </p>
+            </div>
+          </div>
+
+          <div class="functionality">
+            <div class="icon"><mat-icon>table_chart</mat-icon></div>
+            <div class="text">
+              <p>
+                Les tableaux sont constitués de groupes d'espèces et de groupes de relevés afin de faciliter leur manipulation.
+                Déplacer les lignes, les colonnes ou les groupes pour organiser votre tableau.
+              </p>
+            </div>
+          </div>
+
+          <div class="functionality">
+            <div class="icon"><mat-icon>map</mat-icon></div>
+            <div class="text">
+              <p>
+                Visualisez en direct la localisation des relevés de votre tableau.
+              </p>
+            </div>
+          </div>
+
+          <div class="functionality">
+            <div class="icon"><mat-icon>bar_chart</mat-icon></div>
+            <div class="text">
+              <p>
+                Des indicateurs vous donnent les principales caractéristiques écologiques et structurelles du tableau.
+              </p>
+            </div>
+          </div>
+
+          <div class="functionality">
+            <div class="icon"><mat-icon>share</mat-icon></div>
+            <div class="text"><p>
+              Une fois terminé, vous pouvez enregistrer votre tableau. Vous serez le seul à pouvoir le modifier mais d'autres
+              personnes pourront le réutiliser en en faisant une copie.
+            </p></div>
+          </div>
+
+          <h2>Données à votre disposition</h2>
+          <div class="functionality">
+            <div class="img"><img src="./assets/img/icons/tab-icon.jpg"></div>
+            <div class="text">
+              <p><b>{{ countTables }} tableaux</b></p>
+            </div>
+          </div>
+          <div class="functionality">
+              <div class="img"><img src="./assets/img/icons/rel-icon.jpg" (click)="countTopLevelsReleves = !countTopLevelsReleves; setCounters();"></div>
+            <div class="text">
+              <p>
+                <b>{{ countReleves }} relevés</b><br />
+                dont {{ countRelevesSynusies }} relevés synusiaux et {{ countRelevesMicrocenosis }} relevés sigmatistes
+              </p>
+            </div>
+          </div>
+          <div class="functionality">
+              <div class="img"><img src="./assets/img/icons/occ-icon.jpg"></div>
+            <div class="text">
+              <p><b>{{ countIdiotaxons }} taxons</b></p>
+            </div>
+          </div>
+        </div>
+        <div class="right-content">
+          <h2>Fonctionnement</h2>
+          <div class="tuto">
+            <div class="title">Prise en main</div>
+            <div class="video"><img src="./assets/shared/img/play-content.png"></div>
+            <div class="describe">...</div>
+          </div>
+          <div class="tuto">
+            <div class="title">Rechercher un relevé</div>
+            <div class="video"><img src="./assets/shared/img/play-content.png"></div>
+            <div class="describe">...</div>
+          </div>
+          <div class="tuto">
+            <div class="title">Rechercher un tableau</div>
+            <div class="video"><img src="./assets/shared/img/play-content.png"></div>
+            <div class="describe">...</div>
+          </div>
+          <div class="tuto">
+            <div class="title">Construire et manipuler un tableau</div>
+            <div class="video"><img src="./assets/shared/img/play-content.png"></div>
+            <div class="describe">...</div>
+          </div>
+          <div class="tuto">
+            <div class="title">Importer un tableau</div>
+            <div class="video"><img src="./assets/shared/img/play-content.png"></div>
+            <div class="describe">...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div fxFlex="15%" class="column-spacer"></div>
+  </div>
+</div>
+<!--<router-outlet></router-outlet>-->

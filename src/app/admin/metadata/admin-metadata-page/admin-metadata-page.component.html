@@ -1,0 +1,60 @@
+<div class="title-actionbar">
+  <h1>Métadonnées</h1>
+  <button mat-mini-fab color="primary" (click)="createMetadata()" matTooltip="Créer une nouvelle métadonnée"><mat-icon>add</mat-icon></button>
+</div>
+
+<mat-divider></mat-divider>
+
+<div class="section" *ngIf="isCreatingMetadata">
+  <vl-admin-create-metadata
+    (createdMetadata)="metadataPostSuccess()"
+    (fail)="metadataPostFail()"
+    (aborted)="metadataPostAborted()">
+  </vl-admin-create-metadata>
+</div>
+
+<div class="section" *ngIf="metadataToEdit !== null">
+  <vl-admin-edit-metadata
+    [metadata]="metadataToEdit"
+    (success)="metadataPatchSuccess($event)"
+    (fail)="metadataPatchFail($event)"
+    (aborted)="metadataPatchAborted($event)">
+  </vl-admin-edit-metadata>
+</div>
+
+<div class="section" *ngIf="metadataToRemove !== null">
+  <vl-admin-remove-metadata
+    [metadata]="metadataToRemove"
+    (success)="metadataDeleteSuccess($event)"
+    (fail)="metadataDeleteFail($event)"
+    (aborted)="metadataDeleteAborted($event)">
+  </vl-admin-remove-metadata>
+</div>
+
+
+<div class="section" *ngIf="!isCreatingMetadata && !isEditingMetadata && metadataToRemove == null">
+  <h2>Liste des métadonnées</h2>
+  <mat-progress-bar mode="indeterminate" *ngIf="isLoadingMetadata"></mat-progress-bar>
+  <table mat-table matSort multiTemplateDataRows [dataSource]="allMetadata" class="mat-elevation-z8" style="width: 100%">
+    <!-- Columns-->
+    <ng-container *ngFor="let column of columns" matColumnDef="{{column}}">
+      <mat-header-cell mat-sort-header *matHeaderCellDef> {{column}} </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element[column]}} </mat-cell>
+    </ng-container>
+  
+    <!-- Actions column-->
+    <ng-container matColumnDef="actions">
+      <mat-header-cell mat-sort-header *matHeaderCellDef>-</mat-header-cell>
+      <mat-cell *matCellDef="let element">
+          <button mat-icon-button matTooltip="Modifier cette métadonnée" color="primary" (click)="editMetadata(element)"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button matTooltip="Supprimer cette métadonnée" color="warn" (click)="removeMetadata(element)"><mat-icon>delete</mat-icon></button>
+      </mat-cell>
+    </ng-container>
+    
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true;"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"
+      class="example-element-row"
+      [class.example-expanded-row]="expandedElement === element"
+      (click)="expandedElement = expandedElement === element ? null : element"></mat-row>
+  </table>
+</div>

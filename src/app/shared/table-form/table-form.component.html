@@ -1,0 +1,106 @@
+<form [formGroup]="tableForm">
+  <h1>Enregistrer le tableau</h1>
+
+  <div class="form-items">
+    <!-- Title -->
+    <mat-form-field>
+      <input matInput #titleInput formControlName="title" placeholder="Titre du tableau" maxlength="{{ maxTitleLength }}">
+      <mat-hint align="end">{{titleInput.value?.length || 0}}/{{ maxTitleLength }}</mat-hint>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field>
+      <textarea matInput #descriptionInput formControlName="description" placeholder="Courte description du tableau" maxlength="{{ maxDescriptionLength }}"></textarea>
+      <mat-hint align="end">{{descriptionInput.value?.length || 0}}/{{ maxDescriptionLength }}</mat-hint>
+    </mat-form-field>
+
+    <div class="inline-form">
+      <!-- Date creation -->
+      <mat-form-field>
+        <input matInput formControlName="createdAt" [matDatepicker]="picker" placeholder="Date de création">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Auteur -->
+      <mat-form-field>
+        <input matInput formControlName="createdBy" placeholder="Auteur">
+      </mat-form-field>
+    </div>
+    
+    <!-- Syntaxon -->
+    <div class="inline-form syntaxon">
+      <mat-slide-toggle formControlName="isDiagnosis">Diagnose originale</mat-slide-toggle>
+      <div class="tsb-wrapper">
+        <tb-tsb-search-box
+          level="synusy"
+          [showRepositoryInput]="false"
+          [allowFreeValueIfNoResults]="false"
+          placeholder="Syntaxon concerné"
+          (newData)="syntaxonChange($event)"></tb-tsb-search-box>
+        </div>
+    </div>
+    
+    <div class="relatedSyntaxon">
+      <div *ngFor="let synt of relatedSyntaxon" class="item">
+        <div class="syntaxon">
+          <!--<div class="isDiagnosis"><mat-icon *ngIf="synt.isDiagnosis">grade</mat-icon></div>-->
+          <div class="displayName">{{ synt.name }} {{ synt.author }}</div>
+          <div class="actions">
+            <button mat-icon-button aria-label="Delete" (click)="deleteSyntaxon(synt)"><mat-icon>delete</mat-icon></button>
+          </div>
+        </div>
+        <!-- biblio -->
+        <!--<div class="biblio">
+          <mat-form-field>
+            <input matInput placeholder="Source bibliographique">
+          </mat-form-field>
+        </div>
+        <div class="biblioList">
+          <div class="icon"><mat-icon>book</mat-icon></div>
+          <div class="displayName">Source bibliographique...</div>
+          <div class="actions">
+            <button mat-icon-button aria-label="Delete" (click)="deleteBilbioSource(synt)"><mat-icon>delete</mat-icon></button>
+          </div>
+        </div>-->
+      </div>
+    </div>
+    <div class="relatedPdfFiles">
+      <!-- PDF -->
+      <div class="pdfFile" *ngIf="tableForm.controls.isDiagnosis.value && pdfFilesToSend.length == 0">
+          <tb-dropfile-box
+            label="Ajouter le fichier PDF de la diagnose"
+            labelHelp="15 Mo maximum"
+            maxFileSize="15000"
+            [allowFullWindowDrop]="false"
+            [showTable]="false"
+            [allowedFileTypes]="allowedUploadedFileTypes"
+            (acceptedFiles)="pdfUploaded($event)"
+          ></tb-dropfile-box>
+        </div>
+        <!-- pdf file to be sent -->
+        <div *ngIf="pdfFilesToSend.length == 1" class="pdfFileList">
+          <div class="icon"><mat-icon>attachment</mat-icon></div>
+          <div class="displayName">{{ relatedPdfFile[0]?.file.name }}</div>
+          <div class="actions">
+            <button mat-icon-button aria-label="Delete" (click)="deleteRelatedPdfFile(relatedPdfFile[0])"><mat-icon>delete</mat-icon></button>
+          </div>
+        </div>
+        <!-- pdf file already exists -->
+        <div *ngIf="currentTablePdfFiles.length > 0" class="pdfFileList">
+          <div class="icon"><mat-icon>attachment</mat-icon></div>
+          <div class="displayName">{{ currentTablePdfFiles[0].originalName }}</div>
+          <div class="actions">
+            <button mat-icon-button aria-label="Delete" (click)="deleteTablePdfFile(currentTablePdfFiles[0])"><mat-icon>delete</mat-icon></button>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="saveCurrentTable" *ngIf="!tableService.isSavingCurrentTable">
+    <button mat-button color="primary" (click)="saveTable()">Enregistrer le tableau</button>
+  </div>
+  <div class="saveCurrentTable">
+    <p>{{ tableService.savingCurrentTableMessage }}</p>
+  </div>
+</form>

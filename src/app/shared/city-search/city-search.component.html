@@ -1,0 +1,27 @@
+<form [formGroup]="form">
+  <!-- Country selector -->
+  <mat-form-field>
+    <mat-select formControlName="country" (selectionChange)="countryChange(country.value)" placeholder="Pays" #country>
+      <mat-option value="fr">France</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Département (fr) selector -->
+  <mat-form-field>
+    <mat-select formControlName="locationType" (selectionChange)="locationTypeChange(type.value)" placeholer="" #type>
+      <mat-option value="city">Commune</mat-option>
+      <mat-option value="departement">Département</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- City / town (OSM "administrary") selector -->
+  <mat-form-field style="width: 100%;">
+    <input matInput formControlName="placeInput" [placeholder]="placeInputPlaceholder" aria-label="Trouver un lieu" [matAutocomplete]="auto">
+    <mat-spinner *ngIf="isLoadingAddress" diameter="20" matSuffix></mat-spinner>
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addressSelectedChanged($event)">
+      <mat-option *ngFor="let place of geoSearchResults" [value]="place">
+        <span>{{ displayPlace(place) }}</span>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</form>

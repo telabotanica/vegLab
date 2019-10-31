@@ -1,0 +1,41 @@
+.phyto_app_container {
+  height: calc(100vh - 75px);
+  max-height: calc(100vh - 75px);
+  overflow: hidden;
+  .layout {
+    height: calc(100vh - 75px);
+    #action_panel {
+      max-height: 100%;
+      height: 100%;
+      background-color: white;margin: 0;
+      overflow-y: scroll;
+      padding: 15px;
+      margin-left: 15px;
+      &.col-md-6 {
+        padding: 0;
+      }
+    }
+
+    #main {
+      display: flex;
+      flex-direction: column;
+      padding-left: 0;
+      #table {
+        flex: 2;
+        background-color: white;
+      }
+      #info_panel {
+        flex: 1;
+        background-color: lightblue;
+        #show_info_panel_button {
+          background-color: lightblue;
+          position: relative;
+          width: fit-content;
+          top: -24px;
+          left: calc(100% - 30px);
+          z-index: 10000;
+        }
+      }
+    }
+  }
+}

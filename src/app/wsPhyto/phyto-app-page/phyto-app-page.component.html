@@ -1,0 +1,22 @@
+<div class="phyto_app_container">
+  <div class="row layout">
+    <as-split unit="percent" direction="horizontal">
+      <as-split-area size="50">
+        <div id="action_panel">
+          <router-outlet></router-outlet>
+        </div>
+      </as-split-area>
+      <as-split-area size="50">
+        <div id="main">
+            <div id="table">
+              <vl-table></vl-table>
+            </div>
+            <div id="info_panel">
+              <div id="show_info_panel_button">...</div>
+              Info
+            </div>
+        </div>
+      </as-split-area>
+    </as-split>
+  </div>
+</div>

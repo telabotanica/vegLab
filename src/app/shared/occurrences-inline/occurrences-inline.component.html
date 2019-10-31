@@ -1,0 +1,116 @@
+<div *ngIf="_orderedOccurrences.length > 0">
+  <div class="header">
+    <div class="header-spacer" *ngIf="orderedOccurrencesHaveChildren"></div>
+    <div class="checkbox item"><mat-checkbox (change)="allOccurrencesSelectedChange($event.checked)"></mat-checkbox></div>
+    <div class="id item">Id.</div>
+    <div class="details item">Détails</div>
+    <div class="level item">Niv.</div>
+    <div class="layer item">Strate</div>
+    <div class="validation item">Identification</div>
+    <div class="authors item">Auteurs</div>
+    <div class="date item">Date</div>
+    <div class="location item">Localisation</div>
+    <div class="elevation item">Altitude</div>
+  </div>
+</div>
+<div class="content">
+  <div *ngFor="let item of _orderedOccurrences">
+    <!-- **************************** -->
+    <!-- occurrence whithout children -->
+    <!-- **************************** -->
+    <div *ngIf="!orderedOccurrencesHaveChildren">
+      <div class="row-without-child">
+        <!--<div class="inline-spacer"></div>--> <!-- *ngIf="returnsChildrenLevelOccurrences && returnsChildrenLevelOccurrencesEnabled" -->
+        <div class="row" [class.already-in-current-table]="item.occurrence.isInCurrentTable || item.occurrence.hasChildInCurrentTable">
+          <div class="checkbox item">
+            <mat-checkbox (change)="occurrenceWithoutChildrenSelectedChange()"
+                          [(ngModel)]="item.occurrence.selected"
+                          [disabled]="item.occurrence.isInCurrentTable || item.occurrence.hasChildInCurrentTable"
+                          [indeterminate]="!item.occurrence.isInCurrentTable && item.occurrence.hasChildInCurrentTable"></mat-checkbox>
+          </div>
+          <div class="id item">{{ item.occurrence.occurrence.id }}</div>
+          <div class="preview item"><mat-icon (click)="togglePreview()" inline="true" matTooltip="Afficher plus de détails">search</mat-icon></div>
+          <div class="level item">{{ item.occurrence.occurrence.level | shortLevel }}</div>
+          <div class="layer item">{{ item.occurrence.occurrence.layer }}</div>
+          <div class="validation item">{{ item.occurrence.occurrence.validations && item.occurrence.occurrence.validations[0] ? item.occurrence.occurrence.validations[0].validatedName : '-' }}</div>
+          <div class="authors item"><mat-icon inline="true" class="grey">person</mat-icon> {{ getObserversPreview(item.occurrence.occurrence) }}</div>
+          <div class="date item" *ngIf="!item.occurrence.occurrence.dateObservedPrecision">
+            <mat-icon inline="true" class="grey">calendar_today</mat-icon> {{ item.occurrence.occurrence.dateObserved | momentLocalDate }}
+          </div>
+          <div class="date item" *ngIf="item.occurrence.occurrence.dateObservedPrecision">
+              <mat-icon inline="true" class="grey">calendar_today</mat-icon> {{ item.occurrence.occurrence.dateObserved | momentLocalDate:item.occurrence.occurrence.dateObservedPrecision }}
+          </div>
+          <div class="location item">
+            <mat-icon inline="true" class="grey">place</mat-icon> {{ item.occurrence.occurrence.locality}} ({{ item.occurrence.occurrence.osmCountryCode | uppercase }} {{ item.occurrence.occurrence.osmPostcode | slice:0:2 }})
+          </div>
+          <div class="elevation item">
+            <div *ngIf="item.occurrence.occurrence.elevation"><mat-icon inline="true" class="grey">landscape</mat-icon> {{ item.occurrence.occurrence.elevation ? item.occurrence.occurrence.elevation : '-' }} m</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ************************ -->
+    <!-- occurrence with children -->
+    <!-- ************************ -->
+    <div *ngIf="orderedOccurrencesHaveChildren">
+      <div class="row-with-children">
+        <div class="parent-item">
+          <div [class.parent-inline-spacer]="item.childOccurrences" [class.inline-spacer]="!item.childOccurrences"></div>
+          <div class="row" [class.already-in-current-table]="item.occurrence.isInCurrentTable || item.occurrence.hasChildInCurrentTable">
+            <div class="checkbox item">
+              <mat-checkbox (change)="occurrenceParentSelectedChange(item.occurrence.occurrence.id)"
+                            [(ngModel)]="item.occurrence.selected"
+                            [disabled]="item.occurrence.isInCurrentTable || item.occurrence.hasChildInCurrentTable"
+                            [indeterminate]="!item.occurrence.isInCurrentTable && item.occurrence.hasChildInCurrentTable">
+              </mat-checkbox></div>
+            <div class="id item">{{ item.occurrence.occurrence.id }}</div>
+            <div class="preview item"><mat-icon (click)="togglePreview()" inline="true" matTooltip="Afficher plus de détails">search</mat-icon></div>
+            <div class="level item">{{ item.occurrence.occurrence.level | shortLevel }}</div>
+            <div class="layer item">{{ item.occurrence.occurrence.layer }}</div>
+            <div class="validation item">{{ item.occurrence.occurrence.validations && item.occurrence.occurrence.validations[0] ? item.occurrence.occurrence.validations[0].validatedName : '-' }}</div>
+            <div class="authors item"><mat-icon inline="true" class="grey">person</mat-icon> {{ getObserversPreview(item.occurrence.occurrence) }}</div>
+            <div class="date item" *ngIf="!item.occurrence.occurrence.dateObservedPrecision">
+              <mat-icon inline="true" class="grey">calendar_today</mat-icon> {{ item.occurrence.occurrence.dateObserved | momentLocalDate }}
+            </div>
+            <div class="date item" *ngIf="item.occurrence.occurrence.dateObservedPrecision">
+                <mat-icon inline="true" class="grey">calendar_today</mat-icon> {{ item.occurrence.occurrence.dateObserved | momentLocalDate:item.occurrence.occurrence.dateObservedPrecision }}
+            </div>
+            <div class="location item">
+              <mat-icon inline="true" class="grey">place</mat-icon> {{ item.occurrence.occurrence.locality}} ({{ item.occurrence.occurrence.osmCountryCode | uppercase }} {{ item.occurrence.occurrence.osmPostcode | slice:0:2 }})
+            </div>
+            <div class="elevation item">
+              <div *ngIf="item.occurrence.occurrence.elevation"><mat-icon inline="true" class="grey">landscape</mat-icon> {{ item.occurrence.occurrence.elevation ? item.occurrence.occurrence.elevation : '-' }} m</div>
+            </div>
+          </div>
+        </div>
+        <div class="children-items">
+          <div class="child-item" *ngFor="let childOcc of item.childOccurrences; index as i;">
+            <div class="child-inline-spacer" [class.end]="i === item.childOccurrences.length - 1"></div>
+            <div class="row" [class.already-in-current-table]="childOcc.isInCurrentTable || item.occurrence.hasChildInCurrentTable">
+              <div class="checkbox item"><mat-checkbox (change)="occurrenceChildSelectedChange(childOcc.occurrence.id)" [(ngModel)]="childOcc.selected" [disabled]="childOcc.disabled || childOcc.isInCurrentTable"></mat-checkbox></div>
+              <div class="id item">{{ childOcc.occurrence.id }}</div>
+              <div class="preview item"><mat-icon (click)="togglePreview()" inline="true" matTooltip="Afficher plus de détails">search</mat-icon></div>
+              <div class="level item">{{ childOcc.occurrence.level | shortLevel }}</div>
+              <div class="layer item">{{ childOcc.occurrence.layer }}</div>
+              <div class="validation item">{{ childOcc.occurrence.validations && childOcc.occurrence.validations[0] ? childOcc.occurrence.validations[0].validatedName : '-' }}</div>
+              <div class="authors item"><mat-icon inline="true" class="grey">person</mat-icon> {{ getObserversPreview(childOcc.occurrence) }}</div>
+              <div class="date item" *ngIf="!childOcc.occurrence.dateObservedPrecision">
+                <mat-icon inline="true" class="grey">calendar_today</mat-icon> {{ childOcc.occurrence.dateObserved | momentLocalDate }}
+              </div>
+              <div class="date item" *ngIf="childOcc.occurrence.dateObservedPrecision">
+                  <mat-icon inline="true" class="grey">calendar_today</mat-icon> {{ childOcc.occurrence.dateObserved | momentLocalDate:childOcc.occurrence.dateObservedPrecision }}
+              </div>
+              <div class="location item">
+                <mat-icon inline="true" class="grey">place</mat-icon> {{ childOcc.occurrence.locality}} ({{ childOcc.occurrence.osmCountryCode | uppercase }} {{ childOcc.occurrence.osmPostcode | slice:0:2 }})
+              </div>
+              <div class="elevation item">
+                <div *ngIf="childOcc.occurrence.elevation"><mat-icon inline="true" class="grey">landscape</mat-icon> {{ childOcc.occurrence.elevation ? childOcc.occurrence.elevation : '-' }} m</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

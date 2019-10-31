@@ -1,0 +1,934 @@
+<h2>Importer un tableau</h2>
+<div id="vl-import-table-container" fxLayout style="height: calc(100% - 45px);">
+  <mat-horizontal-stepper (selectionChange)="stepSelectionChange($event)" labelPosition="bottom" fxLayout="column" fxFlex="100" fxLayoutAlign="start center" [class.full-width]="contentFullWidth">
+
+    <!-- Override step icons -->
+    <ng-template matStepperIcon="edit">
+      <mat-icon>edit</mat-icon>
+    </ng-template>
+  
+    <ng-template matStepperIcon="done">
+      <mat-icon>done</mat-icon>
+    </ng-template>
+
+    <ng-template matStepperIcon="active">
+      <mat-icon>home</mat-icon>
+    </ng-template>
+  
+    <!-- Custom icon with a context variable. -->
+    <ng-template matStepperIcon="number" let-index="index">
+      {{index + 1}}
+    </ng-template>
+
+    <!-- ************** -->
+    <!-- 0. Upload file -->
+    <!-- ************** -->
+    <mat-step fxFlex="100" fxLayout="column">
+      <ng-template matStepLabel>{{ STEPS.file.label }}</ng-template>
+      <div class="step-ahead"></div>
+
+      <div fxFlex="100" fxFill class="step-content">
+        <tb-dropfile-box
+          label="Ajouter un fichier à importer"
+          labelHelp="Fichier CSV uniquement, 5 Mo maximum"
+          maxFileSize=5000
+          [allowedFileTypes]="allowedFileTypes"
+          (acceptedFiles)="uploadedFiles($event)"
+          (rejectedFiles)="rejectedFiles($event)"
+          (deletedFiles)="deletedFiles($event)">
+        </tb-dropfile-box>
+
+        <div *ngIf="importFile.status === 'pending'" class="import-table-notice">
+          <p>Vous allez importez un tableau. Ce processus est rigoureux.</p>
+          <p>
+            Le tableau que vous fournissez doit suivre le modèle indiqué :
+            <button mat-button>Télécharger le modèle</button>
+          </p>
+          <p>
+            Une fois le tableau chargé, passez en revue chacune des 7 étapes afin de contrôler les données.
+            À chaque étpae, vous pouvez corriger certaines données <span class="color-tb-orange-light">non valides</span>.</p>
+          <p>Dans la plupart des cas, vous pourrez finaliser l'import même si toutes les données ne sont pas conformes (elles ne seront alors pas importées)</p>
+        </div>
+      </div>
+
+      <div class="step-status">
+        <div class="step-status">
+          <!-- Status-->
+          <div class="status-box" [ngClass]="importFile.status">
+            <div class="tick">
+              <mat-icon *ngIf="importFile.status === 'error'">priority_high</mat-icon>
+              <mat-icon *ngIf="importFile.status === 'aborted'">priority_high</mat-icon>
+              <mat-icon *ngIf="importFile.status === 'complete'">done</mat-icon>
+              <mat-icon *ngIf="importFile.status === 'pending'">more_horiz</mat-icon>
+            </div>
+            <div class=content>
+              <div class="title">Importation du fichier</div>
+              <div class="sub-title" *ngFor="let message of importFile?.messages">{{ message }}</div>
+            </div>
+            <div class="actions">
+              <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
+              -
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-step>
+
+    <!-- ************** -->
+    <!-- 1. Names check -->
+    <!-- ************** -->
+    <mat-step fxFlex="100" fxLayout="column">
+      <ng-template matStepLabel>{{ STEPS.names.label }}</ng-template>
+
+      <div class="step-ahead">
+        <div class="inline-form">
+          <mat-form-field>
+            <mat-select (selectionChange)="mainRepositoryChange($event)" placeholder="Référentiel principal" value="bdtfx">
+              <mat-option *ngFor="let repo of availableRepository" [value]="repo.id">{{ repo.label }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button mat-button (click)="setTaxonomicList()">Lancer la vérification des noms</button>
+        </div>
+      </div>
+
+      <div fxFlex="100" fxFill class="step-content">
+        <div style="width: 0; height: 0; overflow: hidden;"><input #hiddenInput></div>
+        <div *ngIf="isLoadingTaxonomicList">Vérification des noms...</div>
+        <div *ngIf="!isLoadingTaxonomicList && taxonomicList.length > 0">
+          <div *ngFor="let taxo of taxonomicList" class="name-validation-box">
+            <div class="status">
+              <mat-icon *ngIf="taxo.rim && taxo.rim.repository !== 'otherunknown'"
+                class="status-icon valid"
+                [ngbPopover]="popNameValidationContentValid" [popoverTitle]="popNameValidationTitleValid" container="body" triggers="mouseenter:mouseleave">check</mat-icon>
+              <mat-icon *ngIf="!taxo.rim || taxo.rim && taxo.rim.repository === 'otherunknown'"
+                class="status-icon warning"
+                [ngbPopover]="popNameValidationContentWarning" [popoverTitle]="popNameValidationTitleWarning" container="body" triggers="mouseenter:mouseleave">priority_high</mat-icon>
+            </div>
+            <div class="tsb-search-box">
+              <tb-tsb-search-box
+                [tbRepositoriesConfig]="tbRepositoriesConfig"
+                [defaultRepository]="taxo.validation.repository"
+                [startWithValue]="taxo.rim"
+                [autoResetWhenSelected]="false"
+                (newData)="updateTaxon(taxo, $event)">
+              </tb-tsb-search-box>
+            </div>
+
+            <!-- popover editing releves templates -->
+            <ng-template #popNameValidationTitleValid>Taxon</ng-template>
+            <ng-template #popNameValidationContentValid>Le taxon a pu être identifié dans le référentiel "{{ taxo.rim.repository }}"</ng-template>
+            <ng-template #popNameValidationTitleWarning>Taxon</ng-template>
+            <ng-template #popNameValidationContentWarning>Le taxon n'a pas pu être identifié dans un référentiel</ng-template>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-status">
+        <div class="status-box" [ngClass]="stepNames.currentStatus">
+          <div class="tick">
+            <mat-icon *ngIf="stepNames.currentStatus === 'complete'">done</mat-icon>
+            <mat-icon *ngIf="stepNames.currentStatus === 'warning'">priority_high</mat-icon>
+            <mat-icon *ngIf="stepNames.currentStatus === 'error'">close</mat-icon>
+            <mat-icon *ngIf="stepNames.currentStatus === 'pending'">more_horiz</mat-icon>
+          </div>
+          <div class=content>
+            <div class="title">{{ stepNames.message }}</div>
+            <div class="sub-title">{{ stepNames.tip }}</div>
+          </div>
+          <div class="actions">
+            <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
+          </div>
+        </div>
+      </div>
+    </mat-step>
+
+    <!-- ************************ -->
+    <!-- 2. Author and date check -->
+    <!-- ************************ -->
+    <mat-step fxFlex="100" fxLayout="column">
+      <ng-template matStepLabel>{{ STEPS.authorsDates.label }}</ng-template>
+
+      <div class="step-ahead">
+        <div class="inline-form">
+          <button mat-button (click)="setAuthorDateList()">Lancer la vérification des auteurs et des dates</button>
+        </div>
+      </div>
+
+      <div fxFlex="100" fxFill class="step-content">       
+        <div fxLayout="row" fxLayoutAlign="center start">
+          <!-- table -->
+          <div style="width: 100%;">
+            <!-- Author table -->
+            <table mat-table
+              *ngIf="authorList.length > 0"
+              [dataSource]="authorList"
+              multiTemplateDataRows
+              class="author-table">
+              <ng-container matColumnDef="customColumn1">
+                <th mat-header-cell *matHeaderCellDef style="width: 50px;"> Statut </th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="status">
+                    <mat-icon *ngIf="isAuthorComplete(element)"
+                      class="status-icon valid"
+                      [ngbPopover]="popAuthorValidationContentValid" [popoverTitle]="popAuthorValidationTitleValid" container="body" triggers="mouseenter:mouseleave">check</mat-icon>
+                    <mat-icon *ngIf="!isAuthorComplete(element)"
+                      class="status-icon error"
+                      [ngbPopover]="popAuthorValidationContentError" [popoverTitle]="popAuthorValidationTitleWarning" container="body" triggers="mouseenter:mouseleave">priority_high</mat-icon>
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="authorUserInput">
+                <th mat-header-cell *matHeaderCellDef style="width: 250px;"> Auteur </th>
+                <td mat-cell *matCellDef="let element">{{ element.authorUserInput }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="customColumn2">
+                <th mat-header-cell *matHeaderCellDef> Valeur consolidée </th>
+                <td mat-cell *matCellDef="let element" style="display: flex; flex-direction: row; align-items: center;">
+                  <vl-observer-search
+                    placeholder="auteur"
+                    [observerStr]="element.authorUserInput"
+                    [autoselectIfOneResult]="true"
+                    (inputChange)="authorInputChange(element)"
+                    (selectedObserver)="setSelectedAuthor(element, $event)"
+                    (noResultForStr)="noResultForAuthorStr(element, $event)"></vl-observer-search>
+                  <button mat-button *ngIf="element.noResult && !element.isAddingObserver" (click)="expandedElement = expandedElement === element ? null : element">Ajouter cet auteur</button>
+                  <mat-spinner *ngIf="element.isAddingObserver" diameter="16"></mat-spinner>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="expandedDetailAuthor">
+                <td mat-cell *matCellDef="let element" [attr.colspan]="displayedAuthorColumns.length" class="author-table-expandable-row">
+                  <div class="element-detail"
+                    [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                    <div *ngIf="element === expandedElement">
+                      <div *ngIf="!element.isAddingObserver">
+                        <p>L'observateur "{{ element.noResultFor }}" n'est pas référencé. Vous pouvez l'ajouter à la liste des observateurs (auteurs) pour qu'il soit pris en compte. Vérifiez la bonne ortographe du nom et veuillez respecter le format suivant : "P. Nom" (ex. "H. Passarge" / "J. Braun-Blanquet").</p>
+                        <button mat-button (click)="createAndLinkObserver(element, element.noResultFor)">Ajouter {{ element.noResultFor }} à la liste des observateurs</button>
+                      </div>
+                      <div *ngIf="element.isAddingObserver">
+                        <p style="display: flex; flex-direction: row; align-items: center; justify-content: center;">Enregistrement en cours, merci de patienter. <mat-spinner diameter="16"></mat-spinner></p>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedAuthorColumns"></tr>
+              <tr mat-row *matRowDef="let element; columns: displayedAuthorColumns;"
+                [class.expanded-row]="expandedElement === element"
+                ></tr> <!-- (click)="expandedElement = expandedElement === element ? null : element" -->
+                <tr mat-row *matRowDef="let row; columns: ['expandedDetailAuthor']" class="detail-row" [class.expanded-row]="expandedElement === row"></tr>
+            </table>
+
+            <!-- Date table -->
+            <table mat-table
+              *ngIf="dateList.length > 0"
+              [dataSource]="dateList"
+              class="date-table">
+              <ng-container matColumnDef="customColumn1">
+                <th mat-header-cell *matHeaderCellDef style="width: 50px;"> Statut </th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="status">
+                    <mat-icon *ngIf="isDateComplete(element)"
+                      class="status-icon valid"
+                      [ngbPopover]="popDateValidationContentValid" [popoverTitle]="popDateValidationTitleValid" container="body" triggers="mouseenter:mouseleave">check</mat-icon>
+                    <mat-icon *ngIf="!isDateComplete(element)"
+                      class="status-icon error"
+                      [ngbPopover]="popDateValidationContentError" [popoverTitle]="popDateValidationTitleWarning" container="body" triggers="mouseenter:mouseleave">priority_high</mat-icon>
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="dateUserInput">
+                <th mat-header-cell *matHeaderCellDef style="width: 250px;"> Date </th>
+                <td mat-cell *matCellDef="let element">{{ element.dateUserInput }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="customColumn2">
+                <th mat-header-cell *matHeaderCellDef> Valeur consolidée </th>
+                <td mat-cell *matCellDef="let element">
+                  <span *ngIf="element.precision">{{ element.dateConsolided | momentLocalDate:element.precision }}</span>
+                  <span *ngIf="!element.precision">{{ element.dateConsolided }}</span>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedDateColumns"></tr>
+              <tr mat-row *matRowDef="let element; columns: displayedDateColumns;"></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- popover authors templates -->
+      <ng-template #popAuthorValidationTitleValid>Auteur</ng-template>
+      <ng-template #popAuthorValidationContentValid>L'auteur a été identifié</ng-template>
+      <ng-template #popAuthorValidationTitleWarning>Auteur</ng-template>
+      <ng-template #popAuthorValidationContentError>L'auteur' n'a pas pu être identifié. Veuillez le selectionner manuellement à l'aide du champ de recherche.</ng-template>
+
+      <!-- popover dates templates -->
+      <ng-template #popDateValidationTitleValid>Date</ng-template>
+      <ng-template #popDateValidationContentValid>La date est valide</ng-template>
+      <ng-template #popDateValidationTitleWarning>Date</ng-template>
+      <ng-template #popDateValidationContentError>La date n'est pas valide</ng-template>
+
+      <div class="step-status">
+        <div class="status-box" [ngClass]="stepAuthorsDates.currentStatus">
+          <div class="tick">
+            <mat-icon *ngIf="stepAuthorsDates.currentStatus === 'complete'">done</mat-icon>
+            <mat-icon *ngIf="stepAuthorsDates.currentStatus === 'warning'">priority_high</mat-icon>
+            <mat-icon *ngIf="stepAuthorsDates.currentStatus === 'error'">close</mat-icon>
+            <mat-icon *ngIf="stepAuthorsDates.currentStatus === 'pending'">more_horiz</mat-icon>
+          </div>
+          <div class=content>
+            <div class="title">{{ stepAuthorsDates.message }}</div>
+            <div class="sub-title">{{ stepAuthorsDates.tip }}</div>
+          </div>
+          <div class="actions">
+            <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
+          </div>
+        </div>
+      </div>
+
+    </mat-step>
+
+    <!-- *********** -->
+    <!-- 3. Location -->
+    <!-- *********** -->
+    <mat-step fxFlex="100" fxLayout="column">
+      <ng-template matStepLabel>{{ STEPS.places.label }}</ng-template>
+
+      <div class="step-ahead">
+        <div class="inline-form">
+          <button mat-button (click)="setLocationList()">Lancer la vérification des localisations</button>
+        </div>
+      </div>
+      
+      <div fxFlex="100" fxFill class="step-content">       
+        <div fxLayout="row" fxLayoutAlign="center start">
+          <!-- map -->
+          <div class="locationMap">
+            <tb-geoloc-map
+              height="400px"
+              elevationProvider="mapQuest"
+              mapQuestApiKey="ApIFfQWsb8jW6bkYDD2i0Sq5BD9moJ3l"
+              [showLatLngElevationInputs]="false"
+              [marker]="allowDrawMap"
+              [polyline]="allowDrawMap"
+              [polygon]="allowDrawMap"
+              [patchAddress]="patchMapAddress"
+              [patchLngLatDec]="patchMapLngLatDec"
+              [patchGeometry]="patchMapGeometry"
+              [setAddress]="setMapAddress"
+              [inputFocus]="setMapInputFocus"
+              [placeMarkerWhenReverseGeocoding]="false"
+              (location)="setCurrentLocation($event)">
+            </tb-geoloc-map>
+          </div>
+          <!-- table -->          
+          <div style="width: 100%;">
+            <table mat-table
+            [dataSource]="locationList"
+            class="location-table">
+              <ng-container matColumnDef="customColumn2">
+                <th mat-header-cell *matHeaderCellDef> Statut </th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="status">
+                    <mat-icon *ngIf="isLocationComplete(element)"
+                      class="status-icon valid"
+                      [ngbPopover]="popNameValidationContentValid" [popoverTitle]="popNameValidationTitleValid" container="body" triggers="mouseenter:mouseleave">check</mat-icon>
+                    <mat-icon *ngIf="!isLocationComplete(element)"
+                      class="status-icon warning"
+                      [ngbPopover]="popNameValidationContentWarning" [popoverTitle]="popNameValidationTitleWarning" container="body" triggers="mouseenter:mouseleave">priority_high</mat-icon>
+                  </div>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef> Rel. </th>
+                <td mat-cell *matCellDef="let element"> {{ element.id }} </td>
+              </ng-container>
+              
+              <ng-container matColumnDef="latitude">
+                <th mat-header-cell *matHeaderCellDef> Lat. </th>
+                <td mat-cell *matCellDef="let element">{{ element.latitude | number:'.0-4' }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="longitude">
+                <th mat-header-cell *matHeaderCellDef> Lon. </th>
+                <td mat-cell *matCellDef="let element">{{ element.longitude | number:'.0-4' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="country">
+                <th mat-header-cell *matHeaderCellDef> Pays </th>
+                <td mat-cell *matCellDef="let element">{{ element.country }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="departement">
+                <th mat-header-cell *matHeaderCellDef> Dép. </th>
+                <td mat-cell *matCellDef="let element">{{ element.departement }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="city">
+                <th mat-header-cell *matHeaderCellDef> Ville </th>
+                <td mat-cell *matCellDef="let element">{{ element.city }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="place">
+                <th mat-header-cell *matHeaderCellDef> Lieu-dit </th>
+                <td mat-cell *matCellDef="let element">{{ element.place }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="locationAccuracy">
+                <th mat-header-cell *matHeaderCellDef> Précision </th>
+                <td mat-cell *matCellDef="let element">{{ element.vlAccuracy || '?' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="elevation">
+                <th mat-header-cell *matHeaderCellDef> Altitude </th>
+                <td mat-cell *matCellDef="let element">
+                  <div *ngIf="element.elevation">{{ element.elevation }}<sup *ngIf="element.isElevationEstimated" matTooltip="Valeur estimée">*</sup></div>
+                  <div *ngIf="!element.elevation">
+                    <button mat-icon-button (click)="renewElevation(element)">
+                      <mat-icon>autorenew</mat-icon>
+                    </button>
+                  </div>
+                  
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="customColumn">
+                <th mat-header-cell *matHeaderCellDef> Vérif. </th>
+                <td mat-cell *matCellDef="let element">
+                  <div *ngIf="element.isLoading">
+                    <mat-spinner diameter="16"></mat-spinner>
+                  </div>
+                  <div *ngIf="!element.isLoading">
+                    <!-- no location-->
+                    <div *ngIf="element.suggeredLocations.length === 0 && !element.selectedLocation && !element.tbLocation">
+                      <button *ngIf="!element.manualLocalization" mat-button (click)="localizeOnMap(element)">Rechercher sur la carte</button>
+                      <button *ngIf="element.manualLocalization" mat-button (click)="localizeFromMap(element)">Utiliser la localisation cartographique</button>
+                    </div>
+                    <!-- 1 location -->
+                    <div *ngIf="element.selectedLocation || element.tbLocation">
+                      <button *ngIf="element.selectedLocation && !element.tbLocation" mat-button (click)="showLocationOnMap(element)">Visualiser sur la carte</button>
+                      <button *ngIf="element.tbLocation" mat-button (click)="showTbLocationOnMap(element)">Visualiser sur la carte</button>
+                    </div>
+                  </div>
+                  <!-- several location -->
+                  <div *ngIf="element.suggeredLocations.length > 1">
+                    <mat-select (selectionChange)="localitySelectionChange(element, $event)" placeholder="Choisissez une localité">
+                      <mat-option *ngFor="let suggeredLocation of element.suggeredLocations" [value]="suggeredLocation" (mouseenter)="previewLocationOnMap(suggeredLocation.nominatimLocation)">
+                        <span *ngIf="suggeredLocation.nominatimLocation.geojson.type === 'Point'"><mat-icon inline="true">place</mat-icon></span>
+                        <span *ngIf="suggeredLocation.nominatimLocation.geojson.type === 'MultiPoint'"><mat-icon inline="true">place</mat-icon></span>
+                        <span *ngIf="suggeredLocation.nominatimLocation.geojson.type === 'LineString'"><mat-icon inline="true">maximize</mat-icon></span>
+                        <span *ngIf="suggeredLocation.nominatimLocation.geojson.type === 'MultiLineString'"><mat-icon inline="true">timeline</mat-icon></span>
+                        <span *ngIf="suggeredLocation.nominatimLocation.geojson.type === 'Polygon'"><mat-icon inline="true">crop_din</mat-icon></span>
+                        <span *ngIf="suggeredLocation.nominatimLocation.geojson.type === 'MultiPolygon'"><mat-icon inline="true">crop_din</mat-icon></span>
+                        <span>{{ suggeredLocation.readableAddress }}</span>
+                      </mat-option>
+                    </mat-select>
+                  </div>
+                </td>
+              </ng-container>
+              
+              <tr mat-header-row *matHeaderRowDef="displayedLocationColumns"></tr>
+              <tr mat-row *matRowDef="let element; columns: displayedLocationColumns;"></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-status">
+        <div class="status-box" [ngClass]="stepPlaces.currentStatus">
+          <div class="tick">
+            <mat-icon *ngIf="stepPlaces.currentStatus === 'complete'">done</mat-icon>
+            <mat-icon *ngIf="stepPlaces.currentStatus === 'warning'">priority_high</mat-icon>
+            <mat-icon *ngIf="stepPlaces.currentStatus === 'error'">close</mat-icon>
+            <mat-icon *ngIf="stepPlaces.currentStatus === 'pending'">more_horiz</mat-icon>
+          </div>
+          <div class=content>
+            <div class="title">{{ stepPlaces.message }}</div>
+            <div class="sub-title">{{ stepPlaces.tip }}</div>
+          </div>
+          <div class="actions">
+            <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
+          </div>
+        </div>
+      </div>
+      
+    </mat-step>
+
+    <!-- *********** -->
+    <!-- 4. Metadata -->
+    <!-- *********** -->
+    <mat-step fxFlex="100" fxLayout="column">
+      <ng-template matStepLabel>{{ STEPS.metadata.label }}</ng-template>
+
+      <div class="step-ahead">
+        <div class="inline-form">
+          <button mat-button (click)="setMetadataList()">Lancer la vérification des métadonnées</button>
+        </div>
+      </div>
+
+      <div fxFlex="100" fxFill class="step-content">
+        <!-- metadata list -->
+        <table mat-table
+          *ngIf="flatMetadataList.length > 0"
+          [dataSource]="flatMetadataList" multiTemplateDataRows
+          class="metadata-table">
+
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef> Rel. </th>
+            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="metadataName">
+            <th mat-header-cell *matHeaderCellDef> Nom </th>
+            <td mat-cell *matCellDef="let element"><span *ngIf="element.restrictedToLayer">[{{ element.restrictedToLayer }}] </span> {{element.metadataName}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="metadataValue">
+            <th mat-header-cell *matHeaderCellDef> Val. </th>
+            <td mat-cell *matCellDef="let element">
+              <div *ngIf="!element.isEditing">{{element.metadataValue}}</div>
+              <div *ngIf="element.isEditing" class="metadata-edit-form">
+                <mat-form-field class="input">
+                  <input matInput #metadataItemEditValue value="{{element.metadataValue}}">
+                </mat-form-field>
+                <button mat-button (click)="newMetadataValue(element, metadataItemEditValue.value)"><mat-icon>check</mat-icon></button>
+                <button mat-button (click)="stopEditingMetadata(element)"><mat-icon>clear</mat-icon></button>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="metadataModel">
+            <th mat-header-cell *matHeaderCellDef> Métadonnée </th>
+            <td mat-cell *matCellDef="let element">
+              <!-- popover template -->
+              <ng-template #popMetaTitle>[{{ element.metadataModel.fieldId }}] <b>{{ element.metadataModel.extendedFieldTranslations[0]?.label || '?' }}</b></ng-template>
+              <ng-template #popMetaContent>
+                <div class="metadata-model-popover-content">
+                  <div class="description">
+                    <b>Description : </b>{{element.metadataModel.extendedFieldTranslations[0]?.description}}
+                  </div>
+                  <br />
+                  <div *ngIf="!element.checkedValue.isValid" class="data-type-value-error">
+                    <b>Erreur : </b>{{ element.checkedValue.errorMessage || '?'}}
+                  </div>
+                  <div class="data-type-value">
+                    <b>Type : </b>{{element.metadataModel.dataType}}
+                  </div>
+                  <div class="min-max-value">
+                    <b>Val. min/max : </b>{{element.metadataModel.minValue || element.metadataModel.minValue === 0 ? '0' : '-'}} / {{element.metadataModel.maxValue || '-'}}
+                  </div>
+                  <div class="default-value">
+                    <b>Val. par défaut : </b>{{element.metadataModel.defaultValue || '-'}}
+                  </div>
+                  <div class="unit-value">
+                      <b>Unité : </b>{{element.metadataModel.unit || '-'}}
+                    </div>
+                </div>
+              </ng-template>
+              
+              <!-- popover error template -->
+              <ng-template #popMetaTitleError><b><i>"{{ element.metadataName }}"</i></b></ng-template>
+              <ng-template #popMetaContentError>
+                <div class="metadata-model-popover-content">
+                  <div class="data-type-value-error">
+                    <b>Erreur : </b>Cette métadonnée est inconnue
+                  </div>
+                  <div class="description">
+                    Nous ne parvenons pas à trouver de métadonnée valide pour "{{ element.metadataName }}"
+                  </div>
+                </div>
+              </ng-template>
+
+              <span *ngIf="element.metadataModel" class="metadata-valid" [ngbPopover]="popMetaContent" [popoverTitle]="popMetaTitle" container="body" triggers="mouseenter:mouseleave">{{ element.metadataModel.fieldId }}</span>
+              <span *ngIf="!element.metadataModel" class="metadata-error" [ngbPopover]="popMetaContentError" [popoverTitle]="popMetaTitleError" container="body" triggers="mouseenter:mouseleave">---</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="consolidedValue">
+            <th mat-header-cell *matHeaderCellDef> Val. </th>
+            <td mat-cell *matCellDef="let element">
+              <div class="flex-between">
+                <div *ngIf="element.metadataModel">
+                  <div *ngIf="element.checkedValue.isValid">
+                    <span *ngIf="element.metadataModel.dataType !== 'Date'" [ngClass]="{'metadata-valid': element.checkedValue.isValid, 'metadata-error': !element.checkedValue.isValid}">{{element.checkedValue.consolidedValue || '?'}}</span>
+                    <span *ngIf="element.metadataModel.dataType === 'Date'" [ngClass]="{'metadata-valid': element.checkedValue.isValid, 'metadata-error': !element.checkedValue.isValid}">{{element.checkedValue.consolidedValue | momentLocalDate}}</span>
+                  </div>
+                  <div *ngIf="!element.checkedValue.isValid">
+                    <span *ngIf="element.metadataModel.dataType !== 'Date'" class="metadata-error">---</span>
+                    <span *ngIf="element.metadataModel.dataType === 'Date'" class="metadata-error">---</span>
+                  </div>
+                </div>
+                <div *ngIf="!element.metadataModel">
+                    <span class="metadata-error">---</span>
+                </div>
+                <button mat-icon-button
+                  [disabled]="!element.metadataModel || (element.metadataModel && element.checkedValue.isValid)"
+                  (click)="startEditingMetadata(element)">
+                  <mat-icon matTooltip="{{!element.metadataModel || (element.metadataModel && element.checkedValue.isValid) ? 'Vous ne pouvez pas éditer cette métadonnée' : 'Éditer cette métadonnée' }}">edit</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedMetadataColumns"></tr>
+          <tr mat-row *matRowDef="let element; columns: displayedMetadataColumns;"></tr>
+        </table>
+      </div>
+
+      <div class="step-status">
+        <div class="status-box" [ngClass]="stepMetadata.currentStatus">
+          <div class="tick">
+            <mat-icon *ngIf="stepMetadata.currentStatus === 'complete'">done</mat-icon>
+            <mat-icon *ngIf="stepMetadata.currentStatus === 'warning'">priority_high</mat-icon>
+            <mat-icon *ngIf="stepMetadata.currentStatus === 'error'">close</mat-icon>
+            <mat-icon *ngIf="stepMetadata.currentStatus === 'pending'">more_horiz</mat-icon>
+          </div>
+          <div class=content>
+            <div class="title">{{ stepMetadata.message }}</div>
+            <div class="sub-title">{{ stepMetadata.tip }}</div>
+          </div>
+          <div class="actions">
+            <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
+          </div>
+        </div>
+      </div>
+      
+    </mat-step>
+
+    <!-- ********* -->
+    <!-- 5. Biblio -->
+    <!-- ********* -->
+    <mat-step fxFlex="100" fxLayout="column">
+      <ng-template matStepLabel>{{ STEPS.biblio.label }}</ng-template>
+
+      <div class="step-ahead">
+        <div class="inline-form">
+          <button mat-button (click)="setBiblioList()">Lancer la vérification des références bibliographique</button>
+        </div>
+      </div>
+
+      <div fxFlex="100" fxFill class="step-content">       
+        <div fxLayout="row" fxLayoutAlign="center start">
+          <!-- table -->
+          <div style="width: 100%;">
+            <!-- Biblio table -->
+            <table mat-table
+              *ngIf="biblioList.length > 0"
+              [dataSource]="biblioList"
+              multiTemplateDataRows
+              class="biblio-table">
+              <ng-container matColumnDef="customColumn1">
+                <th mat-header-cell *matHeaderCellDef style="width: 50px;"> Statut </th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="status">
+                    <mat-icon *ngIf="isBiblioComplete(element)"
+                      class="status-icon valid"
+                      [ngbPopover]="popBiblioValidationContentValid" [popoverTitle]="popBiblioValidationTitleValid" container="body" triggers="mouseenter:mouseleave">check</mat-icon>
+                    <mat-icon *ngIf="!isBiblioComplete(element)"
+                      class="status-icon warning"
+                      [ngbPopover]="popBiblioValidationContentError" [popoverTitle]="popBiblioValidationTitleWarning" container="body" triggers="mouseenter:mouseleave">priority_high</mat-icon>
+                  </div>
+                </td>
+              </ng-container>
+              
+              <ng-container matColumnDef="biblioUserInput">
+                <th mat-header-cell *matHeaderCellDef style="width: 250px;"> Ref. biblio. </th>
+                <td mat-cell *matCellDef="let element">{{ element.biblioUserInput }}</td>
+              </ng-container>
+              
+
+              
+              <ng-container matColumnDef="customColumn2">
+                <th mat-header-cell *matHeaderCellDef> Valeur consolidée </th>
+                <td mat-cell *matCellDef="let element" style="display: flex; flex-direction: column; align-items: center;">
+                  <vl-biblio-search
+                    style="width: 100%"
+                    placeholder="Ref. biblio."
+                    [biblioStr]="element.biblioUserInput"
+                    [autoselectIfOneResult]="false"
+                    [fuzzySearch]="true"
+                    (inputChange)="biblioInputChange(element)"
+                    (selectedBiblio)="setSelectedBiblio(element, $event)"
+                    (noResultForStr)="noResultForBiblioStr(element, $event)"></vl-biblio-search>
+                  <button mat-button *ngIf="element.noResult && !element.isAddingBiblio" (click)="expandedBiblioElement = expandedBiblioElement === element ? null : element">Ajouter cette référence biblio.</button>
+                  <mat-spinner *ngIf="element.isAddingBiblio" diameter="16"></mat-spinner>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="expandedDetailBiblio">
+                <td mat-cell *matCellDef="let element" [attr.colspan]="displayedBiblioColumns.length" class="biblio-table-expandable-row">
+                  <div class="element-detail"
+                    [@detailExpand]="element == expandedBiblioElement ? 'expanded' : 'collapsed'">
+                    <div *ngIf="element === expandedBiblioElement">
+                      <div *ngIf="!element.isAddingBiblio">
+                        <p>La référence <br /><b>"{{ element.noResultFor }}"</b> <br />n'est pas référencée. Vous pouvez l'ajouter à la liste des références bibliographiques pour qu'elle soit prise en compte.
+                          Vérifiez la bonne syntaxe de cete référence. Exemple :<br /><b>"Oberdorfer, E., 1957. Süddeutsche Pflanzengesellschaften. Pflanzensoziologie, 10, 567 p. Gustav Fischer. Jena."</b></p>
+                        <button mat-button (click)="createAndLinkBiblio(element, element.noResultFor)">Ajouter cette donnée à la liste des références bibliographiques</button>
+                      </div>
+                      <div *ngIf="element.isAddingBiblio">
+                        <p style="display: flex; flex-direction: row; align-items: center; justify-content: center;">Enregistrement en cours, merci de patienter. <mat-spinner diameter="16"></mat-spinner></p>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+              
+
+              <tr mat-header-row *matHeaderRowDef="displayedBiblioColumns"></tr>
+              <tr mat-row *matRowDef="let element; columns: displayedBiblioColumns;"
+                [class.expanded-row]="expandedBiblioElement === element"
+                ></tr> <!-- (click)="expandedBiblioElement = expandedBiblioElement === element ? null : element" -->
+              <tr mat-row *matRowDef="let row; columns: ['expandedDetailBiblio']" class="detail-row" [class.expanded-row]="expandedBiblioElement === row"></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- popover biblio templates -->
+      <ng-template #popBiblioValidationTitleValid>Ref. biblio.</ng-template>
+      <ng-template #popBiblioValidationContentValid>La référence bibliographique a été identifiée</ng-template>
+      <ng-template #popBiblioValidationTitleWarning>Ref. biblio.</ng-template>
+      <ng-template #popBiblioValidationContentError>La référence bibliographique n'a pas pu être identifiée. Veuillez la selectionner manuellement à l'aide du champ de recherche.</ng-template>
+
+      <div class="step-status">
+        <div class="status-box" [ngClass]="stepBiblio.currentStatus">
+          <div class="tick">
+            <mat-icon *ngIf="stepBiblio.currentStatus === 'complete'">done</mat-icon>
+            <mat-icon *ngIf="stepBiblio.currentStatus === 'warning'">priority_high</mat-icon>
+            <mat-icon *ngIf="stepBiblio.currentStatus === 'error'">close</mat-icon>
+            <mat-icon *ngIf="stepBiblio.currentStatus === 'pending'">more_horiz</mat-icon>
+          </div>
+          <div class=content>
+            <div class="title">{{ stepBiblio.message }}</div>
+            <div class="sub-title">{{ stepBiblio.tip }}</div>
+          </div>
+          <div class="actions">
+            <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
+          </div>
+        </div>
+      </div>
+    </mat-step>
+
+    <!-- ************* -->
+    <!-- 6. Validation -->
+    <!-- ************* -->
+    <mat-step fxFlex="100" fxLayout="column">
+      <ng-template matStepLabel>{{ STEPS.validations.label }}</ng-template>
+
+        <div class="step-ahead">
+          <div class="inline-form">
+            <button mat-button (click)="setValidationList()">Lancer la vérification des identifications</button>
+          </div>
+        </div>
+
+        <div fxFlex="100" fxFill class="step-content">
+          <!-- grid -->
+          <mat-grid-list *ngIf="validationList && validationList.table && validationList.table.sye.length > 0" [cols]="validationList.table.sye.length" rowHeight="50px">
+            <!-- Table tile -->
+            <mat-grid-tile
+              [colspan]="validationList.table.sye.length"
+              rowspan="1"
+              [style.background]="validationList.table && validationList.table.validation && validationList.table.validation.repositoryIsAvailable ? '#c3d45d' : '#e6885b'">
+              <div class="grid-tile _table">
+                <div class="infos"></div>
+                <div class="content">
+                    <b>Tableau : </b>
+                    <span *ngIf="validationList.table.validation && validationList.table.validation.consolidedValidation"
+                          title="{{ validationList.table.validation.consolidedValidation.name }} {{ validationList.table.validation.consolidedValidation.author ? validationList.table.validation.consolidedValidation.author : '' }}">
+                      {{ validationList.table.validation.consolidedValidation.name }} {{ validationList.table.validation.consolidedValidation.author ? validationList.table.validation.consolidedValidation.author : '' }}
+                    </span>
+                    <span *ngIf="!validationList.table.validation || !validationList.table.validation.consolidedValidation">non identifié</span>
+                </div>
+                <div class="actions">
+                  <button mat-icon-button (click)="startEditingTableValidation()"><mat-icon>edit</mat-icon></button>
+                </div>
+              </div>
+            </mat-grid-tile>
+            
+            <!-- Sye tiles -->
+            <mat-grid-tile
+              *ngFor="let sye of validationList.table.sye"
+              colspan="1"
+              rowspan="1"
+              [style.background]="sye.validation && sye.validation.repositoryIsAvailable ? '#c9d693' : '#f0b797'">
+              <div class="grid-tile sye">
+                <div class="infos"></div>
+                <div class="content">
+                  <b>Groupe {{sye.id}} : </b>
+                  <span *ngIf="sye.validation && sye.validation.consolidedValidation"
+                        title="{{ sye.validation.consolidedValidation.name }} {{ sye.validation.consolidedValidation.author ? sye.validation.consolidedValidation.author : '' }}">
+                    {{ sye.validation.consolidedValidation.name }} {{ sye.validation.consolidedValidation.author ? sye.validation.consolidedValidation.author : '' }}
+                  </span>
+                  <span *ngIf="!sye.validation || !sye.validation.consolidedValidation">non identifié</span>
+                </div>
+                <div class="actions">
+                  <button mat-icon-button (click)="startEditingSyeValidation(sye)"><mat-icon>edit</mat-icon></button>
+                </div>
+              </div>
+            </mat-grid-tile>
+
+            <!-- Releve tiles -->
+            <mat-grid-tile
+              *ngFor="let sye of validationList.table.sye"
+              colspan="1"
+              rowspan="3"
+              [style.background]="checkRelevesHaveConsolidedValidation(sye.releves) ? '#f2f5e5a9' : '#fbeee6'">
+              <div class="grid-tile releve">
+                <div class="infos"></div>
+                <div class="content">
+                  <span><b>{{ sye.releves?.length }} relevé<span *ngIf="sye.releves?.length > 1">s</span></b></span>
+                  <div *ngIf="checkRelevesHaveConsolidedValidation(sye.releves) && checkRelevesValidationConsistency(sye.releves)">avec la même identification : </div>
+                  <div *ngIf="!checkRelevesHaveConsolidedValidation(sye.releves) || !checkRelevesValidationConsistency(sye.releves)">avec des identifications différentes : </div>
+                  <ul class="releves-names">
+                    <li *ngFor="let cVal of getUniqConsolidedValidation(sye.releves)" title="{{ cVal.name }} {{ cVal.author ? cVal.author : '' }}">
+                      {{ cVal.name }}
+                    </li>
+                    <li *ngIf="countUnconsolidedValidation(sye.releves) > 0">et {{ countUnconsolidedValidation(sye.releves) }} non identifié(s)</li>
+                  </ul>
+                </div>
+                <div class="actions releve">
+                  <button mat-icon-button (click)="startEditingRelevesValidation(sye.releves)"><mat-icon>edit</mat-icon></button>
+                </div>
+              </div>
+            </mat-grid-tile>
+          </mat-grid-list>
+
+          <!-- validation inputs -->
+          <!-- table -->
+          <div *ngIf="isEditingTableValidation" class="edition-validation">
+            <div class="edition-validation-title"><span></span><span>Identification du tableau</span><button mat-icon-button (click)="stopEditingTableValidation()"><mat-icon>close</mat-icon></button></div>
+            <div class="edition-validation-box table">
+              <div class="referenceId"><b>tab.</b></div>
+              <div class="status">
+                <mat-icon *ngIf="doesTableHasConsolidedValidation()"
+                  class="status-icon valid"
+                  [ngbPopover]="popTableValidationContentValid" [popoverTitle]="popTableValidationTitleValid" container="body" triggers="mouseenter:mouseleave">check</mat-icon>
+                <mat-icon *ngIf="!doesTableHasConsolidedValidation()"
+                  class="status-icon warning"
+                  [ngbPopover]="popTableValidationContentWarning" [popoverTitle]="popTableValidationTitleWarning" container="body" triggers="mouseenter:mouseleave">priority_high</mat-icon>
+              </div>
+              <div class="content">
+                <tb-tsb-search-box
+                  level="synusy"
+                  [defaultRepository]="validationList.table.validation && validationList.table.validation.repositoryIsAvailable ? validationList.table.validation.repository : 'otherunknown'"
+                  [startWithValue]="validationList.table.validation && validationList.table.validation.consolidedValidation ? validationList.table.validation.consolidedValidation : fakeConsolidation(validationList.table)"
+                  [autoResetWhenSelected]="false"
+                  (newData)="updateTableConsolidedValidation($event)"
+                ></tb-tsb-search-box>
+              </div>
+              <!-- popover editing releves templates -->
+              <ng-template #popTableValidationTitleValid>Tableau</ng-template>
+              <ng-template #popTableValidationContentValid>Le tableau a pu être identifié dans le référentiel "{{ validationList.table.validation && validationList.table.validation.consolidedValidation ? validationList.table.validation.consolidedValidation.repository : 'Autre/inconnu' }}"</ng-template>
+              <ng-template #popTableValidationTitleWarning>Tableau</ng-template>
+              <ng-template #popTableValidationContentWarning>
+                <span *ngIf="validationList.table.validation && validationList.table.validation.repository">Le tableau n'à pu être identifié dans le référentiel "{{ validationList.table.validation.repository }}"<br /></span>
+                <span *ngIf="validationList.table.validation && validationList.table.validation.repositoryIsAvailable">Le référentiel "{{ validationList.table.validation.repository }}" existe mais aucune donnée portant le numéro nomenclatural "{{ validationList.table.validation.nomen }}" n'est présente</span>
+                <span *ngIf="validationList.table.validation && !validationList.table.validation.repositoryIsAvailable && validationList.table.validation.repository !== ''">Le référentiel "{{ releve.validation.repository }}" n'existe pas</span>
+                <span *ngIf="validationList.table.validation && !validationList.table.validation.repositoryIsAvailable && validationList.table.validation.repository === ''">Aucun référentiel mentionné</span>
+                <span *ngIf="!validationList.table.validation">Aucun référentiel mentionné</span>
+              </ng-template>
+            </div>
+          </div>
+
+          <!-- sye -->
+          <div *ngIf="isEditingSyeValidation && editingSye !== null" class="edition-validation">
+            <div class="edition-validation-title"><span></span><span>Identification du groupe "{{ editingSye.id }}"</span><button mat-icon-button (click)="stopEditingSyeValidation()"><mat-icon>close</mat-icon></button></div>
+            <div class="edition-validation-box sye">
+              <div class="referenceId"><b>{{ editingSye.id }}</b></div>
+              <div class="status">
+                <mat-icon *ngIf="doesSyeHasConsolidedValidation(editingSye)"
+                  class="status-icon valid"
+                  [ngbPopover]="popSyeValidationContentValid" [popoverTitle]="popSyeValidationTitleValid" container="body" triggers="mouseenter:mouseleave">check</mat-icon>
+                <mat-icon *ngIf="!doesSyeHasConsolidedValidation(editingSye)"
+                  class="status-icon warning"
+                  [ngbPopover]="popSyeValidationContentWarning" [popoverTitle]="popSyeValidationTitleWarning" container="body" triggers="mouseenter:mouseleave">priority_high</mat-icon>
+              </div>
+              <div class="content">
+                <tb-tsb-search-box
+                  level="synusy"
+                  [defaultRepository]="editingSye.validation && editingSye.validation.repositoryIsAvailable ? editingSye.validation.repository : 'otherunknown'"
+                  [startWithValue]="editingSye.validation && editingSye.validation.consolidedValidation ? editingSye.validation.consolidedValidation : fakeConsolidation(editingSye)"
+                  [autoResetWhenSelected]="false"
+                  (newData)="updateSyeConsolidedValidation(editingSye, $event)"
+                ></tb-tsb-search-box>
+              </div>
+              <!-- popover editing releves templates -->
+              <ng-template #popSyeValidationTitleValid>Groupe n°. {{ editingSye.id }}</ng-template>
+              <ng-template #popSyeValidationContentValid>Ce groupe a pu être identifié dans le référentiel "{{ sye.validation && sye.validation.consolidedValidation ? sye.validation.consolidedValidation.repository : 'Autre/inconnu' }}"</ng-template>
+              <ng-template #popSyeValidationTitleWarning>Groupe n°. {{ editingSye.id }}</ng-template>
+              <ng-template #popSyeValidationContentWarning>
+                <span *ngIf="editingSye.validation && editingSye.validation.repository">Ce groupe n'à pu être identifié dans le référentiel "{{ editingSye.validation.repository }}"<br /></span>
+                <span *ngIf="editingSye.validation && editingSye.validation.repositoryIsAvailable">Le référentiel "{{ editingSye.validation.repository }}" existe mais aucune donnée portant le numéro nomenclatural "{{ editingSye.validation.nomen }}" n'est présente</span>
+                <span *ngIf="editingSye.validation && !editingSye.validation.repositoryIsAvailable && editingSye.validation.repository !== ''">Le référentiel "{{ releve.validation.repository }}" n'existe pas</span>
+                <span *ngIf="editingSye.validation && !editingSye.validation.repositoryIsAvailable && editingSye.validation.repository === ''">Aucun référentiel mentionné</span>
+                <span *ngIf="!editingSye.validation">Aucun référentiel mentionné</span>
+              </ng-template>
+            </div>
+          </div>
+
+          <!-- releves -->
+          <div *ngIf="isEditingRelevesValidation && editingReleves.length > 0" class="edition-validation">
+            <div class="edition-validation-title"><span></span><span>Identification des relevés du groupe "{{ getSyeIdForReleve(editingReleves[0]) }}"</span><button mat-icon-button (click)="stopEditingRelevesValidation()"><mat-icon>close</mat-icon></button></div>
+            <div *ngFor="let releve of editingReleves" class="edition-validation-box releves">
+              <div class="referenceId"><b>{{ releve.id }}</b></div>
+              <div class="status">
+                <mat-icon *ngIf="releve.validation?.repositoryIsAvailable && releve.validation?.consolidedValidation"
+                          class="status-icon valid"
+                          [ngbPopover]="popReleveValidationContentValid" [popoverTitle]="popReleveValidationTitleValid" container="body" triggers="mouseenter:mouseleave">check</mat-icon>
+                <mat-icon *ngIf="!releve.validation || !releve.validation?.consolidedValidation"
+                          class="status-icon warning"
+                          [ngbPopover]="popReleveValidationContentWarning" [popoverTitle]="popReleveValidationTitleWarning" container="body" triggers="mouseenter:mouseleave">priority_high</mat-icon>
+              </div>
+              <div class="content">
+                <tb-tsb-search-box
+                  level="synusy"
+                  [defaultRepository]="releve.validation.repositoryIsAvailable ? releve.validation.repository : 'otherunknown'"
+                  [startWithValue]="releve.validation?.consolidedValidation ? releve.validation?.consolidedValidation : fakeConsolidation(releve)"
+                  [autoResetWhenSelected]="false"
+                  (newData)="updateReleveConsolidedValidation(releve, $event)"
+                ></tb-tsb-search-box>
+              </div>
+              <!-- popover editing releves templates -->
+              <ng-template #popReleveValidationTitleValid>Rel n°. {{ releve.id }}</ng-template>
+              <ng-template #popReleveValidationContentValid>Ce relevé a pu être identifié dans le référentiel "{{ releve.validation.consolidedValidation.repository }}"</ng-template>
+              <ng-template #popReleveValidationTitleWarning>Rel n°. {{ releve.id }}</ng-template>
+              <ng-template #popReleveValidationContentWarning>
+                <span *ngIf="releve.validation && releve.validation.consolidedValidation">Ce relevé n'à pu être identifié dans le référentiel "{{ releve.validation.repository }}"<br /></span>
+                <span *ngIf="releve.validation.repositoryIsAvailable">Le référentiel "{{ releve.validation ? releve.validation.repository : 'Autre/inconnu' }}" existe mais aucune donnée portant le numéro nomenclatural "{{ releve.validation.nomen }}" n'est présente</span>
+                <span *ngIf="!releve.validation.repositoryIsAvailable && releve.validation && releve.validation.repository !== ''">Le référentiel "{{ releve.validation.repository }}" n'existe pas</span>
+                <span *ngIf="!releve.validation.repositoryIsAvailable && releve.validation && releve.validation.repository === ''">Aucun référentiel mentionné</span>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <div (click)="setTable()">OKKKKKKK</div>
+        
+        <div class="step-status">
+          <!-- Status-->
+          <div class="status-box" [ngClass]="stepValidation.currentStatus">
+            <div class="tick">
+              <mat-icon *ngIf="stepValidation.currentStatus === 'complete'">done</mat-icon>
+              <mat-icon *ngIf="stepValidation.currentStatus === 'warning'">priority_high</mat-icon>
+              <mat-icon *ngIf="stepValidation.currentStatus === 'error'">close</mat-icon>
+              <mat-icon *ngIf="stepValidation.currentStatus === 'pending'">more_horiz</mat-icon>
+            </div>
+            <div class=content>
+              <div class="title">{{ stepValidation.message }}</div>
+              <div class="sub-title">{{ stepValidation.tip }}</div>
+            </div>
+            <div class="actions">
+              <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
+            </div>
+          </div>
+        </div>
+
+    </mat-step>
+  </mat-horizontal-stepper>
+
+</div>

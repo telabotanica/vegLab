@@ -1,0 +1,81 @@
+<mat-card class="table-card">
+  <div class="flex top">
+    <span class="level">
+      <span class="small">
+        id:{{ table.id }}
+        <span class="diagnosis" *ngIf="table.isDiagnosis"> | <b>Diagnose</b></span>
+      </span>
+    </span>
+    <span class="score">0 %</span>
+    <div class="select-card">
+      <mat-checkbox color="primary" labelPosition='before'>Select.</mat-checkbox>
+    </div>
+  </div>
+  <div class="flex main-content">
+    <div class="title">{{ table.title }}</div>
+    <div class="description">{{ table.description }}</div>
+  </div>
+  <div class="flex validations">
+    <div *ngIf="table.tableName  == ''" style="width: 100%;">
+      <div class="text-validation no-validation">Ce tableau n'est pas été nommé</div>
+    </div>
+    <div *ngIf="table.tableName  !== ''" style="width: 100%;">
+      <div class="text-validation" title="{{ table.tableName }}">{{ table.tableName }}</div>
+    </div>
+  </div>
+  <div class="flex summary row">
+    <div class="item">
+      <div class="sub-item"><mat-icon inline="true" class="grey">person</mat-icon> {{ table.userId ? table.userId : '?' }}</div>
+      <div class="sub-item"><mat-icon inline="true" class="grey">calendar_today</mat-icon> {{ table.createdAt | date:'d/M/yy' }}</div>
+      <div class="sub-item"><mat-icon inline="true" class="grey">view_column</mat-icon>{{ table.occurrencesCount }} relevé<span *ngIf="table.occurrencesCount > 1">s</span></div>
+      <div class="sub-item"><mat-icon inline="true" class="grey">view_list</mat-icon>{{ table.rowsCount }} espèce<span *ngIf="table.rowsCount > 1">s</span></div>
+    </div>
+  </div>
+
+  <!-- action buttons-->
+  <div class="flex bottom">
+    <button mat-flat-button (click)="toggleDetails()">Détails</button>
+    <button mat-flat-button (click)="togglePreview()">Aperçu</button>
+    <button mat-flat-button [matMenuTriggerFor]="menuUseTable">Utiliser</button>
+    <mat-menu #menuUseTable="matMenu">
+        <button mat-menu-item (click)="setCurrentTable(table.id)">Comme tableau courant</button>
+        <button mat-menu-item>Fusionner avec le tableau courant</button>
+      </mat-menu>
+  </div>
+
+  <!-- table details -->
+  <div class="table-preview" [style.display]="showDetails ? 'block' : 'none'">
+    <div *ngIf="table.occurrencesNames.length == 0">Aucun détail à afficher</div>
+    <table class="table" *ngIf="table.occurrencesNames.length > 0">
+      <thead>
+        <tr>
+          <th>Le tableau contient {{ table.occurrencesNames.length }} relevé(s) nommé(s) parmi {{ table.occurrencesCount }} :</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let occName of table.occurrencesNames">
+          <td class="name" title="{{ occName }}">{{ occName }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- table preview -->
+  <div class="table-preview" [style.display]="showPreview ? 'block' : 'none'">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th class="center">Freq.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of getPreview()">
+          <td class="name" title="{{ row }}">{{ row[0] }}</td>
+          <td class="freq" title="{{ row }}">{{ row[1] }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</mat-card>

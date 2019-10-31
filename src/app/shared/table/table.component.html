@@ -1,0 +1,37 @@
+<div id="table-wrapper">
+  <table>
+    <tbody>
+      <tr id="table-sub-header">
+        <td class="spacer" [style.width.px]="tableSpacerPx"></td>
+        <!--<td *ngFor="let sye of currentSyes"
+          (mouseenter)="mouseOverSye=sye.syeId" (mouseleave)="mouseOverSye=null"
+          [style.width]="getSyeVisibleWidth(sye.syeId)"
+          [style.maxWidth]="getSyeVisibleWidth(sye.syeId)"
+          [style.maxWidth]="hover ? 'fit-content' : getSyeVisibleWidth(sye.syeId)"
+          [class]="getSubHeaderClassname(sye.syeId)">[{{ sye.syeId }}] Nom du syntaxon ({{ sye.occurrencesCount }})</td>-->
+        <td *ngFor="let sye of currentSyes"
+          [style.width]="getSyeVisibleWidth(sye.syeId)"
+          [style.maxWidth]="getSyeVisibleWidth(sye.syeId)"
+          [class]="getSubHeaderClassname(sye.syeId)">[{{ sye.syeId }}] Nom du syntaxon ({{ sye.occurrencesCount }})</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hot-table
+    [hotId]="hotTableId"
+    [settings]="tableSettings"
+  ></hot-table>
+
+  <button mat-button (click)="router.navigate(['/phyto/app/create-table'])">Enregistrer le tableau</button>
+</div>
+
+<!--
+<div [hidden]="currentDataView" class="no-data-table">
+  <div class="title">Aucun tableau à afficher</div>
+  <div class="action-buttons">
+    <button mat-button>Rechercher un relevé</button>
+    <button mat-button>Rechercher un tableau</button>
+    <button mat-button>Importer des données</button>
+  </div>
+</div>
+-->

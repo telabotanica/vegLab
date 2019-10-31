@@ -1,0 +1,16 @@
+mat-form-field {
+  &.full-width {
+    width: 100%
+  }
+}
+
+// .mat-autocomplete-panel {
+  .mat-option {
+    white-space: inherit;
+    overflow: visible;
+    text-overflow: unset;
+    line-height: unset;
+    height: auto;
+    padding: 10px;
+  }
+// }

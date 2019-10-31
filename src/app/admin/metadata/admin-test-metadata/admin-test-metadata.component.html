@@ -1,0 +1,15 @@
+<h1>Test des métadonnées</h1>
+<table>
+  <thead>
+    <th class="title">Métadonnée</th>
+    <th class="input">Saisie</th>
+    <th class="filter">Filtre</th>
+  </thead>
+  <tbody>
+    <tr *ngFor="let meta of metadataList">
+      <th>{{ meta.fieldId }}</th>
+      <th><vl-metadata-input [metadata]="meta"></vl-metadata-input></th>
+      <th><vl-metadata-filter [metadata]="meta"></vl-metadata-filter></th>
+    </tr>
+  </tbody>
+</table>

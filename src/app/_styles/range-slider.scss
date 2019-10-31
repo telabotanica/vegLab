@@ -1,0 +1,51 @@
+::ng-deep {
+  .ng5-slider {
+    .ng5-slider-bar {
+      height: 3px !important;
+    }
+    .ng5-slider-pointer {
+      width: 8px !important;
+      height: 17px !important;
+      margin-left: 1px;
+      top: auto !important; /* to remove the default positioning */
+      bottom: 0 !important;
+      border-top-left-radius: 0px !important;
+      border-top-right-radius: 0px !important;
+      border: 1px solid white !important;
+    }
+    .ng5-slider-pointer:after {
+      display: none;
+    }
+    .ng5-slider-bubble {
+      bottom: 14px !important;
+      font-size: 12px !important;
+      .ng5-slider-model-high {
+        padding: 2px 16px !important;
+      }
+    }
+    .ng5-slider-limit {
+      font-weight: bold !important;
+    }
+    .ng5-slider-tick {
+      width: 1px !important;
+      height: 10px !important;
+      margin-left: 4px !important;
+      border-radius: 0 !important;
+      top: -1px !important;
+    }
+  }
+  .ng5-slider:not([disabled]) {
+    .ng5-slider-pointer {
+      background-color: #3f51b5 !important;
+    }
+    .ng5-slider-limit {
+      color: #3f51b5 !important;
+    }
+    .ng5-slider-tick {
+      background: #3f51b5b3 !important;
+    }
+    .ng5-slider-selection {
+      background-color: #3f51b5 !important;
+    }
+  }
+}

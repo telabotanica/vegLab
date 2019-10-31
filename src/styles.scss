@@ -1,1 +1,93 @@
-/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import '~bootstrap/scss/bootstrap-reboot';
+@import '~bootstrap/scss/bootstrap-grid';
+@import '~bootstrap/scss/_tables';
+@import "~leaflet/dist/leaflet.css";
+@import "~leaflet-draw/dist/leaflet.draw.css";
+@import '~handsontable/dist/handsontable.full.css';
+@import './app/_styles/colors.scss';
+
+@import "tb-theme.scss";
+@include angular-material-theme($tb-theme);
+
+html {
+  font-size: 0.8em;
+}
+body {
+  margin: 0;
+  font-family: Muli, sans-serif;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: Ubuntu, sans-serif;
+  }
+  *:focus {
+    border: none;
+    outline: none;
+  }
+}
+
+.handsontable {
+  .htDimmed {
+    color: inherit;
+  }
+  td.group.title {
+    font-weight: bold;
+    background-image: url('./assets/img/table/pen-edit-extra-min.png');
+    background-repeat: no-repeat;
+    background-position-x: right;
+    background-position-y: top;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  td.group.name {
+    padding-left: 10px;
+  }
+  td.coef {
+    text-align: center;
+  }
+  td.synthetic {
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.1);
+
+    &.sye-0 {background-color: rgba($cell-color-0, $cell-color-transparency); }
+    &.sye-1 {background-color: rgba($cell-color-1, $cell-color-transparency); }
+    &.sye-2 {background-color: rgba($cell-color-2, $cell-color-transparency); }
+    &.sye-3 {background-color: rgba($cell-color-3, $cell-color-transparency); }
+    &.sye-4 {background-color: rgba($cell-color-4, $cell-color-transparency); }
+
+  }
+
+  td.titleRowValue {
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.1);
+
+    &.sye-0 {background-color: rgba(0, 0, 0, 0.05); }
+    &.sye-1 {background-color: rgba(0, 0, 0, 0.05); }
+    &.sye-2 {background-color: rgba(0, 0, 0, 0.05); }
+    &.sye-3 {background-color: rgba(0, 0, 0, 0.05); }
+    &.sye-4 {background-color: rgba(0, 0, 0, 0.05); }
+
+  }
+
+  td.sye-0 { color: $cell-color-0; }
+  td.sye-1 { color: $cell-color-1; }
+  td.sye-2 { color: $cell-color-2; }
+  td.sye-3 { color: $cell-color-3; }
+  td.sye-4 { color: $cell-color-4; }
+
+  th.sye-0 { background-color: rgba($cell-color-0, $cell-color-transparency);
+    &.ht__highlight { background-color: rgba($cell-color-0, $cell-color-transparency-highlight);} }
+  th.sye-1 { background-color: rgba($cell-color-1, $cell-color-transparency);
+    &.ht__highlight { background-color: rgba($cell-color-1, $cell-color-transparency-highlight);} }
+  th.sye-2 { background-color: rgba($cell-color-2, $cell-color-transparency);
+    &.ht__highlight { background-color: rgba($cell-color-2, $cell-color-transparency-highlight);} }
+  th.sye-3 { background-color: rgba($cell-color-3, $cell-color-transparency);
+    &.ht__highlight { background-color: rgba($cell-color-3, $cell-color-transparency-highlight);} }
+  th.sye-4 { background-color: rgba($cell-color-4, $cell-color-transparency);
+    &.ht__highlight { background-color: rgba($cell-color-4, $cell-color-transparency-highlight);} }
+}
+
+// Material overwrite
+.mat-tab-label {
+  min-width: 100px !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}

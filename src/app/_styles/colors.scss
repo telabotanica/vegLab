@@ -1,0 +1,34 @@
+$tb-green: #c3d45d;
+$tb-green-light: #c9d693;
+$tb-green-lighter: #f2f5e5a9;
+$tb-green-dark: #92ad27;
+$tb-orange: #e6885b;
+$tb-orange-light: #f0b797;
+$tb-orange-lighter: #fbeee6;
+$tb-orange-dark: #cd3f12;
+
+$green: #278065;
+$blue: #0569A6;
+
+$blue-material: #3f51b5;
+$blue-material-light: scale-color($blue-material, $lightness: 50%);
+
+$occurrence-color: $green;
+$table-color: $blue;
+$table-diagnosis-background: scale-color($table-color, $lightness: 95%);
+
+$cell-color-transparency: .1;
+$cell-color-transparency-highlight: .5;
+$cell-color-0: #3f51b5;
+$cell-color-1: #56b949;
+$cell-color-2: #ee4035;
+$cell-color-3: #26A7FF;
+$cell-color-4: #FF5126;
+$cell-color-5: #268AFF;
+$cell-color-6: #FD9A28;
+$cell-color-7: #162C9a;
+$cell-color-8: #FFD027;
+$cell-color-9: #7828FD;
+$cell-color-10: #FDF028;
+$cell-color-11: #FA5C65;
+$cell-color-12: #37DC94;

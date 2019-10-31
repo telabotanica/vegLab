@@ -1,0 +1,413 @@
+<div class="container">
+  <h1>Rechercher un relevé</h1>
+  <!-- FILTERS -->
+  <div class="filter-container">
+    <mat-tab-group animationDuration="0" (selectedIndexChange)="selectedTabIndexChange($event)">
+      <!-- ****************************************** -->
+      <!-- Low level occurrence filter (ie idiotaxon) -->
+      <!-- ****************************************** -->
+      <mat-tab label="Espèces">
+        <ng-template mat-tab-label>
+          <img class="vl-base-element-icon inline" src="./assets/img/icons/occ-icon.jpg">
+          Espèces
+        </ng-template>
+        <div class="tab-body-wrapper">
+          <!-- search by "species" -->
+          <div class="tab-section">
+            <div class="section-title">
+              Filtrer par espèces
+            </div>
+            <div class="section-body">
+              <mat-chip-list></mat-chip-list> <!-- https://github.com/angular/material2/issues/9964#issuecomment-480287541 -->
+              <table class="must-not-table">
+                <thead>
+                  <tr class="header">
+                    <th class="title"></th>
+                    <th class="taxo-input">
+                      <tb-tsb-search-box
+                        [tbRepositoriesConfig]="tbRepositoriesConfig"
+                        level="idiotaxon"
+                        placeholder="Ajouter une espèce au filtre"
+                        autoResetWhenSelected="true"
+                        defaultRepository="bdtfx"
+                        [showRepositoryInput]="false"
+                        (newData)="addOccurrenceToFilter($event)">
+                      </tb-tsb-search-box>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="row must">
+                    <td class="title">Les relevés <b>doivent</b> contenir</td>
+                    <!--<td class="title" *ngIf="mustOrShouldContain == 'should'">Les relevés <b>devraient</b> contenir</td>-->
+                    <td>
+                      <!-- must/should contain box -->
+                      <div cdkDropList #mustContainList="cdkDropList" [cdkDropListData]="mustContainOccurrences" [cdkDropListConnectedTo]="[mustNotContainList]" (cdkDropListDropped)="dropOccurrenceBetweenLists($event)" id="mustContainBox" class="occurrence-filter-box must">
+                        <mat-chip cdkDrag *ngFor="let item of mustContainOccurrences" removable="true" (removed)="removeOccurrenceFromMustContainList(item)">
+                          {{ item.name }} {{ item.author }}
+                          <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="row must-not">
+                    <td class="title">Les relevés <b>ne doivent pas</b> contenir</td>
+                    <td>
+                      <!-- must not/should not contain box -->
+                      <div cdkDropList #mustNotContainList="cdkDropList" [cdkDropListData]="mustNotContainOccurrences" [cdkDropListConnectedTo]="[mustContainList]" (cdkDropListDropped)="dropOccurrenceBetweenLists($event)" id="mustNotContainBox" class="occurrence-filter-box must-not">
+                        <mat-chip cdkDrag *ngFor="let item of mustNotContainOccurrences" removable="true" (removed)="removeOccurrenceFromMustNotContainList(item)">
+                          {{ item.name }} {{ item.author }}
+                          <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- ******************************************************** -->
+      <!-- Hight level occurrence filter (ie synusy / microcenosis) -->
+      <!-- ******************************************************** -->
+      <mat-tab label="Relevés">
+        <ng-template mat-tab-label>
+          <img class="vl-base-element-icon inline" src="./assets/img/icons/rel-icon.jpg">
+          Relevés
+        </ng-template>
+        <div class="tab-body-wrapper">
+          <!-- search by "species" -->
+          <div class="tab-section">
+            <div class="section-title">
+              Filtrer par relevés
+            </div>
+            <div class="section-body">
+              <mat-chip-list></mat-chip-list> <!-- https://github.com/angular/material2/issues/9964#issuecomment-480287541 -->
+              <table class="must-not-table">
+                <thead>
+                  <tr class="header">
+                    <th class="title"></th>
+                    <th class="taxo-input">
+                      <tb-tsb-search-box
+                        [tbRepositoriesConfig]="tbRepositoriesConfig"
+                        level="synusy"
+                        placeholder="Ajouter un syntaxon au filtre"
+                        autoResetWhenSelected="true"
+                        defaultRepository="baseveg"
+                        [showRepositoryInput]="false"
+                        (newData)="addReleveToFilter($event)">
+                      </tb-tsb-search-box>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="row must">
+                    <td class="title">Les relevés <b>doivent</b> être</td>
+                    <!--<td class="title" *ngIf="mustOrShouldContain == 'should'">Les relevés <b>devraient</b> contenir</td>-->
+                    <td>
+                      <!-- must/should contain box -->
+                      <div cdkDropList #mustContainRelevesList="cdkDropList" [cdkDropListData]="mustContainReleves" [cdkDropListConnectedTo]="[mustNotContainRelevesList]" (cdkDropListDropped)="dropReleveBetweenLists($event)" id="mustContainBox" class="releve-filter-box must">
+                        <mat-chip cdkDrag *ngFor="let item of mustContainReleves" removable="true" (removed)="removeReleveFromMustContainList(item)">
+                          {{ item.name }} {{ item.author }}
+                          <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="row must-not">
+                    <td class="title">Les relevés <b>ne doivent pas</b> être</td>
+                    <td>
+                      <!-- must not/should not contain box -->
+                      <div cdkDropList #mustNotContainRelevesList="cdkDropList" [cdkDropListData]="mustNotContainReleves" [cdkDropListConnectedTo]="[mustContainRelevesList]" (cdkDropListDropped)="dropReleveBetweenLists($event)" id="mustNotContainBox" class="releve-filter-box must-not">
+                        <mat-chip cdkDrag *ngFor="let item of mustNotContainReleves" removable="true" (removed)="removeReleveFromMustNotContainList(item)">
+                          {{ item.name }} {{ item.author }}
+                          <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="level">
+                    <td class="title">Niveau d'intégration</td>
+                    <td class>
+                      <mat-form-field>
+                        <mat-select value="all" (selectionChange)="levelFilterChange($event.value)">
+                          <mat-option value="all">Tous les niveaux</mat-option>
+                          <mat-option value="synusy">Synusie (releve synusial ou sigmatiste)</mat-option>
+                          <mat-option value="microcenosis">Microcénose (relevé sigmatiste)</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </td>
+                  </tr>
+                  <tr class="level">
+                    <td class="title">Strate</td>
+                    <td class>
+                      <mat-form-field>
+                        <mat-select  value="all" (selectionChange)="layerFilterChange($event.value)">
+                          <mat-option value="all">Toutes les strates</mat-option>
+                          <mat-option *ngFor="let layer of layerList" [value]="layer.enum">{{ layer.name }} : {{ layer.description }}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- *************** -->
+      <!-- Location filter -->
+      <!-- *************** -->
+      <mat-tab label="Localisation">
+        <ng-template mat-tab-label>
+          <mat-icon>place</mat-icon>
+          Localisation
+        </ng-template>
+        <div class="tab-body-wrapper">
+          <div class="tab-section">
+            <div class="section-title">
+              Filtrer par Localisation
+            </div>
+            <div class="section-body">
+              <!-- [geoJsonResults]="geoSearchedOccurrences" -->
+              <vl-draw-search-map
+                [invalidateSize]="invalidateSearchMap"
+                [centroidResults]="geoSearchedOccurrences"
+                (boundingBox)=boundingBoxChange($event)
+                (polygon)="polygonChange($event)"></vl-draw-search-map>
+              <div class="elevation-filter">
+                <!-- Elevation -->
+                <div class="row">
+                  <div class="activator">
+                    <mat-slide-toggle color="primary" (change)="elevationFilterActivationChange($event)" [checked]="elevationFilterOn">Filtrer l'altitude</mat-slide-toggle>
+                  </div>
+                  <div class="selector">
+                    <ng5-slider [(value)]="elevationFilterLowValue" [(highValue)]="elevationFilterHighValue" (userChangeStart)="onUserChangeStartElevationValue($event)" (userChangeEnd)="onUserChangeEndElevationValue($event)" [options]="elevationFilterOptions"></ng5-slider>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- *********************** -->
+      <!-- Author and date filters -->
+      <!-- *********************** -->
+      <mat-tab label="Auteur et date">
+        <ng-template mat-tab-label>
+          <mat-icon>perm_contact_calendar</mat-icon>
+          Auteur, date et ref. biblio.
+        </ng-template>
+        <div class="tab-body-wrapper">
+          <div class="tab-section">
+            <div class="section-title">
+              Filtrer par Auteur et date
+            </div>
+            <div class="section-body">
+              <!-- Authors -->
+              <table class="filters-authors">
+                <thead>
+                  <th class="title"></th>
+                  <th class="filter"></th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="title">Auteur</td>
+                    <td class="filter">
+                      <vl-observer-search
+                        placeholder="Auteur"
+                        fuzzySearch="true"
+                        clearAfterEmit="true"
+                        (selectedObserver)="authorChange($event)"></vl-observer-search>
+                      <mat-chip-list>
+                        <mat-chip *ngFor="let filteredAuthor of filteredAuthors" [removable]="true">
+                          {{ filteredAuthor.name }}
+                          <mat-icon matChipRemove (click)="removeFilteredAuthor(filteredAuthor)">cancel</mat-icon>
+                        </mat-chip>
+                      </mat-chip-list>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              
+              <!-- Date -->
+              <table class="filters-dates">
+                <thead>
+                  <th class="title"></th>
+                  <th class="filter"></th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="title"><mat-slide-toggle [checked]="dateFilterOn" (change)="dateFilterActivationChange($event)" color="primary">Date d'obs.</mat-slide-toggle></td>
+                    <td class="filter"><vl-metadata-filter [metadata]="fakeDateMetadata" [disabled]="!dateFilterOn" (filterValues)="dateFilterValuesChange($event)"></vl-metadata-filter></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Biblio -->
+              <table class="filters-biblios">
+                <thead>
+                  <th class="title"></th>
+                  <th class="filter"></th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="title">Ref. Biblio</td>
+                    <td class="filter">
+                      <vl-biblio-search
+                        placeholder="Référence bibliographique"
+                        fuzzySearch="true"
+                        clearAfterEmit="true"
+                        (selectedBiblio)="biblioChange($event)"></vl-biblio-search>
+                      <mat-chip-list>
+                        <mat-chip *ngFor="let filteredBiblio of filteredBiblios" [removable]="true">
+                          {{ filteredBiblio.title }}
+                          <mat-icon matChipRemove (click)="removeFilteredBiblio(filteredBiblio)">cancel</mat-icon>
+                        </mat-chip>
+                      </mat-chip-list>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- **************** -->
+      <!-- Metadata filters -->
+      <!-- **************** -->
+      <mat-tab label="Métadonnées">
+        <ng-template mat-tab-label>
+          <mat-icon>local_offer</mat-icon>
+          Métadonnées
+        </ng-template>
+        <div class="tab-body-wrapper">
+          <div class="tab-section">
+            <div class="section-title">
+              Filtrer par métadonnées
+            </div>
+            <div class="section-body">
+              <div class="metadata-search-bar">
+                <mat-form-field class="metadata-search-input">
+                  <input matInput placeholder="Ajouter une métadonnée" aria-label="Ajouter une métadonnée" [matAutocomplete]="metadataauto" [formControl]="addMetadataInput">
+                  <mat-autocomplete #metadataauto="matAutocomplete" (optionSelected)="addMetadataToFilter($event)" [displayWith]="displayMetadataAutocomplete">
+                    <mat-option *ngFor="let metadata of filteredMetadatas | async" [value]="metadata">
+                      <span *ngIf="!metadata.extendedFieldTranslations || metadata.extendedFieldTranslations.length == 0">{{metadata.fieldId}}</span>
+                      <span *ngIf="metadata.extendedFieldTranslations.length > 0 && metadata.extendedFieldTranslations[0].description"><span>{{metadata.extendedFieldTranslations[0].label }}</span> | <small>{{ metadata.extendedFieldTranslations[0].description }}<span *ngIf="metadata.unit"> ({{ metadata.unit }})</span></small></span>
+                      <span *ngIf="metadata.extendedFieldTranslations.length > 0 && !metadata.extendedFieldTranslations[0].description"><span>{{metadata.extendedFieldTranslations[0].label }}</span> <small><span *ngIf="metadata.unit"> ({{ metadata.unit }})</span></small></span>
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+                <div class="button">
+                  <button mat-flat-button (click)="toggleMetadataOptionsVisible()">
+                    <span *ngIf="!showMetadataFilterOptions">Options</span>
+                    <span *ngIf="showMetadataFilterOptions">Masquer les options</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="metadata-search-options">
+                <div class="options" [hidden]="!showMetadataFilterOptions">
+                  <div class="push-right">
+                    <mat-slide-toggle color="primary" (change)="toggleMetadataFilterIncludeMissingMetadata()" [checked]="metadataFilterIncludeMissingMetadata">
+                        Inclure les relevés sans métadonnées
+                    </mat-slide-toggle>
+                    <mat-icon (click)="openMetadataModal1()" style="cursor: pointer;">info</mat-icon>
+                  </div>
+                </div>
+              </div>
+              <table class="filters-table">
+                <thead>
+                  <th></th>
+                  <th class="title"></th>
+                  <th class="filter"></th>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of metadataToFilter; let i = index;">
+                    <td class="conjunction"><div *ngIf="i > 0">et </div></td>
+                    <td class="title"><mat-slide-toggle [checked]="!item.disabled" (change)="toggleDisabledMetadata(item)" color="primary">{{ item.label }}</mat-slide-toggle></td>
+                    <td class="filter"><vl-metadata-filter [metadata]="item.metadata" [metadataValueID]="item.id" [disabled]="item.disabled" deleteOption="true" (deletedMetadata)="deleteMetadataToFilter($event)" (filterValues)="metadataFilterValuesChange(item, $event)"></vl-metadata-filter></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+              
+      </mat-tab>
+
+      <!-- ******* -->
+      <!-- Options -->
+      <!-- ******* -->
+      <mat-tab label="Options">
+        <ng-template mat-tab-label>
+          <mat-icon>more_horiz</mat-icon>
+          Options
+        </ng-template>
+        <div class="tab-body-wrapper">
+          <div class="tab-section">
+            <div class="section-title">
+              Options des filtres
+            </div>
+            <div class="section-body">
+              <table>
+                <tbody>
+                  <tr>
+                    <td><mat-slide-toggle [(ngModel)]="returnsChildrenLevelOccurrences" (change)="returnsChildrenLevelOccurrencesChange()" [disabled]="!returnsChildrenLevelOccurrencesEnabled">Relevés intégrés</mat-slide-toggle></td>
+                    <td>
+                      Extraire les relevés synusiaux inclus dans un relevé sigmatiste.<br />
+                      Cette option est automatiquement désactivée si vous utilisez le filtre "Niveau d'intégration" ou "Strate".
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <!-- ******* -->
+  <!-- RESULTS -->
+  <!-- ******* -->
+  <div class="spacer"></div>
+  <div class="results-container">
+    <div class="header">
+      <div class="progress-bar-container">
+        <mat-progress-bar *ngIf="isSearching" mode="indeterminate"></mat-progress-bar>
+      </div>
+      <div class="result-top-bar">
+        <div>
+          <div *ngIf="searchedOccurrences.length == 0">
+            <div class="result-title" *ngIf="noFilterApplied()">Aucun filtre appliqué</div>
+            <div class="result-title" *ngIf="!noFilterApplied()">Aucun résultat</div>
+          </div>
+          <div class="result-title" *ngIf="searchedOccurrences.length == 1">1 résultat</div>
+          <div class="result-title" *ngIf="searchedOccurrences.length > 1">{{ searchedOccurrences.length }} résultats</div>
+        </div>
+      </div>
+    </div>
+    <div class="results">
+      <!-- result view -->
+      <div class="results-items">
+        <vl-occurrences-inline
+          [orderedOccurrences]="orderedSearchedOccurrences"
+          (selectedOccurrences)="selectedOccurrencesChange($event)"
+        ></vl-occurrences-inline>
+      </div>
+    </div>
+    <div class="bottom-action-bar" *ngIf="orderedSearchedOccurrences && orderedSearchedOccurrences.length > 0">
+      <button mat-stroked-button (click)="addSelectedOccurrencesToTable()"
+              color="primary"
+              [disabled]="!selectedOccurrencesIds || selectedOccurrencesIds.length === 0">
+              <mat-icon color="primary">add_circle_outline</mat-icon>Ajouter les relevés selectionnés au tableau</button>
+    </div>
+  </div>
+</div>

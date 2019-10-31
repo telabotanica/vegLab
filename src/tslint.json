@@ -12,6 +12,8 @@
             "element",
             "vl",
             "kebab-case"
-        ]
+        ],
+        "typedef-whitespace": [false],
+        "variable-name": false
     }
 }

@@ -1,0 +1,14 @@
+<mat-form-field [class.full-width]="inputFullWidth">
+  <input matInput
+         id="observerInput"
+         [placeholder]="placeholder"
+         [formControl]="observerControl"
+         [matAutocomplete]="auto"
+         (keyDown.enter)="keyDownEnter()">
+  <mat-spinner *ngIf="isSearching" diameter="16" matSuffix></mat-spinner>
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" [autoActiveFirstOption]=true>
+    <mat-option *ngFor="let result of results" [value]="result">
+      {{ result.name }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

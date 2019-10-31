@@ -1,0 +1,21 @@
+@import '../../../_styles/range-slider';
+
+table {
+  thead {
+    border-bottom: 1px solid grey;
+    th.title {
+      min-width: 150px;
+    }
+    th.input {
+      min-width: 400px;
+    }
+    th.filter {
+      min-width: 400px;
+    }
+  }
+  tbody {
+    tr {
+      margin-bottom: 1px solid grey;
+    }
+  }
+}

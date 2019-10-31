@@ -1,0 +1,91 @@
+<h2>Ajouter une métadonnée</h2>
+<form class="metadata-form col-3" [formGroup]="form">
+  <div class="form-row">
+    <mat-form-field>
+      <input matInput formControlName="fieldId" placeholder="identifiant" pattern="[a-z]+">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput formControlName="projectName" placeholder="workspace">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-select formControlName="dataType" placeholder="Type de donnée" style="width:180px;">
+        <mat-option value="Booléen">Booléen</mat-option>
+        <mat-option value="Texte">Texte</mat-option>
+        <mat-option value="Date">Date</mat-option>
+        <mat-option value="Entier">Entier</mat-option>
+        <mat-option value="Décimal">Décimal</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  
+  <div class="form-row">
+    <mat-checkbox formControlName="isVisible">Visible</mat-checkbox>
+    <mat-checkbox formControlName="isEditable">Modifiable</mat-checkbox>
+    <mat-checkbox formControlName="isMandatory">Obligatoire</mat-checkbox>
+  </div>
+
+  <div class="form-row">
+    <mat-form-field>
+      <input matInput formControlName="minValue" placeholder="Valeur minimale">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput formControlName="maxValue" placeholder="Valeur maximale">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput formControlName="defaultValue" placeholder="Valeur par défaut">
+    </mat-form-field>
+
+  </div>
+
+  <div class="form-row">
+    <mat-form-field>
+      <input matInput formControlName="unit" placeholder="Unité">
+    </mat-form-field>
+    
+    <mat-form-field>
+      <input matInput formControlName="filterStep" placeholder="Pas">
+    </mat-form-field>
+
+    <mat-slide-toggle color="primary" formControlName="filterLogarithmic">Filtrer avec une échelle logarithmique</mat-slide-toggle>
+  </div>
+
+  <div class="form-row">
+    <mat-form-field class="col-3">
+      <input matInput formControlName="regExp" placeholder="Expression régulière">
+    </mat-form-field>
+  </div>
+
+  <div class="form-row">
+    <mat-form-field>
+      <mat-select value="'fr'" placeholder="Langue">
+        <mat-option value="'fr'">Fr</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput formControlName="label" placeholder="Nom">
+    </mat-form-field>
+    
+  </div>
+
+  <div class="form-row">
+    <mat-form-field class="col-3">
+      <input matInput formControlName="description" placeholder="Description">
+    </mat-form-field>
+  </div>
+
+  <div class="form-row">
+    <mat-form-field class="col-3">
+      <input matInput formControlName="errorMessage" placeholder="Message d'erreur">
+    </mat-form-field>
+  </div>
+
+  <div class="actions">
+    <span *ngIf="isSendingData">Enregistrement en cours...</span>
+    <button mat-flat-button (click)="abort()">Annuler</button>
+    <button mat-flat-button color="primary" (click)="postMetadata()" [disabled]="!isFormValid()">Enregistrer</button>
+  </div>
+</form>

@@ -1,0 +1,77 @@
+@import '../../_styles//main.scss';
+
+.table-card {
+  @include occurrence-table-card();
+  border-top-color: $table-color;
+  min-width: #{$maxWidthCard * 2}px;
+  max-width: #{$maxWidthCard * 2}px;
+  .flex.top {
+    .select-card {
+      color: lightgrey;
+      max-height: 21px;
+    }
+  }
+  .flex.main-content {
+    flex-direction: column;
+    align-items: center;
+    .title {
+      font-size: 1.4em;
+      font-weight: bold;
+    }
+    .description {
+      font-style: italic;
+    }
+  }
+  .flex.summary {
+    font-size: 1em;
+  }
+  .text-validation {
+    font-size: 1.2em;
+    color: $table-color;
+    text-align: center;
+    &.no-validation {
+      font-weight: normal !important;
+    }
+  }
+  .table-preview {
+    table {
+      font-size: .8em;
+      margin-top: 10px;
+      .name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+      }
+      .center {
+        text-align: center;
+      }
+      thead {
+        background-color: #ece9e9;
+      }
+      th, td {
+        padding: 0;
+        padding-left: 2px;
+        padding-right: 2px;
+      }
+      td.name {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      td.freq {
+        text-align: center;
+      }
+    }
+  }
+}
+
+.level {
+  background-color: $table-color;
+  color: white;
+  border-radius: 0 0 5px 5px;
+  padding: 3px;
+  &.diagnosis {
+    font-variant: small-caps;
+  }
+}

@@ -1,0 +1,170 @@
+<!-- Integer -->
+<div *ngIf="metadataType == 'integer'" class="row">
+  <mat-form-field>
+    <input matInput type="number" pattern="[0-9]+" [formControl]="integerFilterValueControl" placeholder="Nombre entier">
+  </mat-form-field>
+  <div class="options">
+    <button mat-icon-button *ngIf="deleteOption" [matMenuTriggerFor]="menu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item *ngIf="deleteOption" (click)="deleteMetadata()">
+        <mat-icon>delete</mat-icon>
+        <span>Supprimer</span>
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<!-- Integer range -->
+<div *ngIf="metadataType == 'integerRange'" class="row">
+  <div class="filter">
+    <ng5-slider
+      [value]="integerRangeFilterLowValue"
+      [highValue]="integerRangeFilterHighValue"
+      (userChangeStart)="integerRangeValueChange($event)"
+      (userChangeEnd)="integerRangeValueChange($event)"
+      [options]="integerRangeFilterOptions">
+    </ng5-slider>
+  </div>
+  <div class="options">
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item *ngIf="deleteOption" (click)="deleteMetadata()">
+        <mat-icon>delete</mat-icon>
+        <span>Supprimer</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>linear_scale</mat-icon>
+        <span>Échelle de valeurs</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>gps_fixed</mat-icon>
+        <span>Valeurs exactes</span>
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<!-- Float -->
+<div *ngIf="metadataType == 'float'" class="row">
+  <mat-form-field>
+    <input matInput type="number" pattern="[0-9]+(.[0-9]+)" [formControl]="floatFilterValueControl" placeholder="Nombre décimal">
+  </mat-form-field>
+  <div class="options">
+    <button mat-icon-button *ngIf="deleteOption" [matMenuTriggerFor]="menu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item *ngIf="deleteOption" (click)="deleteMetadata()">
+        <mat-icon>delete</mat-icon>
+        <span>Supprimer</span>
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<!-- Float range -->
+<div *ngIf="metadataType == 'floatRange'" class="row">
+  <div class="filter">
+    <ng5-slider
+      [value]="floatRangeFilterLowValue"
+      [highValue]="floatRangeFilterHighValue"
+      (userChangeStart)="floatRangeValueChange($event)"
+      (userChangeEnd)="floatRangeValueChange($event)"
+      [options]="floatRangeFilterOptions">
+    </ng5-slider>
+  </div>
+  <div class="options">
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item *ngIf="deleteOption" (click)="deleteMetadata()">
+        <mat-icon>delete</mat-icon>
+        <span>Supprimer</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>linear_scale</mat-icon>
+        <span>Échelle de valeurs</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>gps_fixed</mat-icon>
+        <span>Valeurs exactes</span>
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<!-- Date range -->
+<div *ngIf="metadataType == 'date'" class="row">
+  <div class="filter">
+    <mat-form-field class="date">
+      <input matInput [matDatepicker]="pickerStart" [formControl]="dateFilterMinValueControl" placeholder="Date de début">
+      <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+      <mat-datepicker #pickerStart></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field class="date">
+      <input matInput [matDatepicker]="pickerEnd" [formControl]="dateFilterMaxValueControl" placeholder="Date de fin">
+      <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+      <mat-datepicker #pickerEnd></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="options">
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item *ngIf="deleteOption" (click)="deleteMetadata()">
+        <mat-icon>delete</mat-icon>
+        <span>Supprimer</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>date_range</mat-icon>
+        <span>Intervalle</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>gps_fixed</mat-icon>
+        <span>Date exacte</span>
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<!-- Text -->
+<div *ngIf="metadataType == 'text'" class="row">
+  <mat-form-field>
+    <input matInput type="text" [formControl]="textFilterValueControl" [placeholder]="(metadata.extendedFieldTranslations && metadata.extendedFieldTranslations.length > 0) ? metadata.extendedFieldTranslations[0].label : metadata.fieldId">
+    <mat-hint *ngIf="metadata.extendedFieldTranslations && metadata.extendedFieldTranslations.length > 0 && metadata.extendedFieldTranslations[0].description">{{ metadata.extendedFieldTranslations[0].description }}</mat-hint>
+    <mat-error *ngIf="textFilterValueControl.invalid && metadata.extendedFieldTranslations && metadata.extendedFieldTranslations.length > 0 && metadata.extendedFieldTranslations[0].errorMessage">{{ metadata.extendedFieldTranslations[0].errorMessage }}</mat-error>
+  </mat-form-field>
+  <div class="options">
+    <button mat-icon-button *ngIf="deleteOption" [matMenuTriggerFor]="menu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item *ngIf="deleteOption" (click)="deleteMetadata()">
+        <mat-icon>delete</mat-icon>
+        <span>Supprimer</span>
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<!-- Boolean -->
+<div *ngIf="metadataType == 'boolean'" class="row">
+  <mat-slide-toggle color="primary" (change)="toggleBooleanFilterChange($event)" checked="true" [disabled]="!booleanFilterOn"></mat-slide-toggle>
+  <div class="options">
+    <button mat-icon-button *ngIf="deleteOption" [matMenuTriggerFor]="menu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item *ngIf="deleteOption" (click)="deleteMetadata()">
+        <mat-icon>delete</mat-icon>
+        <span>Supprimer</span>
+      </button>
+    </mat-menu>
+  </div>
+</div>

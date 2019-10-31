@@ -1,0 +1,154 @@
+<mat-card class="occurrence-card" *ngIf="view === 'cards'">
+  <div class="flex top">
+    <span class="level">{{ occurrence.level | level }} <span class="small"> - id:{{ occurrence.id }}</span></span>
+    <span class="layer">{{ occurrence.layer }}</span>
+    <!--<span *ngIf="score" class="score">{{ score }} %</span>
+    <span *ngIf="!score" class="score">-</span>-->
+    <div class="select-card">
+      <mat-checkbox color="primary" labelPosition='before'>Select.</mat-checkbox>
+    </div>
+  </div>
+  <div class="flex validations">
+    <div *ngIf="occurrence.validations.length == 0" style="width: 100%;">
+      <div class="text-validation no-validation">Ce relevé n'est pas été nommé</div>
+    </div>
+    <div *ngIf="occurrence.validations.length == 1" style="width: 100%;">
+      <div class="text-validation" title="{{ occurrence.validations[0].validatedName }}">{{ occurrence.validations[0].validatedName }}</div>
+    </div>
+    <div *ngIf="occurrence.validations.length > 1" style="width: 100%;">
+      <div *ngFor="let validation of occurrence.validations">
+        <div class="text-validation" title="{{ validation.validatedName }}">{{ validation.validatedName }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="flex summary row">
+    <div class="item author">
+      <!--<mat-icon>person</mat-icon>-->
+      <div class="sub-item"><mat-icon inline="true" class="grey">person</mat-icon> {{ getObserversPreview() }}</div>
+      <div class="sub-item" *ngIf="!occurrence.dateObservedPrecision"><mat-icon inline="true" class="grey">calendar_today</mat-icon> {{ occurrence.dateObserved | momentLocalDate }}</div>
+      <div class="sub-item" *ngIf="occurrence.dateObservedPrecision"><mat-icon inline="true" class="grey">calendar_today</mat-icon> {{ occurrence.dateObserved | momentLocalDate:occurrence.dateObservedPrecision }}</div>
+    </div>
+    <!--<div class="item date">
+      <mat-icon>calendar_today</mat-icon>
+      <div>{{ occurrence.dateObserved | date:'d/M/yy' }}</div>
+    </div>-->
+  </div>
+  <div class=" flex summary row">
+    <div class="item location">
+      <div class="sub-item"><mat-icon inline="true" class="grey">place</mat-icon> {{ occurrence.locality}} ({{ occurrence.osmCountryCode | uppercase }} {{ occurrence.osmPostcode | slice:0:2 }})</div>
+      <div class="sub-item" *ngIf="occurrence.elevation != null"><mat-icon inline="true" class="grey">landscape</mat-icon> {{ occurrence.elevation }} m</div>
+    </div>
+  </div>
+  <div class="flex bottom">
+    <button mat-flat-button (click)="togglePreview()">Aperçu</button>
+    <button mat-flat-button [disabled]="isLoadingOccurrenceFromDb" (click)="addOccurrenceToCurrentTable()">
+      <span>Ajouter au tableau</span></button>
+  </div>
+  <div class="occurrence-preview" [style.display]="preview ? 'block' : 'none'">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th class="center">Coef.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let occ of occurrence.childrenPreview">
+          <td class="name" title="{{ occ.name }}">{{ occ.name }}</td>
+          <td class="center">{{ occ.coef ? occ.coef : '-' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</mat-card>
+
+<div class="occurrence-inline" *ngIf="view === 'inline'">
+    <!--<div class="header">
+      
+    </div>-->
+    <div class="content">
+      <div class="checkbox item"><mat-checkbox></mat-checkbox></div>
+      <div class="id item">{{ occurrence.id }}</div>
+      <div class="preview item"><mat-icon (click)="togglePreview()" inline="true" matTooltip="Afficher plus de détails">search</mat-icon></div>
+      <div class="level item">{{ occurrence.level | shortLevel }}</div>
+      <div class="layer item">{{ occurrence.layer }}</div>
+      <div class="validation item">{{ occurrence.validations && occurrence.validations[0] ? occurrence.validations[0].validatedName : '-' }}</div>
+      <div class="authors item"><mat-icon inline="true" class="grey">person</mat-icon> {{ getObserversPreview() }}</div>
+      <div class="date item" *ngIf="!occurrence.dateObservedPrecision">
+        <mat-icon inline="true" class="grey">calendar_today</mat-icon> {{ occurrence.dateObserved | momentLocalDate }}
+      </div>
+      <div class="date item" *ngIf="occurrence.dateObservedPrecision">
+          <mat-icon inline="true" class="grey">calendar_today</mat-icon> {{ occurrence.dateObserved | momentLocalDate:occurrence.dateObservedPrecision }}
+      </div>
+      <div class="location item">
+        <mat-icon inline="true" class="grey">place</mat-icon> {{ occurrence.locality}} ({{ occurrence.osmCountryCode | uppercase }} {{ occurrence.osmPostcode | slice:0:2 }})
+      </div>
+      <div class="elevation item">
+        <div *ngIf="occurrence.elevation"><mat-icon inline="true" class="grey">landscape</mat-icon> {{ occurrence.elevation ? occurrence.elevation : '-' }} m</div>
+      </div>
+    </div>
+    <div class="preview" [style.display]="preview ? 'block' : 'none'">
+      <div class="occurrence-preview">
+        <div class="title">{{ occurrence.validations && occurrence.validations[0] ? occurrence.validations[0].validatedName : 'Ce relevé n\'est pas nommé' }}</div>
+        <div class="content">
+          <table class="table-preview">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th class="center">Coef.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let occ of occurrence.childrenPreview">
+                <td class="name" title="{{ occ.name }}">{{ occ.name }}</td>
+                <td class="center">{{ occ.coef ? occ.coef : '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="data-preview">
+            <thead>
+              <tr>
+                <th class="data">Donnée</th>
+                <th class="value">Valeur</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="data">id.</td>
+                <td class="value">{{ occurrence.id }}</td>
+              </tr>
+              <tr>
+                <td class="data">Niv. integration</td>
+                <td class="value">{{ occurrence.level | level }}</td>
+              </tr>
+              <tr>
+                <td class="data">Strate</td>
+                <td class="value">{{ occurrence.layer }}</td>
+              </tr>
+              <tr>
+                <td class="data"><mat-icon inline="true" class="grey">person</mat-icon> Observateurs</td>
+                <td class="value"><span *ngFor="let observer of occurrence.vlObservers; index as i">{{ observer.name }}{{ i === occurrence.vlObservers - 1 ? '' : ', ' }}</span></td>
+              </tr>
+              <tr>
+                <td class="data"><mat-icon inline="true" class="grey">calendar_today</mat-icon> Date</td>
+                <td class="value" *ngIf="occurrence.dateObservedPrecision">{{ occurrence.dateObserved | momentLocalDate }}</td>
+                <td class="value" *ngIf="!occurrence.dateObservedPrecision">{{ occurrence.dateObserved | momentLocalDate:occurrence.dateObservedPrecision }}</td>
+              </tr>
+              <tr>
+                <td class="data"><mat-icon inline="true" class="grey">place</mat-icon> Localisation</td>
+                <td class="value">{{ occurrence.locality}} ({{ occurrence.osmCountryCode | uppercase }} {{ occurrence.osmPostcode | slice:0:2 }})</td>
+              </tr>
+              <tr>
+                <td class="data"><mat-icon inline="true" class="grey">landscape</mat-icon> Altitude</td>
+                <td class="value">{{ occurrence.elevation ? occurrence.elevation : '-' }} m</td>
+              </tr>
+              <tr *ngFor="let meta of occurrence.extendedFieldValues">
+                <td class="data"><mat-icon inline="true" class="grey">local_offer</mat-icon> {{ meta.fieldId }}</td>
+                <td class="value">{{ meta.value }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>

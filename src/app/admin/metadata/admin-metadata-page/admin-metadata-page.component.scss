@@ -1,0 +1,87 @@
+.title-actionbar {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+
+  button {
+    margin-left: 20px;
+  }
+}
+.section {
+  padding: 20px;
+}
+
+mat-form-field {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+mat-select {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+mat-checkbox {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+/deep/.datatable-header {
+  height: auto !important;
+}
+/deep/.datatable-body-row {
+  height: auto !important;
+}
+/deep/.datatable-body-row {
+  height: auto !important;
+}
+
+// FORM
+$fieldWidth: 180;
+$gutterSize: 10;
+
+/deep/.metadata-form {
+  &.col-2 {
+    min-width: #{($fieldWidth*2) + $gutterSize}px;
+  }
+  &.col-3 {
+    min-width: #{($fieldWidth*3) + ($gutterSize*2) + 30}px;
+  }
+  &.col-4 {
+    min-width: #{($fieldWidth*4) + ($gutterSize*3) + 30}px;
+  }
+
+  mat-form-field {
+    width: #{$fieldWidth}px;
+    margin-right: #{$gutterSize}px;
+
+    &.col-2 {
+      min-width: #{($fieldWidth*2) + $gutterSize}px;
+      padding: 0;
+    }
+    &.col-3 {
+      min-width: #{($fieldWidth*3) + ($gutterSize*2)}px;
+      padding: 0;
+    }
+    &.col-4 {
+      min-width: #{($fieldWidth*4) + ($gutterSize*3)}px;
+      padding: 0;
+    }
+  }
+
+  mat-checkbox {
+    min-width: #{$fieldWidth}px;
+    margin-right: #{$gutterSize}px;
+  }
+
+  .form-row {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-start;
+  }
+  .actions {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-end;
+  }
+}

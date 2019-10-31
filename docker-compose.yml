@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+
+  veglab:
+    container_name: veglab
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+    ports:
+      - '4201:4200'

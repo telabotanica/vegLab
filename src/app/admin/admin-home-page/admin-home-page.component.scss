@@ -1,0 +1,22 @@
+.admin-container {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+
+  .sidenav-menu {
+    max-width: 200px;
+    min-height: 100%;
+  
+    mat-accordion {
+      mat-expansion-panel {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .admin-content {
+    margin-left: 20px;
+    width: 100%;
+  }
+}

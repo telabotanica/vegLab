@@ -1,0 +1,18 @@
+<mat-form-field [class.full-width]="inputFullWidth">
+  <textarea matInput
+          id="biblioInput"
+          cdkTextareaAutosize
+          #autosize="cdkTextareaAutosize"
+          cdkAutosizeMinRows="2"
+          cdkAutosizeMaxRows="5"
+          [placeholder]="placeholder"
+          [formControl]="biblioControl"
+          [matAutocomplete]="auto"
+          (keyDown.enter)="keyDownEnter()"></textarea>
+  <mat-spinner *ngIf="isSearching" diameter="16" matSuffix></mat-spinner>
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" [autoActiveFirstOption]=true>
+    <mat-option *ngFor="let result of results" [value]="result" class="mat-option">
+      {{ result.title }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

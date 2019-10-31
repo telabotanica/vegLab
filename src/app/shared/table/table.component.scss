@@ -1,0 +1,47 @@
+@import '../../_styles/colors.scss';
+
+.no-data-table {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  color: lightgrey;
+  .title {
+    margin-bottom: 50px;
+  }
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    button {
+      color: black;
+      margin-bottom: 20px;
+    }
+  }
+}
+
+#table-sub-header {
+  font-size: .8em;
+  .spacer {
+    background-color: #F0F0F0;
+  }
+  .sub-header {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: default;
+    &.sye-0 {background-color: rgba($cell-color-0, $cell-color-transparency); }
+    &.sye-1 {background-color: rgba($cell-color-1, $cell-color-transparency); }
+    &.sye-2 {background-color: rgba($cell-color-2, $cell-color-transparency); }
+    &.sye-3 {background-color: rgba($cell-color-3, $cell-color-transparency); }
+    &.sye-4 {background-color: rgba($cell-color-4, $cell-color-transparency); }
+  }
+}
+
+#table-wrapper {
+  overflow: hidden;
+  // width: 500px;
+  // height: 500px;
+}

@@ -1,0 +1,29 @@
+<div id="homepage-container">
+  <div class="header">
+    <h1>VegLab</h1>
+    <h2>Saisie, traitement et analyse de données<br />pour les végétations et les habitats</h2>
+  </div>
+
+  <div class="tiles">
+    <mat-grid-list cols="3" rowHeight="200px">
+      <mat-grid-tile class="tile" id="wsPhyto" [routerLink]="['/phyto']">
+        
+        <div class="content">
+          <div class="title">Phytosociologie</div>
+        </div>
+      </mat-grid-tile>
+
+      <mat-grid-tile class="tile" id="wsForest">
+        <div class="content">
+          <div class="title">Foresterie</div>
+        </div>
+      </mat-grid-tile>
+
+      <mat-grid-tile class="tile" id="wsAgro">
+        <div class="content">
+          <div class="title">Agronomie</div>
+        </div>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
+</div>

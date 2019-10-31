@@ -1,0 +1,169 @@
+@import '../../_styles/main';
+
+/* Card view */
+.occurrence-card {
+  @include occurrence-table-card();
+  border-top-color: $occurrence-color;
+  .flex.top {
+    .select-card {
+      color: lightgrey;
+      max-height: 21px;
+    }
+  }
+  .text-validation {
+    color: $green;
+  }
+  .occurrence-preview {
+    table {
+      font-size: .8em;
+      margin-top: 10px;
+      .name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+      }
+      .center {
+        text-align: center;
+      }
+      thead {
+        background-color: #ece9e9;
+      }
+      th, td {
+        padding: 0;
+        padding-left: 2px;
+        padding-right: 2px;
+      }
+      td.name {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+  .level {
+    background-color: $occurrence-color;
+    color: white;
+    border-radius: 0 0 5px 5px;
+    padding: 3px;
+  }
+}
+
+
+
+/* Inline view */
+$cell-width: 30px;
+.occurrence-inline {
+  width: 100%;
+  margin-left: 5px;
+  padding-left: 5px;
+  background-color: scale-color($occurrence-color, $lightness: 99%);
+
+  .header {
+    color: $occurrence-color;
+  }
+  .content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    .item {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: .8em;
+      mat-icon.mat-icon-inline {
+        width: auto;  
+      }
+    }
+    .checkbox {
+      max-width: $cell-width;
+      width: $cell-width;
+    }
+    .id {
+      max-width: $cell-width;
+      width: $cell-width;
+    }
+    .preview {
+      max-width: $cell-width;
+      width: $cell-width;
+      font-size: 1em;
+    }
+    .details {
+      max-width: $cell-width;
+      width: $cell-width;
+    }
+    .level {
+      max-width: $cell-width;
+      width: $cell-width;
+    }
+    .layer {
+      max-width: $cell-width;
+      width: $cell-width;
+    }
+    .validation {
+      max-width: $cell-width * 10;
+      width: $cell-width * 10;
+    }
+    .authors {
+      max-width: $cell-width * 5;
+      width: $cell-width * 5;
+    }
+    .date {
+      max-width: $cell-width * 5;
+      width: $cell-width * 5;
+    }
+    .location {
+      max-width: $cell-width * 5;
+      width: $cell-width * 5;
+    }
+    .elevation {
+      max-width: $cell-width * 2;
+      width: $cell-width * 2;
+    }
+  }
+  .preview {
+    flex-direction: row;
+    justify-content: space-between;
+    height: auto;
+    width: 100%;
+    .occurrence-preview {
+      .content {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        table.table-preview {
+          max-width: 400px;
+          margin: 10px;
+          border: 1px solid lightgrey;
+          th, td {
+            padding: 0;
+            height: 20px;
+          }
+          thead {
+            tr {
+              border: 1px solid lightgrey;
+            }
+          }
+        }
+        table.data-preview {
+          max-width: 400px;
+          margin: 10px;
+          border: 1px solid lightgrey;
+          thead {
+            tr {
+              border: 1px solid lightgrey;
+            }
+          }
+          tbody {
+            tr {
+              td.data {
+                font-weight: bold;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,130 @@
+$cell-width: 30px;
+
+.header {
+  padding-top: 5px;
+  margin-bottom: 5px;
+  background-color: #f6f5f6;
+  font-weight: bold;
+  .header-spacer {
+    width: 40px;
+  }
+}
+.header, .row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  margin-left: 5px;
+  padding-left: 5px;
+  .item {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: .8em;
+    mat-icon.mat-icon-inline {
+      width: auto;  
+    }
+  }
+  .checkbox {
+    max-width: $cell-width;
+    width: $cell-width;
+  }
+  .id {
+    max-width: $cell-width;
+    width: $cell-width;
+  }
+  .preview {
+    max-width: $cell-width;
+    width: $cell-width;
+    font-size: 1em;
+  }
+  .details {
+    max-width: $cell-width;
+    width: $cell-width;
+  }
+  .level {
+    max-width: $cell-width;
+    width: $cell-width;
+  }
+  .layer {
+    max-width: $cell-width;
+    width: $cell-width;
+  }
+  .validation {
+    max-width: $cell-width * 8;
+    width: $cell-width * 8;
+  }
+  .authors {
+    max-width: $cell-width * 4;
+    width: $cell-width * 4;
+  }
+  .date {
+    max-width: $cell-width * 4;
+    width: $cell-width * 4;
+  }
+  .location {
+    max-width: $cell-width * 4;
+    width: $cell-width * 4;
+  }
+  .elevation {
+    max-width: $cell-width * 2;
+    width: $cell-width * 2;
+  }
+}
+
+.content {
+  .row-without-child {
+    display: flex;
+    flex-direction: row;
+    .row {
+      &.already-in-current-table {
+        color: lightgrey;
+      }
+    }
+  }
+  
+  .row-with-children {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: start;
+    .row {
+      &.already-in-current-table {
+        color: lightgrey;
+      }
+    }
+    .inline-spacer {
+      width: 40px;
+      background-image: url('../../../assets/img/icons/arbo_rel.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+    .parent-item {
+      display: flex;
+      flex-direction: row;
+      .parent-inline-spacer {
+        width: 40px;
+        background-image: url('../../../assets/img/icons/arbo_rel_parent.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+      }
+    }
+    .children-items {
+      display: flex;
+      flex-direction: column;
+      .child-item {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        .child-inline-spacer {
+          width: 40px;
+          background-image: url('../../../assets/img/icons/arbo_rel_child.png');
+          background-size: cover;
+          background-repeat: no-repeat;
+          &.end {
+            background-image: url('../../../assets/img/icons/arbo_rel_child_end.png');
+          }
+        }
+      }
+    }
+  }
+}
