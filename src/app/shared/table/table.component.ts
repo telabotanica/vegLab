@@ -140,6 +140,14 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
               },
               {
+                key: 'columns:toggle_only_show_synthetic_column',
+                name: 'Afficher / masquer les relevés [ctrl + t]',
+                callback: () => { this.toggleCurrentSyeOnlyShowSyntheticColumn(); },
+                disabled: () => {
+                  if (this.isCurrentTableContainsNoOneOrOnlyOneSye()) { return true; } else { return false; }
+                }
+              },
+              {
                 key: 'columns:delete_all',
                 name: 'Supprimer tous les groupes',
                 callback: () => { console.log('Supprimer tous les sye...'); },
@@ -511,6 +519,11 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     }
+
+    // Ctrl + t
+    if (event.ctrlKey && !event.shiftKey && !event.altKey && event.keyCode === 84) {
+      this.toggleCurrentSyeOnlyShowSyntheticColumn();
+    }
   }
 
   constructor(private tableService: TableService, private cdr: ChangeDetectorRef, public router: Router) { }
@@ -574,7 +587,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     const newTableSettings = this.tableSettings;                     // New table settings
 
     // Get the number of columns
-    const nbColumns = dataView[0].count;
+    const nbColumns = dataView[0].items.length;
 
     // Define table columns
     const columns = [{data: 'displayName'}];
@@ -746,6 +759,29 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.tableService.sortColumnsByFrequency(order, startCol, endCol, coefArrayToSort);
   }
 
+  toggleCurrentSyeOnlyShowSyntheticColumn() {
+    const selected = this.tableInstance.getSelected(); // [[startRow, startCol, endRow, endCol], ...]
+    const rowsVisulaIndexes = [selected[0][0], selected[0][2]];
+    const colsVisulaIndexes = [selected[0][1], selected[0][3]];
+    const startRow = _.min(rowsVisulaIndexes);
+    const endRow = _.max(rowsVisulaIndexes);
+    const startCol = _.min(colsVisulaIndexes);
+    const endCol = _.max(colsVisulaIndexes);
+
+    const currentSye = this.tableService.getSyeForColId(this.tableService.getCurrentTable(), startCol);
+
+    if (!currentSye) { return; }
+
+    currentSye.onlyShowSyntheticColumn = !currentSye.onlyShowSyntheticColumn;
+    this.tableService.updateDataView(this.tableService.getCurrentTable());
+
+    // update selection (select synthetic column)
+    const columnPositions = this.tableService.getColumnPositionsForSyeById(currentSye.syeId);
+    if (columnPositions) {
+      this.tableInstance.selectColumns(columnPositions.syntheticColumnPosition, columnPositions.syntheticColumnPosition);
+    }
+  }
+
   // -----
   // UTILS
   // -----
@@ -806,6 +842,25 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   isMultipleSyeGroupsSelected(): boolean {
     return !this.isOnlyOnSyeGroupselected();
+  }
+
+  isCurrentSyeCollapsed(): boolean {
+    const selected = this.tableInstance.getSelected(); // [[startRow, startCol, endRow, endCol], ...]
+    const rowsVisulaIndexes = [selected[0][0], selected[0][2]];
+    const colsVisulaIndexes = [selected[0][1], selected[0][3]];
+    const startRow = _.min(rowsVisulaIndexes);
+    const endRow = _.max(rowsVisulaIndexes);
+    const startCol = _.min(colsVisulaIndexes);
+    const endCol = _.max(colsVisulaIndexes);
+
+    const currentSye = this.tableService.getSyeForColId(this.tableService.getCurrentTable(), startCol);
+
+    if (!currentSye) {
+      return true;
+    } else {
+      return currentSye.onlyShowSyntheticColumn;
+    }
+
   }
 
   isEntireSyeSelected(): boolean {

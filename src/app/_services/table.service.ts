@@ -59,7 +59,9 @@ export class TableService {
   }
 
   getTableById(id: number): Observable<Table> {
-    return this.http.get<Table>(`http://localhost:8000/api/tables/${id}.json`);
+    return this.http.get<Table>(`http://localhost:8000/api/tables/${id}.json`).pipe(
+      map(t => this.orderSyeOccurrences(t))
+    );
   }
 
   postTable(table: Table): Observable<Table> {
@@ -74,9 +76,15 @@ export class TableService {
     // Stringify geometry before POST
     this.stringyfyGeometryAndIntegerifyElevation(table);
 
+    // Set syes occurrencesOrder
+    for (const sye of table.sye) {
+      sye.occurrencesOrder = this.syeService.getOccurrencesOrder(sye);
+    }
+
     // Post table
     return this.http.post<Table>('http://localhost:8000/api/tables.json', table).pipe(
-      map(t => this.parseGeometryAndIntegerifyElevation(t))
+      map(t => this.parseGeometryAndIntegerifyElevation(t)),
+      map(t => this.orderSyeOccurrences(t))
     );
 
   }
@@ -93,12 +101,18 @@ export class TableService {
     // Stringify geometry before POST
     this.stringyfyGeometryAndIntegerifyElevation(table);
 
+    // Set syes occurrencesOrder
+    for (const sye of table.sye) {
+      sye.occurrencesOrder = this.syeService.getOccurrencesOrder(sye);
+    }
+
     // Remove empty fields before PATCH
     this.removeEmpty(table);
 
     // Post table
     return this.http.patch<Table>(`http://localhost:8000/api/tables/${table.id}.json`, table).pipe(
-      map(t => this.parseGeometryAndIntegerifyElevation(t))
+      map(t => this.parseGeometryAndIntegerifyElevation(t)),
+      map(t => this.orderSyeOccurrences(t))
     );
   }
 
@@ -197,6 +211,13 @@ export class TableService {
     return table;
   }
 
+  public orderSyeOccurrences(table: Table): Table {
+    for (const sye of table.sye) {
+      this.syeService.orderOccurrences(sye);
+    }
+    return table;
+  }
+
   // @Todo MOVE funtion into table form component
   public getTableValidationFromRelatedSyntaxonFormData(table: Table, relatedSyntaxon: TableRelatedSyntaxon): OccurrenceValidationModel {
     const name: string = relatedSyntaxon.validation.name + (relatedSyntaxon.validation.author ? ' ' + relatedSyntaxon.validation.author : '');
@@ -224,6 +245,10 @@ export class TableService {
 
   getCurrentTable(): Table {
     return this.currentTable;
+  }
+
+  updateDataView(table: Table) {
+    this.tableDataView.next(this.createDataView(table));
   }
 
   private setCurrentTableOccurrencesIds(): void {
@@ -429,23 +454,31 @@ export class TableService {
           const syeOccs = table.sye[columnPositions.id].occurrences;
           const syeOccsIds = _.concat([], _.map(syeOccs, o => o.id));
 
-          // sye contains one or several occurrences
-          if (columnPositions.startColumnPosition !== columnPositions.endColumnPosition
-              || columnPositions.startColumnPosition === columnPositions.endColumnPosition && columnPositions.endColumnPosition !== columnPositions.syntheticColumnPosition) {
-            let n = 0;
-            // push items
-            for (let m = columnPositions.startColumnPosition; m <= columnPositions.endColumnPosition; m++) {
-              rowItem.items.push({type: 'rowValue', syeId: columnPositions.id, occurrenceId: syeOccsIds[n], value: null});
-              n++;
-            }
-            // push synthetic column item
+          if (columnPositions.onlyShowSyntheticColumn) {
+            // Only push synthetic column
             if (columnPositions.syntheticColumnPosition !== null) {
               rowItem.items.push({type: 'cellSynColValue', syeId: columnPositions.id, occurrenceId: null, value: null});
             }
-          }
-          // special case : sye is empty (only one synthtic column)
-          if (columnPositions.syntheticColumnPosition === columnPositions.startColumnPosition && columnPositions.syntheticColumnPosition === columnPositions.endColumnPosition) {
-            rowItem.items.push({type: 'cellSynColValue', syeId: columnPositions.id, occurrenceId: null, value: null});
+          } else {
+            // push relevés columns and synthetic column
+            // sye contains one or several occurrences
+            if (columnPositions.startColumnPosition !== columnPositions.endColumnPosition
+                || columnPositions.startColumnPosition === columnPositions.endColumnPosition && columnPositions.endColumnPosition !== columnPositions.syntheticColumnPosition) {
+              let n = 0;
+              // push items
+              for (let m = columnPositions.startColumnPosition; m <= columnPositions.endColumnPosition; m++) {
+                rowItem.items.push({type: 'rowValue', syeId: columnPositions.id, occurrenceId: syeOccsIds[n], value: null});
+                n++;
+              }
+              // push synthetic column item
+              if (columnPositions.syntheticColumnPosition !== null) {
+                rowItem.items.push({type: 'cellSynColValue', syeId: columnPositions.id, occurrenceId: null, value: null});
+              }
+            }
+            // special case : sye is empty (only one synthtic column)
+            if (columnPositions.syntheticColumnPosition === columnPositions.startColumnPosition && columnPositions.syntheticColumnPosition === columnPositions.endColumnPosition) {
+              rowItem.items.push({type: 'cellSynColValue', syeId: columnPositions.id, occurrenceId: null, value: null});
+            }
           }
         }
 
@@ -463,51 +496,78 @@ export class TableService {
 
         // For every sye...
         for (const sye of table.sye) {
-          // ...get child occurrences of each sye occurrence and create a row item
-          for (const occ of sye.occurrences) {
-            // Create occurrence row item
-            const item = {type: null, syeId: null, occurrenceId: null, value: null};
-            item.type = 'cellOccValue';
-            item.syeId = sye.syeId;
-            item.occurrenceId = occ.id;
+          // GET COLUMN POSITIONS
+          const columnPositions = this.getColumnPositionsForSyeById(sye.syeId);
+          if (columnPositions.onlyShowSyntheticColumn) {
+            // Push synthetic column
+            // row item push synthetic column value
+            const syeItem = {type: null, syeId: null, occurrenceId: null, value: null};                                                                               // DUPLICATE CODE --A-- SEE BELOW
+            syeItem.type = 'cellSynColValue';
+            syeItem.syeId = sye.syeId;
+            syeItem.occurrenceId = null;
 
-            const childOcc = this.getChildOccurrences(occ);
-            for (const cOcc of childOcc) {
-              const cOccValidation = cOcc.validations.find(x => x !== undefined); // get the first available item (the first item could not be validations[0] !)
+            if (!sye.syntheticColumn || sye.syntheticColumn === null) {
+              // @Todo notify user
+              this.errorService.log('[Internal error] Try to create a new table dataView but no synthetic column provided');
+            }
+            for (const syeCellItem of sye.syntheticColumn.items) {
               // @Todo check that there is only one child occurrence that match the if statment
-              //       (An occurrence can't contains several identical child occurrences)
-              if (cOccValidation.repositoryIdTaxo) {
-                if (cOcc.layer === row.layer && cOccValidation.repositoryIdTaxo === row.repositoryIdTaxo) {
-                  minRowCoef = minRowCoef === '?' ? cOcc.coef : this.isLowerCoef(minRowCoef, cOcc.coef) ? cOcc.coef : minRowCoef;
-                  maxRowCoef = maxRowCoef === '?' ? cOcc.coef : this.isUpperCoef(maxRowCoef, cOcc.coef) ? cOcc.coef : maxRowCoef;
-                  item.value = cOcc.coef;
-                }
-              } else {
-                // Validation could not have a repositoryIdTaxo value if the repository is otherunknown
+              if (syeCellItem.repositoryIdTaxo === row.repositoryIdTaxo && syeCellItem.layer === row.layer) {
+                // synthetic column value to show
+                // syeItem.value = syeCellItem.occurrencesCount + ' / ' + sye.occurrencesCount;
+                syeItem.value = this.syntheticColumnService.getReadableCoef('roman', sye.occurrencesCount, syeCellItem.occurrencesCount, minRowCoef, maxRowCoef);     //
               }
-
             }
-            rowItem.items.push(item);
-          }
-          // Create the sye synthetic column row item
-          const syeItem = {type: null, syeId: null, occurrenceId: null, value: null};
-          syeItem.type = 'cellSynColValue';
-          syeItem.syeId = sye.syeId;
-          syeItem.occurrenceId = null;
+            rowItem.items.push(syeItem);
 
-          if (!sye.syntheticColumn || sye.syntheticColumn === null) {
-            // @Todo notify user
-            this.errorService.log('[Internal error] Try to create a new table dataView but no synthetic column provided');
-          }
-          for (const syeCellItem of sye.syntheticColumn.items) {
-            // @Todo check that there is only one child occurrence that match the if statment
-            if (syeCellItem.repositoryIdTaxo === row.repositoryIdTaxo && syeCellItem.layer === row.layer) {
-              // synthetic column value to show
-              // syeItem.value = syeCellItem.occurrencesCount + ' / ' + sye.occurrencesCount;
-              syeItem.value = this.syntheticColumnService.getReadableCoef('roman', sye.occurrencesCount, syeCellItem.occurrencesCount, minRowCoef, maxRowCoef);
+          } else {
+            // Push relevés columns and synthetic columns
+            // ...get child occurrences of each sye occurrence and create a row item
+            for (const occ of sye.occurrences) {
+              // Create occurrence row item
+              const item = {type: null, syeId: null, occurrenceId: null, value: null};
+              item.type = 'cellOccValue';
+              item.syeId = sye.syeId;
+              item.occurrenceId = occ.id;
+
+              const childOcc = this.getChildOccurrences(occ);
+              for (const cOcc of childOcc) {
+                const cOccValidation = cOcc.validations.find(x => x !== undefined); // get the first available item (the first item could not be validations[0] !)
+                // @Todo check that there is only one child occurrence that match the if statment
+                //       (An occurrence can't contains several identical child occurrences)
+                if (cOccValidation.repositoryIdTaxo) {
+                  if (cOcc.layer === row.layer && cOccValidation.repositoryIdTaxo === row.repositoryIdTaxo) {
+                    minRowCoef = minRowCoef === '?' ? cOcc.coef : this.isLowerCoef(minRowCoef, cOcc.coef) ? cOcc.coef : minRowCoef;
+                    maxRowCoef = maxRowCoef === '?' ? cOcc.coef : this.isUpperCoef(maxRowCoef, cOcc.coef) ? cOcc.coef : maxRowCoef;
+                    item.value = cOcc.coef;
+                  }
+                } else {
+                  // Validation could not have a repositoryIdTaxo value if the repository is otherunknown
+                }
+
+              }
+              rowItem.items.push(item);
             }
+            // Create the sye synthetic column row item
+            const syeItem = {type: null, syeId: null, occurrenceId: null, value: null};                                                                                 // DUPLICATE CODE --A-- SEE ABOVE
+            syeItem.type = 'cellSynColValue';
+            syeItem.syeId = sye.syeId;
+            syeItem.occurrenceId = null;
+
+            if (!sye.syntheticColumn || sye.syntheticColumn === null) {
+              // @Todo notify user
+              this.errorService.log('[Internal error] Try to create a new table dataView but no synthetic column provided');
+            }
+            for (const syeCellItem of sye.syntheticColumn.items) {
+              // @Todo check that there is only one child occurrence that match the if statment
+              if (syeCellItem.repositoryIdTaxo === row.repositoryIdTaxo && syeCellItem.layer === row.layer) {
+                // synthetic column value to show
+                // syeItem.value = syeCellItem.occurrencesCount + ' / ' + sye.occurrencesCount;
+                syeItem.value = this.syntheticColumnService.getReadableCoef('roman', sye.occurrencesCount, syeCellItem.occurrencesCount, minRowCoef, maxRowCoef);       //
+              }
+            }
+            rowItem.items.push(syeItem);
           }
-          rowItem.items.push(syeItem);
         }
         rows.push(rowItem);
       }
@@ -566,76 +626,6 @@ export class TableService {
       }
     });
     return rows;
-  }
-
-  private getBelongingMovedGroup(movedRows: Array<number>): GroupPositions | null {
-    const firstRowMoved = _.min(movedRows);
-    const lastRowMoved  = _.max(movedRows);
-    for (const groupPositions of this.groupsPositions) {
-      if (firstRowMoved === groupPositions.titleRowPosition) {
-        return groupPositions;
-      } else if (firstRowMoved >= groupPositions.startRowPosition && lastRowMoved <= groupPositions.endRowPosition) {
-        return groupPositions;
-      }
-    }
-    return null;
-  }
-
-  private getBelongingTargetGroup(target: number): GroupPositions | null {
-    let g = 0;
-    for (const groupPositions of this.groupsPositions) {
-      // If target === 0 (start table)
-      if (target === 0) {
-        return this.groupsPositions[0];
-      }
-      // If 1st row is a group title
-      // If rows are moved in an empty group
-      if (groupPositions.startRowPosition === groupPositions.endRowPosition && groupPositions.startRowPosition === groupPositions.titleRowPosition && target === groupPositions.titleRowPosition + 1) {
-        return groupPositions;
-      }
-      // If rows are moved at the end of a group
-      if (target === groupPositions.titleRowPosition && target !== 0) {
-        return this.groupsPositions[g - 1];
-      }
-      // If rows are moved at the end of the table
-      if (g === this.groupsPositions.length - 1 && target === groupPositions.endRowPosition + 1) {
-        return groupPositions;
-      }
-      // Else, rows are moved inside an existing group rows interval
-      if (target >= groupPositions.startRowPosition && target <= groupPositions.endRowPosition) {
-        return groupPositions;
-      }
-      g++;
-    }
-    return null;
-  }
-
-  /**
-   * Splice and return a group within this.groupsPositions
-   * Be careful, this function alterates this.groupsPositions
-   */
-  private spliceGroupWhithinTableRowsDefinitionById(id: number) {
-    const groupToSplice = this.getGroupPositionsById(this.currentTable, id);
-    const splicedGroup = this.currentTable.rowsDefinition.splice(groupToSplice.titleRowPosition, groupToSplice.endRowPosition - groupToSplice.titleRowPosition + 1);
-    return splicedGroup ? splicedGroup : null;
-  }
-
-  private insertRowsAboveGroup(rowsToInsert: Array<TableRowDefinition>, aboveGroup: GroupPositions): void {
-    console.log(aboveGroup);
-    let positionToInsert = aboveGroup.titleRowPosition;
-    if (positionToInsert < 0 ) { positionToInsert = 0; }
-    this.currentTable.rowsDefinition.splice(aboveGroup.titleRowPosition, 0, ...rowsToInsert);
-  }
-
-  private insertRowsUnderGroup(rowsToInsert: Array<TableRowDefinition>, underGroup: GroupPositions): void {
-    console.log(underGroup);
-    let positionToInsert = underGroup.endRowPosition + 1;
-    if (positionToInsert > this.currentTable.rowsDefinition.length) { positionToInsert = this.currentTable.rowsDefinition.length; }
-    this.currentTable.rowsDefinition.splice(positionToInsert, 0, ...rowsToInsert);
-  }
-
-  private insertRowsAtTheBottom(rowsToInsert: Array<TableRowDefinition>): void {
-    this.currentTable.rowsDefinition.push(...rowsToInsert);
   }
 
   // --------
@@ -789,6 +779,85 @@ export class TableService {
     return false;
   }
 
+  /**
+   * Returns the group that is being moved
+   * @param movedRows is an array of number representing the rows offsets that are moved
+   */
+  private getBelongingMovedGroup(movedRows: Array<number>): GroupPositions | null {
+    const firstRowMoved = _.min(movedRows);
+    const lastRowMoved  = _.max(movedRows);
+    for (const groupPositions of this.groupsPositions) {
+      if (firstRowMoved === groupPositions.titleRowPosition) {
+        return groupPositions;
+      } else if (firstRowMoved >= groupPositions.startRowPosition && lastRowMoved <= groupPositions.endRowPosition) {
+        return groupPositions;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns the target group
+   * @param target is the row target
+   */
+  private getBelongingTargetGroup(target: number): GroupPositions | null {
+    let g = 0;
+    for (const groupPositions of this.groupsPositions) {
+      // If target === 0 (start table)
+      if (target === 0) {
+        return this.groupsPositions[0];
+      }
+      // If 1st row is a group title
+      // If rows are moved in an empty group
+      if (groupPositions.startRowPosition === groupPositions.endRowPosition && groupPositions.startRowPosition === groupPositions.titleRowPosition && target === groupPositions.titleRowPosition + 1) {
+        return groupPositions;
+      }
+      // If rows are moved at the end of a group
+      if (target === groupPositions.titleRowPosition && target !== 0) {
+        return this.groupsPositions[g - 1];
+      }
+      // If rows are moved at the end of the table
+      if (g === this.groupsPositions.length - 1 && target === groupPositions.endRowPosition + 1) {
+        return groupPositions;
+      }
+      // Else, rows are moved inside an existing group rows interval
+      if (target >= groupPositions.startRowPosition && target <= groupPositions.endRowPosition) {
+        return groupPositions;
+      }
+      g++;
+    }
+    return null;
+  }
+
+  /**
+   * Splice and return a group within this.groupsPositions
+   * Be careful, this function alterates this.groupsPositions
+   */
+  private spliceGroupWhithinTableRowsDefinitionById(id: number) {
+    const groupToSplice = this.getGroupPositionsById(this.currentTable, id);
+    const splicedGroup = this.currentTable.rowsDefinition.splice(groupToSplice.titleRowPosition, groupToSplice.endRowPosition - groupToSplice.titleRowPosition + 1);
+    return splicedGroup ? splicedGroup : null;
+  }
+
+  private insertRowsAboveGroup(rowsToInsert: Array<TableRowDefinition>, aboveGroup: GroupPositions): void {
+    let positionToInsert = aboveGroup.titleRowPosition;
+    if (positionToInsert < 0 ) { positionToInsert = 0; }
+    this.currentTable.rowsDefinition.splice(aboveGroup.titleRowPosition, 0, ...rowsToInsert);
+  }
+
+  private insertRowsUnderGroup(rowsToInsert: Array<TableRowDefinition>, underGroup: GroupPositions): void {
+    let positionToInsert = underGroup.endRowPosition + 1;
+    if (positionToInsert > this.currentTable.rowsDefinition.length) { positionToInsert = this.currentTable.rowsDefinition.length; }
+    this.currentTable.rowsDefinition.splice(positionToInsert, 0, ...rowsToInsert);
+  }
+
+  private insertRowsAtTheBottom(rowsToInsert: Array<TableRowDefinition>): void {
+    this.currentTable.rowsDefinition.push(...rowsToInsert);
+  }
+
+  /**
+   * Create a new rows group
+   */
   public moveRangeRowsToNewGroup(startRowPosition: number, endRowPosition: number): {success: boolean, newGroupId: number} {
     this.updateGroupsPositions(this.currentTable);
 
@@ -860,6 +929,9 @@ export class TableService {
     return {success: false, newGroupId: null};
   }
 
+  /**
+   * Move a row group 1 level below
+   */
   public moveGroupToBottom(startRowPosition: number): boolean | {movedRowsStart: number, movedRowsEnd: number} {
     const belongingRowsGroup = this.getGroupPositionsForRowId(this.currentTable, startRowPosition);
     const nextGroupPositions = this.getNextGroupPositionsForRowId(this.currentTable, startRowPosition);
@@ -869,6 +941,11 @@ export class TableService {
     if (nextGroupPositions) {
       const splicedRows = this.currentTable.rowsDefinition.splice(belongingRowsGroup.titleRowPosition, belongingRowsGroup.endRowPosition - belongingRowsGroup.titleRowPosition + 1);
       this.currentTable.rowsDefinition.splice(nextGroupPositions.endRowPosition - splicedRows.length + 1, 0, ...splicedRows);
+
+      this.updateGroupsPositions(this.currentTable);
+
+      // update rowId values
+      let j = 0; for (const row of this.currentTable.rowsDefinition) { row.rowId = j; j++; }
 
       // Emit new dataView
       // Maybe we should improve by updating only the dataView instead of creating a new one servered to handsontable instance...
@@ -881,6 +958,9 @@ export class TableService {
     return false;
   }
 
+  /**
+   * Move a row group 1 level above
+   */
   public moveGroupToTop(startRowPosition: number): boolean | {movedRowsStart: number, movedRowsEnd: number} {
     const belongingRowsGroup = this.getGroupPositionsForRowId(this.currentTable, startRowPosition);
     const previousGroupPositions = this.getPreviousGroupPositionsForRowId(this.currentTable, startRowPosition);
@@ -890,6 +970,11 @@ export class TableService {
     if (previousGroupPositions) {
       const splicedRows = this.currentTable.rowsDefinition.splice(belongingRowsGroup.titleRowPosition, belongingRowsGroup.endRowPosition - belongingRowsGroup.titleRowPosition + 1);
       this.currentTable.rowsDefinition.splice(previousGroupPositions.titleRowPosition, 0, ...splicedRows);
+
+      this.updateGroupsPositions(this.currentTable);
+
+      // update rowId values
+      let j = 0; for (const row of this.currentTable.rowsDefinition) { row.rowId = j; j++; }
 
       // Emit new dataView
       // Maybe we should improve by updating only the dataView instead of creating a new one servered to handsontable instance...
@@ -1400,18 +1485,24 @@ export class TableService {
     for (const sye of table.sye) {
       i++;
       const columnPositions: ColumnPositions = {
-        id: null, label: null, startColumnPosition: null, endColumnPosition: null, syntheticColumnPosition: null
+        id: null, label: null, startColumnPosition: null, endColumnPosition: null, syntheticColumnPosition: null, onlyShowSyntheticColumn: sye.onlyShowSyntheticColumn
       };
 
       columnPositions.id = sye.syeId;
       columnPositions.label = 'sye';  // @Todo bind sye validation[x] name
 
-      columnPositions.startColumnPosition = i;
-      columnPositions.endColumnPosition = sye.occurrences.length > 0 ? i + sye.occurrences.length - 1 : i;
-      columnPositions.syntheticColumnPosition = i + sye.occurrences.length;
+      if (columnPositions.onlyShowSyntheticColumn) {
+        columnPositions.startColumnPosition = i;
+        columnPositions.endColumnPosition = i;
+        columnPositions.syntheticColumnPosition = i;
+      } else {
+        columnPositions.startColumnPosition = i;
+        columnPositions.endColumnPosition = sye.occurrences.length > 0 ? i + sye.occurrences.length - 1 : i;
+        columnPositions.syntheticColumnPosition = i + sye.occurrences.length;
+      }
 
       columnsPositions.push(columnPositions);
-      i = i + sye.occurrences.length;
+      i = columnPositions.onlyShowSyntheticColumn ? i : i + sye.occurrences.length;
     }
     this.columnsPositions = columnsPositions;
   }
@@ -1426,6 +1517,17 @@ export class TableService {
         return columnPositions;
       }
     }
+  }
+
+  /**
+   * Returns ColumnPositions for a given syeId
+   * Be careful, columnPositions.id = sye.syeId;
+   */
+  getColumnPositionsForSyeById(syeId: number): ColumnPositions {
+    for (const columnPositions of this.columnsPositions) {
+      if (columnPositions.id === syeId) { return columnPositions; }
+    }
+    return null;
   }
 
   /**
@@ -1799,4 +1901,5 @@ interface ColumnPositions {
   startColumnPosition: number;
   endColumnPosition: number;
   syntheticColumnPosition: number;
+  onlyShowSyntheticColumn: boolean;
 }

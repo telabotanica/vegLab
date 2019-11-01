@@ -9,7 +9,9 @@ export interface Sye {
   syeId:              number;
   occurrencesCount:   number;
   occurrences:        Array<OccurrenceModel>;
+  occurrencesOrder?:  string;
   syntheticColumn:    SyntheticColumn;
+  onlyShowSyntheticColumn: boolean;
   validations?:       Array<OccurrenceValidationModel>;
   vlBiblioSource?:    Biblio;
   vlWorkspace:        string;

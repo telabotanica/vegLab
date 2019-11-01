@@ -1906,6 +1906,7 @@ export class TableImportComponent implements OnInit {
         occurrencesCount: sye.releves.length,
         occurrences: [],
         syntheticColumn: null, // get synthetic column
+        onlyShowSyntheticColumn: false,
         vlWorkspace: this.wsService.currentWS.getValue()
       };
 
