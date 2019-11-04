@@ -55,15 +55,21 @@ export class TableService {
   // TABLE I/O (DB)
   // --------------
   getTables(): Observable<Table[]> {
-    return this.http.get<Table[]>('http://localhost:8000/api/tables.json');
+    return this.http.get<Table[]>('http://localhost:8000/api/tables');
   }
 
+  /**
+   * Get a table
+   */
   getTableById(id: number): Observable<Table> {
-    return this.http.get<Table>(`http://localhost:8000/api/tables/${id}.json`).pipe(
+    return this.http.get<Table>(`http://localhost:8000/api/tables/${id}`).pipe(
       map(t => this.orderSyeOccurrences(t))
     );
   }
 
+  /**
+   * Create an table
+   */
   postTable(table: Table): Observable<Table> {
     console.log('table', table);
     if (typeof(table.id) === 'number') {
@@ -82,15 +88,18 @@ export class TableService {
     }
 
     // Post table
-    return this.http.post<Table>('http://localhost:8000/api/tables.json', table).pipe(
+    return this.http.post<Table>('http://localhost:8000/api/tables', table).pipe(
       map(t => this.parseGeometryAndIntegerifyElevation(t)),
       map(t => this.orderSyeOccurrences(t))
     );
 
   }
 
-  patchTable(table: Table, data?: {title: string, description: string, createdAt: Date, createdBy: string, relatedSyntaxons: Array<TableRelatedSyntaxon>}) {
-    // PATCH current table
+  /**
+   * Replace a table
+   */
+  putTable(table: Table, data?: {title: string, description: string, createdAt: Date, createdBy: string, relatedSyntaxons: Array<TableRelatedSyntaxon>}) {
+    // PUT (replace) current table
     if (!table.id) {
       // throw throwError('The current table doesn\'t exists in DB, could not PATCH it');
       console.log('The current table doesn\'t exists in DB, could not PATCH it');
@@ -110,7 +119,7 @@ export class TableService {
     this.removeEmpty(table);
 
     // Post table
-    return this.http.patch<Table>(`http://localhost:8000/api/tables/${table.id}.json`, table).pipe(
+    return this.http.put<Table>(`http://localhost:8000/api/tables/${table.id}`, table).pipe(
       map(t => this.parseGeometryAndIntegerifyElevation(t)),
       map(t => this.orderSyeOccurrences(t))
     );
@@ -122,7 +131,7 @@ export class TableService {
       return;
     }
     const linkHttpHeaders = {'Content-Type': 'application/ld+json'};
-    return this.http.patch<Table>(`http://localhost:8000/api/tables/${table.id}.json`, {pdf: pdfFileIri}, {headers: linkHttpHeaders}).pipe(
+    return this.http.patch<Table>(`http://localhost:8000/api/tables/${table.id}`, {pdf: pdfFileIri}, {headers: linkHttpHeaders}).pipe(
       map(t => this.parseGeometryAndIntegerifyElevation(t))
     );
   }
@@ -339,7 +348,7 @@ export class TableService {
 
   public createSyntheticColumnsForSyeOnTable(table: Table) {
     for (const sye of table.sye) {
-      const syntheticColumn = this.createSyntheticColumn(sye.occurrences);
+      const syntheticColumn = this.createSyntheticColumn(sye.occurrences, sye);
       sye.syntheticColumn = syntheticColumn;
     }
   }
@@ -1295,8 +1304,8 @@ export class TableService {
       syeTarget.occurrences.splice(targetIndex, 0, ...syeSource.occurrences.splice(sourceIndex, nbColumnsToMove));
 
       // create new synthetic columns
-      syeSource.syntheticColumn = this.createSyntheticColumn(syeSource.occurrences);
-      syeTarget.syntheticColumn = this.createSyntheticColumn(syeTarget.occurrences);
+      syeSource.syntheticColumn = this.createSyntheticColumn(syeSource.occurrences, syeSource);
+      syeTarget.syntheticColumn = this.createSyntheticColumn(syeTarget.occurrences, syeTarget);
 
       // update sye occurrences count
       this.updateSyeCount(this.currentTable);
@@ -1692,10 +1701,16 @@ export class TableService {
   // -----------------
   // SYNTHETIC COLUMNS
   // -----------------
+
+  /**
+   * Create a new synthetic column from given occurrences
+   * If a sye is provided AND has an id, we keep this id (and also @id) for PATCH/PUT requests
+   */
   createSyntheticColumn(occurrences: Array<OccurrenceModel>, sye?: Sye): SyntheticColumn {
     console.log('occurrences', occurrences);
     const syntheticColumn: SyntheticColumn = {
-      id: (sye && sye.id && sye.syntheticColumn) ? sye.syntheticColumn.id : null, // If the sye already has a synthetic column, set id & sye properties
+      '@id': sye && sye['@id'] ? sye['@id'] : null,
+      id: (sye && sye.id && sye.syntheticColumn) ? sye.syntheticColumn.id : null,    // If the sye already has a synthetic column, set id & sye properties
       // sye: (sye && sye.id) ? sye : null,                                          // so the table PATCH operations will also patch sye & synthetic column
       sye: null,
       validations: [],

@@ -121,16 +121,16 @@ export class TableFormComponent implements OnInit {
   }
 
   /**
-   * POST pdf files trough API and then POST / PATCH table
+   * POST pdf files trough API and then POST / PUT table
    */
-  postPdfFiles(callback: 'POST' | 'PATCH') {
+  postPdfFiles(callback: 'POST' | 'PUT') {
     if (this.pdfFilesToSend.length > 0) {
       this.pdfFileService.createPdfFile(this.pdfFilesToSend[0]).subscribe(
         pdfFile => {
           this.pdfFileIrisToLink.push(pdfFile['@id']);
           this.notificationService.notify('Fichier ' + pdfFile.originalName + ' uploadé !');
           if (callback === 'POST') { this.postTable(); }
-          if (callback === 'PATCH') { this.patchTable(); }
+          if (callback === 'PUT') { this.putTable(); }
         }, errorPdfFile => {
           this.notificationService.warn('Erreur lors de l\'upload du fichier  PDF ' + this.pdfFilesToSend[0].get('file').toString());
         }
@@ -186,10 +186,9 @@ export class TableFormComponent implements OnInit {
   }
 
   /**
-   * Update (PATCH) an existing table
-   * @Todo improve PATCH granularity : only patch metadata, related syntaxon, pdf file or table
+   * Replace (PUT) an existing table
    */
-  patchTable() {
+  putTable() {
     const prePatchedTable = _.cloneDeep(this.tableService.getCurrentTable());
     const prePatchedTableValidations: Array<OccurrenceValidationModel> = [];
 
@@ -238,7 +237,7 @@ export class TableFormComponent implements OnInit {
       deleteLinkedPdfFile = true;
     }
 
-    this.tableService.patchTable(prePatchedTable).subscribe(
+    this.tableService.putTable(prePatchedTable).subscribe(
       patchedTable => {
         // Should we link pdf file ?
         if (this.pdfFileIrisToLink.length > 0) {
@@ -286,7 +285,7 @@ export class TableFormComponent implements OnInit {
     let pdfFilesToPost = false;
     if (this.pdfFilesToSend.length > 0) { pdfFilesToPost = true; }
 
-    const callback = ct.id ? 'PATCH' : 'POST';
+    const callback = ct.id ? 'PUT' : 'POST';
 
     if (pdfFilesToPost) {
       this.postPdfFiles(callback);
@@ -294,7 +293,7 @@ export class TableFormComponent implements OnInit {
       if (callback === 'POST') {
         this.postTable();
       } else {
-        this.patchTable();
+        this.putTable();
       }
     }
   }

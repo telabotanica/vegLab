@@ -4,6 +4,7 @@ import { Sye } from './sye.model';
 import { Biblio } from './biblio.model';
 
 export interface SyntheticColumn {
+  '@id'?:          string;
   id:              number;
   sye:             Sye;
   validations:     Array<OccurrenceValidationModel>;
