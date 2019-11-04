@@ -63,6 +63,7 @@ export class TableService {
    */
   getTableById(id: number): Observable<Table> {
     return this.http.get<Table>(`http://localhost:8000/api/tables/${id}`).pipe(
+      map(t => this.parseGeometryAndIntegerifyElevation(t)),
       map(t => this.orderSyeOccurrences(t))
     );
   }
@@ -217,6 +218,8 @@ export class TableService {
         }
       }
     }
+    console.log('TABLE WITH JSON GEOMETRY');
+    console.log(table);
     return table;
   }
 
