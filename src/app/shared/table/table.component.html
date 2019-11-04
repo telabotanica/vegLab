@@ -1,4 +1,4 @@
-<div id="table-wrapper">
+<div id="table-wrapper" [class.hide-table]="!currentDataView">
   <table>
     <tbody>
       <tr id="table-sub-header">
@@ -25,13 +25,11 @@
   <button mat-button (click)="router.navigate(['/phyto/app/create-table'])">Enregistrer le tableau</button>
 </div>
 
-<!--
-<div [hidden]="currentDataView" class="no-data-table">
+<div *ngIf="!currentDataView" class="no-data-table">
+  <div class="icon"><mat-icon inline="true">table_chart</mat-icon></div>
   <div class="title">Aucun tableau à afficher</div>
   <div class="action-buttons">
-    <button mat-button>Rechercher un relevé</button>
-    <button mat-button>Rechercher un tableau</button>
-    <button mat-button>Importer des données</button>
+    <button mat-button (click)="router.navigate(['/phyto/app/search-occurrence'])">Rechercher un relevé</button>
+    <button mat-button (click)="router.navigate(['/phyto/app/search-table'])">Rechercher un tableau</button>
   </div>
 </div>
--->
