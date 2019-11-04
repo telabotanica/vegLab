@@ -1,21 +1,22 @@
 <div class="phyto_app_container">
   <div class="row layout">
     <as-split unit="percent" direction="horizontal">
-      <as-split-area size="50">
+      <as-split-area size="50" [order]="0" *ngIf="wsPhytoService.isActionPanelOpened()">
         <div id="action_panel">
+          <button mat-icon-button (click)="router.navigate(['/phyto/app'])"><mat-icon>close</mat-icon></button>
           <router-outlet></router-outlet>
         </div>
       </as-split-area>
-      <as-split-area size="50">
-        <div id="main">
-            <div id="table">
+      <as-split-area size="50" [order]="1">
+        <as-split unit="percent" [direction]="wsPhytoService.getInfoPanelSplitDirection()">
+          <as-split-area size="80" [order]="0">
               <vl-table></vl-table>
-            </div>
-            <div id="info_panel">
-              <div id="show_info_panel_button">...</div>
-              Info
-            </div>
-        </div>
+          </as-split-area>
+          <as-split-area size="20" [order]="1">
+            <button mat-button (click)="toggleSplitInfoPanel()">SPLIT INFO PANEL</button>
+            <button mat-button (click)="wsPhytoService.toggleActionPanelVisibility()">TOGGLE ACTION PANEL {{ wsPhytoService.isActionPanelOpened() }}</button>
+          </as-split-area>
+        </as-split>
       </as-split-area>
     </as-split>
   </div>
