@@ -1264,7 +1264,7 @@ export class TableImportComponent implements OnInit {
    */
   localizeFromMap(location: Location): void {
     location.manualLocalization = false;
-    if (this.currentLocation.geometry['type'] === 'Polygon') {
+    if (this.currentLocation && this.currentLocation.geometry['type'] === 'Polygon') {
       // simplify polygon
       this.currentLocation.geometry = this.locationService.simplifyPolygon(this.currentLocation.geometry);
       this.patchMapGeometry = [{
