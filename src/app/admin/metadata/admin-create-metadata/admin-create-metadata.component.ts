@@ -6,6 +6,7 @@ import { NotificationService } from 'src/app/_services/notification.service';
 
 import { ExtendedFieldModel } from 'src/app/_models/extended-field.model';
 import { ExtendeFieldTranslationModel } from 'src/app/_models/extended-field-translation.model';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'vl-admin-create-metadata',
@@ -83,7 +84,7 @@ export class AdminCreateMetadataComponent implements OnInit {
     metadata.extendedFieldTranslations.push(frTranslation);
 
     this.isSendingData = true;
-    this.http.post('http://localhost:8000/api/extended_fields', metadata).subscribe(
+    this.http.post(`${environment.apiBaseUrl}/extended_fields`, metadata).subscribe(
       success => {
         this.isSendingData = false;
         this.createdMetadata.next(success as ExtendedFieldModel);

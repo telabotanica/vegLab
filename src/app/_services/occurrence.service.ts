@@ -53,14 +53,14 @@ export class OccurrenceService {
   }
 
   getOccurrenceById(id: number): Observable<OccurrenceModel> {
-    const dataObs = this.http.get(`http://localhost:8000/api/occurrences/${id}.json`).pipe(
+    const dataObs = this.http.get(`${environment.apiBaseUrl}/occurrences/${id}.json`).pipe(
       map(result => result as OccurrenceModel)
     );
     return dataObs;
   }
 
   getEsOccurrenceById(id: number): Observable<OccurrenceModel> {
-    return this.http.get(`http://localhost:9200/cel2_occurrences/_search?q=id:${id}`).pipe(
+    return this.http.get(`${environment.esBaseUrl}/cel2_occurrences/_search?q=id:${id}`).pipe(
       map(result => result as EsOccurrencesResultModel),
       map(result => result.hits.hits[0]._source)
     );
@@ -77,7 +77,7 @@ export class OccurrenceService {
 
     const headers = new HttpHeaders({ 'Content-type': 'application/json' });
     const query = `{ "ids": [${parts}] }`;
-    return this.http.post(`http://localhost:9200/cel2_occurrences/_mget`, query, { headers }).pipe(
+    return this.http.post(`${environment.esBaseUrl}/cel2_occurrences/_mget`, query, { headers }).pipe(
       map(data => data as EsOccurrencesDocsResultModel),
       map(data0 => data0.docs),
       map(data2 => _.map(data2, item => item._source))

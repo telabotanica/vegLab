@@ -55,14 +55,14 @@ export class TableService {
   // TABLE I/O (DB)
   // --------------
   getTables(): Observable<Table[]> {
-    return this.http.get<Table[]>('http://localhost:8000/api/tables');
+    return this.http.get<Table[]>(`${environment.apiBaseUrl}/tables`);
   }
 
   /**
    * Get a table
    */
   getTableById(id: number): Observable<Table> {
-    return this.http.get<Table>(`http://localhost:8000/api/tables/${id}`).pipe(
+    return this.http.get<Table>(`${environment.apiBaseUrl}/tables/${id}`).pipe(
       map(t => this.parseGeometryAndIntegerifyElevation(t)),
       map(t => this.orderSyeOccurrences(t))
     );
@@ -89,7 +89,7 @@ export class TableService {
     }
 
     // Post table
-    return this.http.post<Table>('http://localhost:8000/api/tables', table).pipe(
+    return this.http.post<Table>(`${environment.apiBaseUrl}/tables`, table).pipe(
       map(t => this.parseGeometryAndIntegerifyElevation(t)),
       map(t => this.orderSyeOccurrences(t))
     );
@@ -120,7 +120,7 @@ export class TableService {
     this.removeEmpty(table);
 
     // Post table
-    return this.http.put<Table>(`http://localhost:8000/api/tables/${table.id}`, table).pipe(
+    return this.http.put<Table>(`${environment.apiBaseUrl}/tables/${table.id}`, table).pipe(
       map(t => this.parseGeometryAndIntegerifyElevation(t)),
       map(t => this.orderSyeOccurrences(t))
     );
@@ -132,7 +132,7 @@ export class TableService {
       return;
     }
     const linkHttpHeaders = {'Content-Type': 'application/ld+json'};
-    return this.http.patch<Table>(`http://localhost:8000/api/tables/${table.id}`, {pdf: pdfFileIri}, {headers: linkHttpHeaders}).pipe(
+    return this.http.patch<Table>(`${environment.apiBaseUrl}/tables/${table.id}`, {pdf: pdfFileIri}, {headers: linkHttpHeaders}).pipe(
       map(t => this.parseGeometryAndIntegerifyElevation(t))
     );
   }
@@ -142,14 +142,14 @@ export class TableService {
   // TABLE I/O (ES)
   // --------------
   getEsTables(): Observable<Array<EsTableModel>> {
-    return this.http.get<EsTableResultModel>(`http://localhost:9200/vl_tables/_search`).pipe(
+    return this.http.get<EsTableResultModel>(`${environment.esBaseUrl}/vl_tables/_search`).pipe(
       map(result => _.map(result.hits.hits, hit => hit._source))
     );
   }
 
   findEsTableByQuery(esQuery: string): Observable<Array<EsTableModel>> {
     const headers = new HttpHeaders({ 'Content-type': 'application/json' });
-    return this.http.post<EsTableResultModel>('http://localhost:9200/vl_tables/_search', esQuery, {headers}).pipe(
+    return this.http.post<EsTableResultModel>(`${environment.esBaseUrl}/vl_tables/_search`, esQuery, {headers}).pipe(
       map(result => _.map(result.hits.hits, hit => hit._source))
     );
   }
@@ -253,6 +253,7 @@ export class TableService {
     this.currentTable = table;
     this.setCurrentTableOccurrencesIds();
     if (forceReloadDataView) { this.tableDataView.next(this.createDataView(this.currentTable)); }
+    this.currentTableChanged.next(true);
   }
 
   getCurrentTable(): Table {

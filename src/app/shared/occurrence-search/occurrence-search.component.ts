@@ -365,7 +365,7 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
     // Request
     const headers = new HttpHeaders({ 'Content-type': 'application/json' });
     this.isSearching = true;
-    this.http.post('http://localhost:9200/cel2_occurrences/_search', esQuery, { headers })
+    this.http.post(`${environment.esBaseUrl}/cel2_occurrences/_search`, esQuery, { headers })
     .pipe(
       debounceTime(1500),
       distinctUntilChanged()

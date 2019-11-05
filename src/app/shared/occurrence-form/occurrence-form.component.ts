@@ -358,7 +358,7 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
       console.log(this.occurrence);
 
       // POST occurrence via API
-      this.http.post('http://localhost:8000/api/occurrences', this.occurrence)
+      this.http.post(`${environment.apiBaseUrl}/occurrences`, this.occurrence)
       .subscribe(
         occ => {
           // @TODO Link photos to occurrence (photoService)

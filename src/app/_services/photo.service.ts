@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 
 import { OccurrenceModel } from '../_models/occurrence.model';
 import { PhotoModel } from '../_models/photo.model';
+import { environment } from '../../environments/environment';
 
 
 @Injectable({
@@ -20,6 +21,6 @@ export class PhotoService {
       occurrence: {'@id': `/api/occurrences/${occurrence.id}`},
       dateLinkedToOccurrence: Date.now()
     };
-    return this.http.patch(`http://localhost/8000/api/photos/${photo.id}`, data, {headers});
+    return this.http.patch(`${environment.apiBaseUrl}/photos/${photo.id}`, data, {headers});
   }
 }

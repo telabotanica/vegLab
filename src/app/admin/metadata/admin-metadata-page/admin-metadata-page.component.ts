@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 
 import { NotificationService } from '../../../_services/notification.service';
 import { MetadataService } from '../../../_services/metadata.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'vl-admin-metadata-page',
@@ -115,7 +116,7 @@ export class AdminMetadataPageComponent implements OnInit {
 
   getMetadata(): void {
     this.isLoadingMetadata = true;
-    this.http.get('http://localhost:8000/api/extended_fields.json').pipe(
+    this.http.get(`${environment.apiBaseUrl}/extended_fields.json`).pipe(
       map(data => data as Array<ExtendedFieldModel>)
     ).subscribe(
       data => {

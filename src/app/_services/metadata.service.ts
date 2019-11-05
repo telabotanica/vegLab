@@ -6,6 +6,8 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { ExtendedFieldModel } from '../_models/extended-field.model';
 import { FieldDataType } from '../_enums/field-data-type-enum';
 
+import { environment } from '../../environments/environment';
+
 import * as moment from 'moment';
 
 @Injectable({
@@ -19,7 +21,7 @@ export class MetadataService {
 
   refreshMetadataList(): void {
     this.isLoadingMetadataList = true;
-    this.http.get('http://localhost:8000/api/extended_fields.json?projectName=veglab').subscribe(
+    this.http.get(`${environment.apiBaseUrl}/extended_fields.json?projectName=veglab`).subscribe(
       result => {
         this.isLoadingMetadataList = false;
         this.setMetadataList(result as Array<ExtendedFieldModel>);

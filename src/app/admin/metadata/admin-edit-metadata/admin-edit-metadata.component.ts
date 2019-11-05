@@ -6,6 +6,7 @@ import { NotificationService } from 'src/app/_services/notification.service';
 
 import { ExtendedFieldModel } from 'src/app/_models/extended-field.model';
 import { ExtendeFieldTranslationModel } from 'src/app/_models/extended-field-translation.model';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'vl-admin-edit-metadata',
@@ -82,9 +83,9 @@ export class AdminEditMetadataComponent implements OnInit {
       errorMessage: this.form.controls.errorMessage.value
     };
 
-    this.http.patch(`http://localhost:8000/api/extended_fields/${this.metadata.id}`, metadataToUpdate).subscribe(
+    this.http.patch(`${environment.apiBaseUrl}/extended_fields/${this.metadata.id}`, metadataToUpdate).subscribe(
       success1 => {
-        this.http.patch(`http://localhost:8000/api/extended_field_translations/${this.frTranslation.id}`, translationToUpdate).subscribe(
+        this.http.patch(`${environment.apiBaseUrl}/extended_field_translations/${this.frTranslation.id}`, translationToUpdate).subscribe(
           success2 => {
             this.isSendingData = false;
             this.success.next(true);

@@ -35,6 +35,8 @@ import { TableFormComponent } from './shared/table-form/table-form.component';
 import { TableSearchComponent } from './shared/table-search/table-search.component';
 import { TableImportComponent } from './shared/table-import/table-import.component';
 
+import { PdfViewerComponent } from './shared/pdf-viewer/pdf-viewer.component';
+
 import { MetadataInputComponent } from './shared/metadata-input/metadata-input.component';
 
 // admin pages and components
@@ -89,6 +91,7 @@ import { AngularSplitModule } from 'angular-split';
 import { ObserverSearchComponent } from './shared/observer-search/observer-search.component';
 import { BiblioSearchComponent } from './shared/biblio-search/biblio-search.component';
 import { OccurrencesInlineComponent } from './shared/occurrences-inline/occurrences-inline.component';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 /*
 import * as Sentry from '@sentry/browser';
@@ -119,7 +122,7 @@ export class SentryErrorHandler implements ErrorHandler {
     LevelPipe, ShortLevelPipe, MomentPipe, MomentLocalDatePipe, // Pipes
     PhytoHomePageComponent, PhytoAppPageComponent, // WS phyto
     ForestHomePageComponent, ForestAppPageComponent, // WS forest
-    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, // admin
+    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, // admin
   ],
   entryComponents: [
     OccurrenceSearchMetadataModal1Component
@@ -139,7 +142,8 @@ export class SentryErrorHandler implements ErrorHandler {
     LeafletModule.forRoot(), LeafletDrawModule.forRoot(),
     HotTableModule.forRoot(),
     NgbPopoverModule,
-    AngularSplitModule.forRoot()
+    AngularSplitModule.forRoot(),
+    PdfViewerModule
   ],
   providers: [UserService, NotificationService, MenuService, OccurrenceService, TableService, MetadataService, PhotoService, LayerService,
               {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},

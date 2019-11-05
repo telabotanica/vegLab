@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { PdfFileJsonLd, PdfFile } from '../_models/pdf-file.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +14,11 @@ export class PdfFileService {
   constructor(private http: HttpClient) { }
 
   createPdfFile(formDataFile: FormData): Observable<PdfFileJsonLd> {
-    return this.http.post<PdfFileJsonLd>('http://localhost:8000/api/pdf_files', formDataFile);
+    return this.http.post<PdfFileJsonLd>(`${environment.apiBaseUrl}/pdf_files`, formDataFile);
   }
 
   removePdfFile(pdfFileId: number): Observable<PdfFile> {
     console.log('PDF FILE SERVICE, REMOVE PDF...');
-    return this.http.delete<PdfFile>(`http://localhost:8000/api/pdf_files/${pdfFileId}`);
+    return this.http.delete<PdfFile>(`${environment.apiBaseUrl}/pdf_files/${pdfFileId}`);
   }
 }

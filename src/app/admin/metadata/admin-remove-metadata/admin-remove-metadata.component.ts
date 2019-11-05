@@ -5,6 +5,7 @@ import { ExtendedFieldModel } from 'src/app/_models/extended-field.model';
 
 import { NotificationService } from 'src/app/_services/notification.service';
 import { ExtendedFieldOccurrence } from 'src/app/_models/extended-field-occurrence';
+import { environment } from '../../../../environments/environment';
 
 
 @Component({
@@ -27,7 +28,7 @@ export class AdminRemoveMetadataComponent implements OnInit {
 
   ngOnInit() {
     this.isLoadingOccurrenceMetadataValues = true;
-    this.http.get(`http://localhost:8000/api/extended_fields/${this.metadata.id}/extended_field_occurrences`).subscribe(result => {
+    this.http.get(`${environment.apiBaseUrl}/extended_fields/${this.metadata.id}/extended_field_occurrences`).subscribe(result => {
       console.log(result);
       this.metadataOccurrencesValues = result as Array<ExtendedFieldOccurrence>;
       this.isLoadingOccurrenceMetadataValues = false;
@@ -39,7 +40,7 @@ export class AdminRemoveMetadataComponent implements OnInit {
   }
 
   deleteMetadata(): void {
-    this.http.delete(`http://localhost:8000/api/extended_fields/${this.metadata.id}`).subscribe(
+    this.http.delete(`${environment.apiBaseUrl}/extended_fields/${this.metadata.id}`).subscribe(
       success => { this.success.emit(true); },
       error => {
         this.fail.next(true);
