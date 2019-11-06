@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   baseUrl: 'http://localhost',
-  apiBaseUrl: 'http://localhost:8001/index.php/api',
+  apiBaseUrl: 'http://localhost:80/index.php/api',
   esBaseUrl: 'http://localhost:9200',
   tbRepositoriesConfigVegetation: [
     {
