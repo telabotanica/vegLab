@@ -47,6 +47,7 @@
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.27",
+    "ng2-pdf-viewer": "^6.0.1",
     "ng5-slider": "^1.1.14",
     "papaparse": "^5.0.1",
     "rxjs": "~6.3.3",

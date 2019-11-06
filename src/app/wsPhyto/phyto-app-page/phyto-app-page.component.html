@@ -23,7 +23,7 @@
             <div class="info-panel vertical" *ngIf="wsPhytoService.getInfoPanelSplitDirection() === 'vertical'">
               <div class="content">
                 <as-split direction="horizontal">
-                  <as-split-area *ngIf="pdfAreaActive"></as-split-area>
+                  <as-split-area *ngIf="pdfAreaActive"><vl-pdf-viewer></vl-pdf-viewer></as-split-area>
                   <as-split-area *ngIf="chartAreaActive">chart</as-split-area>
                   <as-split-area *ngIf="mapAreaActive">map</as-split-area>
                   <as-split-area *ngIf="infoAreaActive">info</as-split-area>
@@ -51,7 +51,7 @@
               </div>
               <div class="content">
                 <as-split direction="vertical">
-                  <as-split-area *ngIf="pdfAreaActive"></as-split-area>
+                  <as-split-area *ngIf="pdfAreaActive"><vl-pdf-viewer></vl-pdf-viewer></as-split-area>
                   <as-split-area *ngIf="chartAreaActive">chart</as-split-area>
                   <as-split-area *ngIf="mapAreaActive">map</as-split-area>
                   <as-split-area *ngIf="infoAreaActive">info</as-split-area>

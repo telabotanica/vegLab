@@ -1,0 +1,18 @@
+<div *ngIf="table && table.pdf && !errorLoadingFile" class="pdf-view">
+  <div class="title">
+    {{ getPdfBiblioSource() }}
+  </div>
+  <div class="content">
+    <pdf-viewer
+      [src]="table.pdf.url"
+      [render-text]="true"
+      (on-progress)="loadingFile($event)"
+      style="display: block;"></pdf-viewer>  
+  </div>
+</div>
+<div *ngIf="table && table.pdf && errorLoadingFile" class="error-loading-file">
+  Nous ne parvenons pas à télécharger le fichier PDF
+</div>
+<div *ngIf="!table || !table.pdf" class="no-pdf">
+  Aucun fichier PDF
+</div>

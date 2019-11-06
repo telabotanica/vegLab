@@ -1,0 +1,36 @@
+.pdf-view {
+  .title {
+    font-weight: bold;
+    text-align: center;
+  }
+}
+.loading-file {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: lightgrey;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+.error-loading-file {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: lightgrey;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+.no-pdf {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: lightgrey;
+  font-weight: bold;
+  font-size: 1.2em;
+}

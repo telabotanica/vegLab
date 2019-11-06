@@ -16,8 +16,8 @@ export class PhytoAppPageComponent implements OnInit {
   infoPanelActive = true;
   infoAreaActive = false;
   chartAreaActive = false;
-  mapAreaActive = false;
-  pdfAreaActive = true;
+  mapAreaActive = true;
+  pdfAreaActive = false;
 
   constructor(private menuService: MenuService,
               private wsService: WorkspaceService,
