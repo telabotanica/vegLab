@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TableService } from 'src/app/_services/table.service';
 import { Table } from 'src/app/_models/table.model';
 import { Subscription } from 'rxjs';
