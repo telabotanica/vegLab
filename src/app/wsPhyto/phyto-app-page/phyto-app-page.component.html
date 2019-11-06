@@ -9,12 +9,55 @@
       </as-split-area>
       <as-split-area size="50" [order]="1">
         <as-split unit="percent" [direction]="wsPhytoService.getInfoPanelSplitDirection()">
-          <as-split-area size="80" [order]="0">
+          <as-split-area size="80" [order]="0" id="table-panel">
               <vl-table></vl-table>
+              <div *ngIf="!infoPanelActive" class="info-panel-button">
+                <button mat-mini-fab color="primary" (click)="openInfoPanel()">
+                  <mat-icon *ngIf="wsPhytoService.getInfoPanelSplitDirection() === 'vertical'">more_horiz</mat-icon>
+                  <mat-icon *ngIf="wsPhytoService.getInfoPanelSplitDirection() === 'horizontal'" >more_vert</mat-icon>
+                </button>
+              </div>
           </as-split-area>
-          <as-split-area size="20" [order]="1">
-            <button mat-button (click)="toggleSplitInfoPanel()">SPLIT INFO PANEL</button>
-            <button mat-button (click)="wsPhytoService.toggleActionPanelVisibility()">TOGGLE ACTION PANEL {{ wsPhytoService.isActionPanelOpened() }}</button>
+          <as-split-area *ngIf="infoPanelActive" size="20" [order]="1">
+            <!-- info panel vertical -->
+            <div class="info-panel vertical" *ngIf="wsPhytoService.getInfoPanelSplitDirection() === 'vertical'">
+              <div class="content">
+                <as-split direction="horizontal">
+                  <as-split-area *ngIf="pdfAreaActive"></as-split-area>
+                  <as-split-area *ngIf="chartAreaActive">chart</as-split-area>
+                  <as-split-area *ngIf="mapAreaActive">map</as-split-area>
+                  <as-split-area *ngIf="infoAreaActive">info</as-split-area>
+                </as-split>
+              </div>
+              <div class="actions-bar">
+                <div class="button close" (click)="closeInfoPanel()"><mat-icon>close</mat-icon></div>
+                <div class="button toggle-direction" (click)="toggleSplitInfoPanel()"><mat-icon>arrow_forward</mat-icon></div>
+                <div class="button info"  [class.active]="infoAreaActive"  (click)="toggleInfo()"><mat-icon>info</mat-icon></div>
+                <div class="button map"   [class.active]="mapAreaActive"   (click)="toggleMap()"><mat-icon>map</mat-icon></div>
+                <div class="button chart" [class.active]="chartAreaActive" (click)="toggleChart()"><mat-icon>bar_chart</mat-icon></div>
+                <div class="button pdf"   [class.active]="pdfAreaActive"   (click)="togglePdf()"><mat-icon>picture_as_pdf</mat-icon></div>
+              </div>
+            </div>
+
+            <!-- info panel horizontal -->
+            <div class="info-panel horizontal" *ngIf="wsPhytoService.getInfoPanelSplitDirection() === 'horizontal'">
+              <div class="actions-bar">
+                <div class="button close" (click)="closeInfoPanel()"><mat-icon>close</mat-icon></div>
+                <div class="button toggle-direction" (click)="toggleSplitInfoPanel()"><mat-icon>arrow_downward</mat-icon></div>
+                <div class="button info"  [class.active]="infoAreaActive"  (click)="toggleInfo()"><mat-icon>info</mat-icon></div>
+                <div class="button map"   [class.active]="mapAreaActive"   (click)="toggleMap()"><mat-icon>map</mat-icon></div>
+                <div class="button chart" [class.active]="chartAreaActive" (click)="toggleChart()"><mat-icon>bar_chart</mat-icon></div>
+                <div class="button pdf"   [class.active]="pdfAreaActive"   (click)="togglePdf()"><mat-icon>picture_as_pdf</mat-icon></div>
+              </div>
+              <div class="content">
+                <as-split direction="vertical">
+                  <as-split-area *ngIf="pdfAreaActive"></as-split-area>
+                  <as-split-area *ngIf="chartAreaActive">chart</as-split-area>
+                  <as-split-area *ngIf="mapAreaActive">map</as-split-area>
+                  <as-split-area *ngIf="infoAreaActive">info</as-split-area>
+                </as-split>
+              </div>
+            </div>
           </as-split-area>
         </as-split>
       </as-split-area>

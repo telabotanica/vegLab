@@ -13,6 +13,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./phyto-app-page.component.scss']
 })
 export class PhytoAppPageComponent implements OnInit {
+  infoPanelActive = true;
+  infoAreaActive = false;
+  chartAreaActive = false;
+  mapAreaActive = false;
+  pdfAreaActive = true;
 
   constructor(private menuService: MenuService,
               private wsService: WorkspaceService,
@@ -24,8 +29,36 @@ export class PhytoAppPageComponent implements OnInit {
     this.menuService.setMenu(WSPMenu);
   }
 
-  toggleSplitInfoPanel() {
+  toggleInfoPanel(): void {
+    this.infoPanelActive = !this.infoPanelActive;
+  }
+
+  closeInfoPanel(): void {
+    this.infoPanelActive = false;
+  }
+
+  openInfoPanel(): void {
+    this.infoPanelActive = true;
+  }
+
+  toggleSplitInfoPanel(): void {
     this.wsPhytoService.toggleInfoPanelSplitDirection();
+  }
+
+  toggleInfo(): void {
+    this.infoAreaActive = !this.infoAreaActive;
+  }
+
+  toggleChart(): void {
+    this.chartAreaActive = !this.chartAreaActive;
+  }
+
+  toggleMap(): void {
+    this.mapAreaActive = !this.mapAreaActive;
+  }
+
+  togglePdf(): void {
+    this.pdfAreaActive = !this.pdfAreaActive;
   }
 
 }

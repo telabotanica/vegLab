@@ -15,27 +15,78 @@
         padding: 0;
       }
     }
+    #table-panel {
+      .info-panel-button {
+        position: absolute;
+        bottom: 15px;
+        right: 30px;
+        margin: 30px;
+      }
+    }
+  }
+  
 
-    #main {
+  .info-panel.vertical {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    justify-content: space-between;
+    .actions-bar {
       display: flex;
       flex-direction: column;
-      padding-left: 0;
-      #table {
-        flex: 2;
-        background-color: white;
-      }
-      #info_panel {
-        flex: 1;
-        background-color: lightblue;
-        #show_info_panel_button {
-          background-color: lightblue;
-          position: relative;
-          width: fit-content;
-          top: -24px;
-          left: calc(100% - 30px);
-          z-index: 10000;
+      align-items: center;
+      flex-wrap: nowrap;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      height: 100%;
+
+      background-color: #EEEEEE;
+      color: grey;
+      .button {
+        padding: 10px;
+        cursor: pointer;
+        &:hover {
+          color: black;
+        }
+        &.active {
+          color: green;
         }
       }
+    }
+    .content {
+      width: 100%
+    }
+  }
+
+  .info-panel.horizontal {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+    .actions-bar {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: nowrap;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      width: 100%;
+
+      background-color: #EEEEEE;
+      color: grey;
+      .button {
+        padding: 10px;
+        cursor: pointer;
+        &:hover {
+          color: black;
+        }
+        &.active {
+          color: green;
+        }
+      }
+    }
+    .content {
+      height: 100%
     }
   }
 }
