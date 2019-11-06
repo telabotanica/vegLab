@@ -5,6 +5,8 @@ import { wsPhytoMenu as WSPMenu } from '../../_menus/main-menus';
 import { MenuService } from '../../_services/menu.service';
 import { WorkspaceService } from 'src/app/_services/workspace.service';
 import { WsPhytoService } from '../_services/ws-phyto.service';
+import { TableService } from 'src/app/_services/table.service';
+
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,6 +15,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./phyto-app-page.component.scss']
 })
 export class PhytoAppPageComponent implements OnInit {
+  // tableLoading = false;
+
   infoPanelActive = true;
   infoAreaActive = false;
   chartAreaActive = false;
@@ -22,6 +26,7 @@ export class PhytoAppPageComponent implements OnInit {
   panelsSizeChanged = new EventEmitter<boolean>();
 
   constructor(private menuService: MenuService,
+              private tableService: TableService,
               private wsService: WorkspaceService,
               private wsPhytoService: WsPhytoService,
               public router: Router) { }

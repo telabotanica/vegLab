@@ -1,5 +1,5 @@
 import { Injectable, EventEmitter } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
 import { AbstractControl } from '@angular/forms';
 
 import { Table } from '../_models/table.model';
@@ -41,6 +41,7 @@ export class TableService {
   public columnsPositions: Array<ColumnPositions> = [];
   public isSavingCurrentTable = false;
   public savingCurrentTableMessage = '';
+  public isLoadingData: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(
     private userService: UserService,

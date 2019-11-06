@@ -25,12 +25,15 @@ export class TableCardComponent implements OnInit {
   }
 
   setCurrentTable(id: number): void {
+    this.tableService.isLoadingData.next(true);
     this.tableService.getTableById(id).subscribe(
       table => {
         console.log(this.tableService.toString(table));
         this.tableService.setCurrentTable(table, true);
+        this.tableService.isLoadingData.next(false);
       }, errorTable => {
         this.notificationService.error('Nous ne parvenons pas à récupérer le tableau en base de données');
+        this.tableService.isLoadingData.next(false);
         // @Todo log error
       }
     );

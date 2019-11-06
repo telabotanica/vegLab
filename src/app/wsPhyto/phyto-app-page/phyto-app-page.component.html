@@ -10,6 +10,9 @@
       <as-split-area size="50" [order]="1">
         <as-split unit="percent" [direction]="wsPhytoService.getInfoPanelSplitDirection()" (dragEnd)="infoPanelDragEnd($event)">
           <as-split-area size="80" [order]="0" id="table-panel">
+              <div class="progress-bar-container" *ngIf="tableService.isLoadingData | async">
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+              </div>
               <vl-table></vl-table>
               <div *ngIf="!infoPanelActive" class="info-panel-button">
                 <button mat-mini-fab color="primary" (click)="openInfoPanel()">

@@ -692,14 +692,17 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
 
     let i = 0;
     this.selectedOccurrencesIds.forEach(sOccId => {
+      this.tableService.isLoadingData.next(true);
       this.occurrenceService.getOccurrenceById(sOccId).subscribe(
         rOcc => {
           occurrences.push(rOcc);
           if (i === this.selectedOccurrencesIds.length - 1) { this.tableService.addOccurrencesToCurrentTable(occurrences); }
           i++;
+          this.tableService.isLoadingData.next(false);
         },
         error => {
           // @Todo manage error
+          this.tableService.isLoadingData.next(false);
         }
       );
     });
