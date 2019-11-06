@@ -16,11 +16,6 @@ export class PdfViewerComponent implements OnInit, OnDestroy {
   isLoadingFile = false;
   errorLoadingFile = false;
 
-  src = {
-    url: 'http://localhost:8001/media/veglab/pdf/5dc00487d1219_7AnodCycr%20Allorge%201941.pdf',
-    withCredentials: true
-  };
-
   constructor(private tableService: TableService) { }
 
   ngOnInit() {
