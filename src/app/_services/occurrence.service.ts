@@ -53,8 +53,8 @@ export class OccurrenceService {
   }
 
   getOccurrenceById(id: number): Observable<OccurrenceModel> {
-    const dataObs = this.http.get(`${environment.apiBaseUrl}/occurrences/${id}.json`).pipe(
-      map(result => result as OccurrenceModel)
+    const dataObs = this.http.get<OccurrenceModel>(`${environment.apiBaseUrl}/occurrences/${id}.json`).pipe(
+      map(occ => this.parseGeometryAndIntegerifyElevation(occ))
     );
     return dataObs;
   }
@@ -117,6 +117,34 @@ export class OccurrenceService {
         return of(occurrence);
       })
     );
+  }
+
+  //
+  public parseGeometryAndIntegerifyElevation(occurrence: OccurrenceModel): OccurrenceModel {
+    // for (const occ of sye.occurrences) {
+    occurrence.geometry = occurrence.geometry ? JSON.parse(occurrence.geometry) : null;
+    occurrence.centroid = occurrence.centroid ? JSON.parse(occurrence.centroid) : null;
+    occurrence.elevation = occurrence.elevation ? +occurrence.elevation : null;
+    if (occurrence.level === 'synusy') {
+      for (const child of occurrence.children) {
+        child.geometry = child.geometry ? JSON.parse(child.geometry) : null;
+        child.centroid = child.centroid ? JSON.parse(child.centroid) : null;
+        child.elevation = child.elevation ? +child.elevation : null;
+      }
+    } else if (occurrence.level === 'microcenosis') {
+      for (const child of occurrence.children) {
+        child.geometry = child.geometry ? JSON.parse(child.geometry) : null;
+        child.centroid = child.centroid ? JSON.parse(child.centroid) : null;
+        child.elevation = child.elevation ? +child.elevation : null;
+        for (const grandChild of child.children) {
+          grandChild.geometry = grandChild.geometry ? JSON.parse(grandChild.geometry) : null;
+          grandChild.centroid = grandChild.centroid ? JSON.parse(grandChild.centroid) : null;
+          grandChild.elevation = grandChild.elevation ? +grandChild.elevation : null;
+        }
+      }
+    }
+
+    return occurrence;
   }
 
   // --------

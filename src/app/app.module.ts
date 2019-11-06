@@ -92,6 +92,7 @@ import { ObserverSearchComponent } from './shared/observer-search/observer-searc
 import { BiblioSearchComponent } from './shared/biblio-search/biblio-search.component';
 import { OccurrencesInlineComponent } from './shared/occurrences-inline/occurrences-inline.component';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { TableOverviewMapComponent } from './shared/map/table-overview-map/table-overview-map/table-overview-map.component';
 
 /*
 import * as Sentry from '@sentry/browser';
@@ -122,7 +123,7 @@ export class SentryErrorHandler implements ErrorHandler {
     LevelPipe, ShortLevelPipe, MomentPipe, MomentLocalDatePipe, // Pipes
     PhytoHomePageComponent, PhytoAppPageComponent, // WS phyto
     ForestHomePageComponent, ForestAppPageComponent, // WS forest
-    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, // admin
+    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, // admin
   ],
   entryComponents: [
     OccurrenceSearchMetadataModal1Component

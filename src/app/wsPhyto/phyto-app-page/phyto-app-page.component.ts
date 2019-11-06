@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 
 import { wsPhytoMenu as WSPMenu } from '../../_menus/main-menus';
 
@@ -19,18 +19,38 @@ export class PhytoAppPageComponent implements OnInit {
   mapAreaActive = true;
   pdfAreaActive = false;
 
+  panelsSizeChanged = new EventEmitter<boolean>();
+
   constructor(private menuService: MenuService,
               private wsService: WorkspaceService,
               private wsPhytoService: WsPhytoService,
-              private router: Router) { }
+              public router: Router) { }
 
   ngOnInit() {
     this.wsService.currentWS.next('phyto');
     this.menuService.setMenu(WSPMenu);
   }
 
+  actionPanelDragEnd(gutterNum: number, sizes: Array<number>): void {
+    this.panelsSizeOrPositionHaveBeenUpdated();
+  }
+
+  infoPanelDragEnd(gutterNum: number, sizes: Array<number>): void {
+    this.panelsSizeOrPositionHaveBeenUpdated();
+  }
+
+  infoSubPanelDragEnd(gutterNum: number, sizes: Array<number>): void {
+    this.panelsSizeOrPositionHaveBeenUpdated();
+  }
+
+  panelsSizeOrPositionHaveBeenUpdated(): void {
+    this.panelsSizeChanged.next(true);
+    setTimeout(() => { this.panelsSizeChanged.next(false); }, 50);
+  }
+
   toggleInfoPanel(): void {
     this.infoPanelActive = !this.infoPanelActive;
+    this.panelsSizeOrPositionHaveBeenUpdated();
   }
 
   closeInfoPanel(): void {
@@ -47,18 +67,22 @@ export class PhytoAppPageComponent implements OnInit {
 
   toggleInfo(): void {
     this.infoAreaActive = !this.infoAreaActive;
+    this.panelsSizeOrPositionHaveBeenUpdated();
   }
 
   toggleChart(): void {
     this.chartAreaActive = !this.chartAreaActive;
+    this.panelsSizeOrPositionHaveBeenUpdated();
   }
 
   toggleMap(): void {
     this.mapAreaActive = !this.mapAreaActive;
+    this.panelsSizeOrPositionHaveBeenUpdated();
   }
 
   togglePdf(): void {
     this.pdfAreaActive = !this.pdfAreaActive;
+    this.panelsSizeOrPositionHaveBeenUpdated();
   }
 
 }

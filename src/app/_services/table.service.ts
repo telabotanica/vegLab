@@ -260,6 +260,21 @@ export class TableService {
     return this.currentTable;
   }
 
+  /**
+   * Returns first level occurrences for each sye in current table
+   */
+  getReleves(): Array<OccurrenceModel> {
+    const releves: Array<OccurrenceModel> = [];
+    if (this.currentTable && this.currentTable.sye) {
+      for (const sye of this.currentTable.sye) {
+        if (sye.occurrences && sye.occurrences.length > 0) {
+          releves.push(...sye.occurrences);
+        }
+      }
+    }
+    return releves;
+  }
+
   updateDataView(table: Table) {
     this.tableDataView.next(this.createDataView(table));
   }
@@ -339,6 +354,7 @@ export class TableService {
     this.updateColumnsPositions(this.currentTable);
     this.tableDataView.next(this.createDataView(this.currentTable));
     this.setCurrentTableOccurrencesIds();
+    this.currentTableChanged.next(true);
   }
 
   public removeOccurencesToCurrentTable(occurrences: Array<OccurrenceModel>) {
