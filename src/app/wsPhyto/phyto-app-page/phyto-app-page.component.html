@@ -44,6 +44,7 @@
                 <as-split direction="horizontal" (dragEnd)="infoSubPanelDragEnd($event)" *ngIf="!noActiveArea()">
                   <as-split-area *ngIf="pdfAreaActive"><vl-pdf-viewer></vl-pdf-viewer></as-split-area>
                   <as-split-area *ngIf="chartAreaActive">chart</as-split-area>
+                  <as-split-area *ngIf="validationAreaActive"><vl-phyto-validation></vl-phyto-validation></as-split-area>
                   <as-split-area *ngIf="mapAreaActive"><vl-table-overview-map [invalidateSize]="panelsSizeChanged | async"></vl-table-overview-map></as-split-area>
                   <as-split-area *ngIf="infoAreaActive">info</as-split-area>
                 </as-split>
@@ -54,6 +55,7 @@
                 <div class="button info"  [class.active]="infoAreaActive"  (click)="toggleInfo()"><mat-icon>info</mat-icon></div>
                 <div class="button map"   [class.active]="mapAreaActive"   (click)="toggleMap()"><mat-icon>map</mat-icon></div>
                 <div class="button chart" [class.active]="chartAreaActive" (click)="toggleChart()"><mat-icon>bar_chart</mat-icon></div>
+                <div class="button validation" [class.active]="validationAreaActive" (click)="toggleValidation()"><mat-icon>check</mat-icon></div>
                 <div class="button pdf"   [class.active]="pdfAreaActive"   (click)="togglePdf()"><mat-icon>picture_as_pdf</mat-icon></div>
               </div>
             </div>
@@ -66,6 +68,7 @@
                 <div class="button info"  [class.active]="infoAreaActive"  (click)="toggleInfo()"><mat-icon>info</mat-icon></div>
                 <div class="button map"   [class.active]="mapAreaActive"   (click)="toggleMap()"><mat-icon>map</mat-icon></div>
                 <div class="button chart" [class.active]="chartAreaActive" (click)="toggleChart()"><mat-icon>bar_chart</mat-icon></div>
+                <div class="button validation" [class.active]="validationAreaActive" (click)="toggleValidation()"><mat-icon>check</mat-icon></div>
                 <div class="button pdf"   [class.active]="pdfAreaActive"   (click)="togglePdf()"><mat-icon>picture_as_pdf</mat-icon></div>
               </div>
               <div class="content">
@@ -80,6 +83,7 @@
                 <as-split direction="vertical" (dragEnd)="infoSubPanelDragEnd($event)" *ngIf="!noActiveArea()">
                   <as-split-area *ngIf="pdfAreaActive"><vl-pdf-viewer></vl-pdf-viewer></as-split-area>
                   <as-split-area *ngIf="chartAreaActive">chart</as-split-area>
+                  <as-split-area *ngIf="validationAreaActive"><vl-phyto-validation></vl-phyto-validation></as-split-area>
                   <as-split-area *ngIf="mapAreaActive"><vl-table-overview-map [invalidateSize]="panelsSizeChanged | async"></vl-table-overview-map></as-split-area>
                   <as-split-area *ngIf="infoAreaActive">info</as-split-area>
                 </as-split>

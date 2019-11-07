@@ -1,0 +1,20 @@
+<div *ngIf="!isTableEmpty()">
+  <mat-grid-list [cols]="countTableReleves()" rowHeight="50px" gutterSize="0">
+    <!-- table row -->
+    <mat-grid-tile [colspan]="countTableReleves()" class="table-tile">Tab. [{{ table.id }}] : {{ getTableValidation() }}</mat-grid-tile>
+
+    <!-- sye row -->
+    <div *ngFor="let sye of table.sye">
+      <mat-grid-tile [colspan]="countRelevesInSye(sye)" rowspan="1" class="sye-tile">Sye [{{ sye.id }}] : {{ getSyeValidation(sye) }}</mat-grid-tile>
+    </div>
+
+    <!-- releve row -->
+    <div *ngFor="let sye of table.sye">
+      <mat-grid-tile colspan="1" rowspan="6" class="releve-tile" *ngFor="let releve of sye.occurrences">Rel. [{{ releve.id }}] : {{ getReleveValidation(releve) }}</mat-grid-tile>
+    </div>
+  </mat-grid-list>
+</div>
+
+<div *ngIf="isTableEmpty()" class="no-table">
+    Aucune donnée à afficher
+</div>

@@ -23,6 +23,7 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
   chartAreaActive = false;
   mapAreaActive = true;
   pdfAreaActive = false;
+  validationAreaActive = false;
 
   panelsSizeChanged = new EventEmitter<boolean>();
 
@@ -109,6 +110,11 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
     this.panelsSizeOrPositionHaveBeenUpdated();
   }
 
+  toggleValidation(): void {
+    this.validationAreaActive = !this.validationAreaActive;
+    this.panelsSizeOrPositionHaveBeenUpdated();
+  }
+
   /**
    * Emit a boolean 'panelsSizeChanged' when a panel has been updated (open / close, drag)
    * Used in several sub-component to update their own views (eg: a leaflet component should subscribe and resize the map)
@@ -130,7 +136,7 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
    * Returns true if no one sub-info panel (ie info, map, chart, pdf, ...) is active
    */
   noActiveArea(): boolean {
-    return !this.infoAreaActive && !this.chartAreaActive && !this.mapAreaActive && !this.pdfAreaActive;
+    return !this.infoAreaActive && !this.chartAreaActive && !this.mapAreaActive && !this.pdfAreaActive && !this.validationAreaActive;
   }
 
 }
