@@ -80,7 +80,7 @@ export class TableService {
     }
 
     // Stringify geometry before POST
-    this.stringyfyGeometryAndIntegerifyElevation(table);
+    this.stringifyGeometryAndIntegerifyElevation(table);
 
     // Set syes order
     table.syeOrder = this.getSyeOrder(table);
@@ -111,7 +111,7 @@ export class TableService {
     }
 
     // Stringify geometry before POST
-    this.stringyfyGeometryAndIntegerifyElevation(table);
+    this.stringifyGeometryAndIntegerifyElevation(table);
 
     // Set syes order
     table.syeOrder = this.getSyeOrder(table);
@@ -169,7 +169,7 @@ export class TableService {
     });
   }
 
-  private stringyfyGeometryAndIntegerifyElevation(table: Table): void {
+  private stringifyGeometryAndIntegerifyElevation(table: Table): void {
     for (const sye of table.sye) {
       for (const occ of sye.occurrences) {
         occ.geometry = occ.geometry ? JSON.stringify(occ.geometry) : null;
