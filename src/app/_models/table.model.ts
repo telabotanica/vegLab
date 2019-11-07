@@ -22,6 +22,7 @@ export interface Table {
   rowsDefinition:  Array<TableRowDefinition>;
 
   sye:             Array<Sye>;
+  syeOrder:        string;
   syntheticColumn: SyntheticColumn;
 
   pdf?:            PdfFile;

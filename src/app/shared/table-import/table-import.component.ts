@@ -1887,7 +1887,7 @@ export class TableImportComponent implements OnInit {
   // TABLE
   // *****
   setTable(): Table {
-    const newTable: Table = { id: null, createdBy: null, createdAt: null, rowsDefinition: null, sye: [], syntheticColumn: null, vlWorkspace: this.wsService.currentWS.getValue() };
+    const newTable: Table = { id: null, createdBy: null, createdAt: null, rowsDefinition: null, sye: [], syeOrder: '', syntheticColumn: null, vlWorkspace: this.wsService.currentWS.getValue() };
 
     newTable.createdBy = 22;
     newTable.createdAt = new Date();

@@ -56,16 +56,13 @@ export class TableService {
   // --------------
   // TABLE I/O (DB)
   // --------------
-  getTables(): Observable<Table[]> {
-    return this.http.get<Table[]>(`${environment.apiBaseUrl}/tables`);
-  }
-
   /**
    * Get a table
    */
   getTableById(id: number): Observable<Table> {
     return this.http.get<Table>(`${environment.apiBaseUrl}/tables/${id}`).pipe(
       map(t => this.parseGeometryAndIntegerifyElevation(t)),
+      map(t => this.orderSye(t)),
       map(t => this.orderSyeOccurrences(t))
     );
   }
@@ -84,6 +81,9 @@ export class TableService {
 
     // Stringify geometry before POST
     this.stringyfyGeometryAndIntegerifyElevation(table);
+
+    // Set syes order
+    table.syeOrder = this.getSyeOrder(table);
 
     // Set syes occurrencesOrder
     for (const sye of table.sye) {
@@ -112,6 +112,9 @@ export class TableService {
 
     // Stringify geometry before POST
     this.stringyfyGeometryAndIntegerifyElevation(table);
+
+    // Set syes order
+    table.syeOrder = this.getSyeOrder(table);
 
     // Set syes occurrencesOrder
     for (const sye of table.sye) {
@@ -225,6 +228,53 @@ export class TableService {
     return table;
   }
 
+  private getSyeOrder(table: Table): string {
+    const order: Array<number> = [];
+    for (const sye of table.sye) {
+      if (sye.id) { order.push(sye.id); }
+    }
+    if (order.length > 0) {
+      return order.toString();
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Order sye according to table.syeOrder
+   * This function alterates table.sye
+   */
+  private orderSye(table: Table): Table {
+    if (table.sye && table.sye.length > 0) {
+      const order = table.syeOrder;
+      if (!order || order === '') { return table; }
+
+      const orderedArray = order.split(',');
+      const orderedArrayNumber: Array<number> = [];
+      _.map(orderedArray, oa => orderedArrayNumber.push(Number(oa)));
+
+      const countSye = table.sye.length;
+
+      if (countSye !== orderedArray.length) {
+        // @Todo log error
+        return table;
+      }
+
+      const orderedSye: Array<Sye> = [];
+      // Order sye according to orderSye
+      for (const orderedSyeId of orderedArrayNumber) {
+        const sye = _.find(table.sye, syeT => syeT.id === orderedSyeId);
+        if (sye) { orderedSye.push(sye); }
+      }
+
+      if (orderedSye.length === table.sye.length) {
+        table.sye = orderedSye;
+      }
+
+      return table;
+    } else { return table; }
+  }
+
   public orderSyeOccurrences(table: Table): Table {
     for (const sye of table.sye) {
       this.syeService.orderOccurrences(sye);
@@ -307,6 +357,7 @@ export class TableService {
       rowsDefinition: null,
 
       sye: [this.syeService.createSye(0)],
+      syeOrder: '',
       syntheticColumn: null,
 
       vlWorkspace: this.wsService.currentWS.getValue()
