@@ -33,7 +33,15 @@
             <!-- info panel vertical -->
             <div class="info-panel vertical" *ngIf="wsPhytoService.getInfoPanelSplitDirection() === 'vertical'">
               <div class="content">
-                <as-split direction="horizontal" (dragEnd)="infoSubPanelDragEnd($event)">
+                <div class="no-active-area" *ngIf="noActiveArea()">
+                  <div class="icon"><mat-icon inline="true">more_horiz</mat-icon></div>
+                  <div class="title">Paneau d'informations</div>
+                  <div class="text">
+                    <p>Cet espace est dédié à l'affichage des informations relatives tableau : identiciations, auteurs, métadonnées, localisation des relevés, etc.</p>
+                    <p>Activez l'un des modules via les bouttons de droite pour afficher les informations.</p>
+                  </div>
+                </div>
+                <as-split direction="horizontal" (dragEnd)="infoSubPanelDragEnd($event)" *ngIf="!noActiveArea()">
                   <as-split-area *ngIf="pdfAreaActive"><vl-pdf-viewer></vl-pdf-viewer></as-split-area>
                   <as-split-area *ngIf="chartAreaActive">chart</as-split-area>
                   <as-split-area *ngIf="mapAreaActive"><vl-table-overview-map [invalidateSize]="panelsSizeChanged | async"></vl-table-overview-map></as-split-area>
@@ -61,7 +69,15 @@
                 <div class="button pdf"   [class.active]="pdfAreaActive"   (click)="togglePdf()"><mat-icon>picture_as_pdf</mat-icon></div>
               </div>
               <div class="content">
-                <as-split direction="vertical" (dragEnd)="infoSubPanelDragEnd($event)">
+                <div class="no-active-area" *ngIf="noActiveArea()">
+                  <div class="icon"><mat-icon inline="true">more_vert</mat-icon></div>
+                  <div class="title">Paneau d'informations</div>
+                  <div class="text">
+                    <p>Cet espace est dédié à l'affichage des informations relatives tableau : identiciations, auteurs, métadonnées, localisation des relevés, etc.</p>
+                    <p>Activez l'un des modules via les bouttons ci-dessus pour afficher les informations.</p>
+                  </div>
+                </div>
+                <as-split direction="vertical" (dragEnd)="infoSubPanelDragEnd($event)" *ngIf="!noActiveArea()">
                   <as-split-area *ngIf="pdfAreaActive"><vl-pdf-viewer></vl-pdf-viewer></as-split-area>
                   <as-split-area *ngIf="chartAreaActive">chart</as-split-area>
                   <as-split-area *ngIf="mapAreaActive"><vl-table-overview-map [invalidateSize]="panelsSizeChanged | async"></vl-table-overview-map></as-split-area>

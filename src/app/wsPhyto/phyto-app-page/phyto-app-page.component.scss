@@ -57,7 +57,36 @@
       }
     }
     .content {
-      width: 100%
+      width: 100%;
+      .no-active-area {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2em;
+        color: lightgrey;
+        padding-left: 60px;
+        .icon {
+          height: 100px;
+          width: 100px;
+          padding-left: 18px;
+          padding-top: 5px;
+          border: 2px solid lightgrey;
+          font-size: 60px;
+          border-radius: 50px;
+        }
+        .title {
+          margin-bottom: 30px;
+          font-size: 1.5em;
+          font-weight: bold;
+        }
+        .text {
+          max-width: 500px;
+          text-align: justify;
+        }
+      }
     }
   }
 
@@ -89,7 +118,35 @@
       }
     }
     .content {
-      height: 100%
+      height: 100%;
+      .no-active-area {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2em;
+        color: lightgrey;
+        .icon {
+          height: 100px;
+          width: 100px;
+          padding-left: 18px;
+          padding-top: 5px;
+          border: 2px solid lightgrey;
+          font-size: 60px;
+          border-radius: 50px;
+        }
+        .title {
+          margin-bottom: 30px;
+          font-size: 1.5em;
+          font-weight: bold;
+        }
+        .text {
+          max-width: 400px;
+          text-align: justify;
+        }
+      }
     }
   }
 }

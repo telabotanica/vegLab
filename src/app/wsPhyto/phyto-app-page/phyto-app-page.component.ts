@@ -126,4 +126,11 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
     this.tableService.tableAreaDimensions.next({width: this.tableAreaDomElement.nativeElement.offsetWidth, height: this.tableAreaDomElement.nativeElement.offsetHeight});
   }
 
+  /**
+   * Returns true if no one sub-info panel (ie info, map, chart, pdf, ...) is active
+   */
+  noActiveArea(): boolean {
+    return !this.infoAreaActive && !this.chartAreaActive && !this.mapAreaActive && !this.pdfAreaActive;
+  }
+
 }
