@@ -17,10 +17,12 @@
     </tbody>
   </table>
 
-  <hot-table
-    [hotId]="hotTableId"
-    [settings]="tableSettings"
-  ></hot-table>
+  <div class="handsontable-container">
+    <hot-table
+      [hotId]="hotTableId"
+      [settings]="tableSettings"
+    ></hot-table>
+  </div>
 
   <button mat-button (click)="router.navigate(['/phyto/app/create-table'])">Enregistrer le tableau</button>
 </div>

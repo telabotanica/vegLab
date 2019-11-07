@@ -64,7 +64,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       return cp;
     },
-    // width: 500,
+    width: 500,
     height: 500,
     manualColumnResize: true,
     nestedRows: false,
@@ -559,6 +559,19 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       this.updateTableValuesAndMetadata(dataView);
       console.log('UPDATE TABLE VALUES AND METADATA');
       this.cdr.detectChanges();
+    });
+
+    // Subscribe to table area width and height change
+    this.tableService.tableAreaDimensions.subscribe(value => {
+      if (value.height && value.width) {
+        this.tableSettings.width = value.width;
+        this.tableSettings.height = value.height - 40;
+        if (this.currentDataView && this.currentDataView.length > 0) {
+          this.tableInstance.updateSettings(this.tableSettings);
+          this.setTableMetadataAndStyle();
+          this.tableInstance.render();
+        }
+      }
     });
   }
 

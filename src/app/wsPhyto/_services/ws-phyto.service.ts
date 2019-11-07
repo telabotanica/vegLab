@@ -7,8 +7,8 @@ import { Router, NavigationEnd } from '@angular/router';
   providedIn: 'root'
 })
 export class WsPhytoService {
-  // PANLES VARS
-  panelStart: WsPhytoPanels = { actionPanel: {opened: false, size: 50}, infoPanel: {opened: true, size: 20, splitDirection: 'vertical'} };
+  // PANELS VARS
+  panelStart: WsPhytoPanels = { actionPanel: {opened: false, size: 50}, infoPanel: {opened: true, size: 30, splitDirection: 'horizontal'} };
   panels = new BehaviorSubject<WsPhytoPanels>(this.panelStart);
 
   constructor(private router: Router) {

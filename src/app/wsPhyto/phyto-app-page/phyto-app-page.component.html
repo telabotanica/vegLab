@@ -1,27 +1,35 @@
 <div class="phyto_app_container">
   <div class="row layout">
-    <as-split unit="percent" direction="horizontal" (dragEnd)="actionPanelDragEnd($event)">
-      <as-split-area size="50" [order]="0" *ngIf="wsPhytoService.isActionPanelOpened()">
+    <!--   SPLIT Action -- Table + Info   -->
+    <as-split #actionTablePanels unit="percent" direction="horizontal" (dragEnd)="actionPanelDragEnd($event)">
+      <!-- ACTION PANEL -->
+      <as-split-area size="67" [order]="0" *ngIf="wsPhytoService.isActionPanelOpened()">
         <div id="action_panel">
           <button mat-icon-button (click)="panelsSizeOrPositionHaveBeenUpdated(); router.navigate(['/phyto/app'])"><mat-icon>close</mat-icon></button>
           <router-outlet></router-outlet>
         </div>
       </as-split-area>
-      <as-split-area size="50" [order]="1">
-        <as-split unit="percent" [direction]="wsPhytoService.getInfoPanelSplitDirection()" (dragEnd)="infoPanelDragEnd($event)">
-          <as-split-area size="80" [order]="0" id="table-panel">
-              <div class="progress-bar-container" *ngIf="tableService.isLoadingData | async">
-                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-              </div>
+      <as-split-area size="33" [order]="1" #content>
+        <!--   SPLIT Table -- Info   -->
+        <as-split #tableInfoPanels unit="percent" [direction]="wsPhytoService.getInfoPanelSplitDirection()" (dragEnd)="infoPanelDragEnd($event)">
+          <!-- TABLE PANEL -->
+          <as-split-area size="67" [order]="0" id="table-panel">
+            <div class="progress-bar-container" *ngIf="tableService.isLoadingData | async">
+              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </div>
+            <div class="table-menu"></div>
+            <div #tableArea style="width: 100%; height: 100%">
               <vl-table></vl-table>
-              <div *ngIf="!infoPanelActive" class="info-panel-button">
-                <button mat-mini-fab color="primary" (click)="openInfoPanel()">
-                  <mat-icon *ngIf="wsPhytoService.getInfoPanelSplitDirection() === 'vertical'">more_horiz</mat-icon>
-                  <mat-icon *ngIf="wsPhytoService.getInfoPanelSplitDirection() === 'horizontal'" >more_vert</mat-icon>
-                </button>
-              </div>
+            </div>
+            <div *ngIf="!infoPanelActive" class="info-panel-button">
+              <button mat-mini-fab color="primary" (click)="openInfoPanel()">
+                <mat-icon *ngIf="wsPhytoService.getInfoPanelSplitDirection() === 'vertical'">more_horiz</mat-icon>
+                <mat-icon *ngIf="wsPhytoService.getInfoPanelSplitDirection() === 'horizontal'" >more_vert</mat-icon>
+              </button>
+            </div>
           </as-split-area>
-          <as-split-area *ngIf="infoPanelActive" size="20" [order]="1">
+          <!-- INFO PANEL -->
+          <as-split-area *ngIf="infoPanelActive" size="33" [order]="1">
             <!-- info panel vertical -->
             <div class="info-panel vertical" *ngIf="wsPhytoService.getInfoPanelSplitDirection() === 'vertical'">
               <div class="content">

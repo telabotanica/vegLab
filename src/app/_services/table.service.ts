@@ -42,6 +42,7 @@ export class TableService {
   public isSavingCurrentTable = false;
   public savingCurrentTableMessage = '';
   public isLoadingData: EventEmitter<boolean> = new EventEmitter<boolean>();
+  public tableAreaDimensions: EventEmitter<{width: number, height: number}> = new EventEmitter();
 
   constructor(
     private userService: UserService,
