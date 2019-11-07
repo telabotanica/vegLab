@@ -3,7 +3,7 @@
     <as-split unit="percent" direction="horizontal" (dragEnd)="actionPanelDragEnd($event)">
       <as-split-area size="50" [order]="0" *ngIf="wsPhytoService.isActionPanelOpened()">
         <div id="action_panel">
-          <button mat-icon-button (click)="router.navigate(['/phyto/app'])"><mat-icon>close</mat-icon></button>
+          <button mat-icon-button (click)="panelsSizeOrPositionHaveBeenUpdated(); router.navigate(['/phyto/app'])"><mat-icon>close</mat-icon></button>
           <router-outlet></router-outlet>
         </div>
       </as-split-area>

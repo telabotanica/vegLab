@@ -60,14 +60,17 @@ export class PhytoAppPageComponent implements OnInit {
 
   closeInfoPanel(): void {
     this.infoPanelActive = false;
+    this.panelsSizeOrPositionHaveBeenUpdated();
   }
 
   openInfoPanel(): void {
     this.infoPanelActive = true;
+    this.panelsSizeOrPositionHaveBeenUpdated();
   }
 
   toggleSplitInfoPanel(): void {
     this.wsPhytoService.toggleInfoPanelSplitDirection();
+    this.panelsSizeOrPositionHaveBeenUpdated();
   }
 
   toggleInfo(): void {
