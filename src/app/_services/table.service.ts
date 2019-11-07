@@ -172,23 +172,23 @@ export class TableService {
   private stringifyGeometryAndIntegerifyElevation(table: Table): void {
     for (const sye of table.sye) {
       for (const occ of sye.occurrences) {
-        occ.geometry = occ.geometry ? JSON.stringify(occ.geometry) : null;
-        occ.centroid = occ.centroid ? JSON.stringify(occ.centroid) : null;
+        occ.geometry = this.stringify(occ.geometry);
+        occ.centroid = this.stringify(occ.centroid);
         occ.elevation = occ.elevation ? +occ.elevation : null;
         if (occ.level === 'synusy') {
           for (const child of occ.children) {
-            child.geometry = child.geometry ? JSON.stringify(child.geometry) : null;
-            child.centroid = child.centroid ? JSON.stringify(child.centroid) : null;
+            child.geometry = this.stringify(child.geometry);
+            child.centroid = this.stringify(child.centroid);
             child.elevation = child.elevation ? +child.elevation : null;
           }
         } else if (occ.level === 'microcenosis') {
           for (const child of occ.children) {
-            child.geometry = child.geometry ? JSON.stringify(child.geometry) : null;
-            child.centroid = child.centroid ? JSON.stringify(child.centroid) : null;
+            child.geometry = this.stringify(child.geometry);
+            child.centroid = this.stringify(child.centroid);
             child.elevation = child.elevation ? +child.elevation : null;
             for (const grandChild of child.children) {
-              grandChild.geometry = grandChild.geometry ? JSON.stringify(grandChild.geometry) : null;
-              grandChild.centroid = grandChild.centroid ? JSON.stringify(grandChild.centroid) : null;
+              grandChild.geometry = this.stringify(grandChild.geometry);
+              grandChild.centroid = this.stringify(grandChild.centroid);
               grandChild.elevation = grandChild.elevation ? +grandChild.elevation : null;
             }
           }
@@ -200,32 +200,61 @@ export class TableService {
   public parseGeometryAndIntegerifyElevation(table: Table): Table {
     for (const sye of table.sye) {
       for (const occ of sye.occurrences) {
-        occ.geometry = occ.geometry ? JSON.parse(occ.geometry) : null;
-        occ.centroid = occ.centroid ? JSON.parse(occ.centroid) : null;
+        occ.geometry = this.parseJson(occ.geometry);
+        occ.centroid = this.parseJson(occ.centroid);
         occ.elevation = occ.elevation ? +occ.elevation : null;
         if (occ.level === 'synusy') {
           for (const child of occ.children) {
-            child.geometry = child.geometry ? JSON.parse(child.geometry) : null;
-            child.centroid = child.centroid ? JSON.parse(child.centroid) : null;
+            child.geometry = this.parseJson(child.geometry);
+            child.centroid = this.parseJson(child.centroid);
             child.elevation = child.elevation ? +child.elevation : null;
           }
         } else if (occ.level === 'microcenosis') {
           for (const child of occ.children) {
-            child.geometry = child.geometry ? JSON.parse(child.geometry) : null;
-            child.centroid = child.centroid ? JSON.parse(child.centroid) : null;
+            child.geometry = this.parseJson(child.geometry);
+            child.centroid = this.parseJson(child.centroid);
             child.elevation = child.elevation ? +child.elevation : null;
             for (const grandChild of child.children) {
-              grandChild.geometry = grandChild.geometry ? JSON.parse(grandChild.geometry) : null;
-              grandChild.centroid = grandChild.centroid ? JSON.parse(grandChild.centroid) : null;
+              grandChild.geometry = this.parseJson(grandChild.geometry);
+              grandChild.centroid = this.parseJson(grandChild.centroid);
               grandChild.elevation = grandChild.elevation ? +grandChild.elevation : null;
             }
           }
         }
       }
     }
-    console.log('TABLE WITH JSON GEOMETRY');
-    console.log(table);
+
     return table;
+  }
+
+  private stringify(data: any): string {
+    if (!data) {
+      return null;
+    } else {
+      if (typeof(data) === 'object') {
+        return JSON.stringify(data);
+      } else if (typeof(data) === 'string') {
+        return data;
+      } else {
+        // @Todo log error
+        return null;
+      }
+    }
+  }
+
+  private parseJson(data: any): object {
+    if (!data) {
+      return null;
+    } else {
+      if (typeof(data) === 'string') {
+        return JSON.parse(data);
+      } else if (typeof(data) === 'object') {
+        return data;
+      } else {
+        // @Todo log error
+        return null;
+      }
+    }
   }
 
   private getSyeOrder(table: Table): string {
