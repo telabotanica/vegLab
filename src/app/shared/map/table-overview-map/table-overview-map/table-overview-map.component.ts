@@ -102,41 +102,6 @@ export class TableOverviewMapComponent implements OnInit, OnDestroy {
         }
       }
       if (this.uniqCentroids.length > 0) {
-        /*const aaa: GeoJsonObject = [
-          {
-            type: 'Feature',
-            geometry: {
-                type: 'Point',
-                coordinates: [2.2922926, 48.85]
-            },
-            properties: {
-                text: '5',
-                radius: 60
-            }
-          },
-          {
-            type: 'Feature',
-            geometry: {
-                type: 'Point',
-                coordinates: [2.3922926, 48.95]
-            },
-            properties: {
-                text: '5',
-                radius: 60
-            }
-          }
-        ];
-        const geo = L.geoJSON(aaa, {
-          pointToLayer: (feature, latlng) => {
-            return new L.CircleMarker([latlng.lat, latlng.lng], {radius: feature.properties.radius});
-          },
-          onEachFeature: (feature, layer) => {
-            const text = L.tooltip({permanent: true, direction: 'center', className: 'text'}).setContent(feature.properties.text).setLatLng(new L.LatLng(0, 1));
-            text.addTo(this.map);
-          }
-        }).addTo(this.map);*/
-
-
         for (const uc of this.uniqCentroids) {
           const tooltip = new L.Tooltip({permanent: true, direction: 'center', className: 'text'}).setContent(uc.occurrencesIds.length.toString());
           const l = new L.CircleMarker(new L.LatLng(uc.point.coordinates[1], uc.point.coordinates[0]), {
@@ -144,9 +109,6 @@ export class TableOverviewMapComponent implements OnInit, OnDestroy {
             radius: (uc.occurrencesIds.length * 5), fillColor: '#ff7800', color: '#000', weight: 1, opacity: 1, fillOpacity: 1
           }).bindTooltip(tooltip).addTo(this.occurrencesCentroidsLayer);
         }
-
-        // _.forEach(this.uniqCentroids, uc => this.occurrencesCentroidsLayer.addData(uc.point));
-        // this.occurrencesCentroidsLayer.bindTooltip(new L.Tooltip({permanent: true, direction: 'center', className: 'text'}).setContent('1'));
 
         this.flyToDrawnItems();
       }
