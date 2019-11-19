@@ -472,6 +472,8 @@ export class TableService {
           if (childOcc.validations.length === 0) {
             // @Todo it should never append because an 'idiotaxon' level occurrence must have at less one validation !
           } else if (childOcc.validations.length === 1) {
+            let name: string;
+            name = childOcc.validations[0].repository === 'otherunknown' ? childOcc.validations[0].inputName : childOcc.validations[0].validatedName;
             const newName = {
               group: {id: 0, label: 'default'}, // Add a default group
               // group: {id: group.id, label: group.label}, // TEST
@@ -479,7 +481,7 @@ export class TableService {
               repository: childOcc.validations[0].repository,
               repositoryIdNomen: childOcc.validations[0].repositoryIdNomen,
               repositoryIdTaxo: childOcc.validations[0].repositoryIdTaxo,
-              name: childOcc.validations[0].validatedName
+              name
             };
             names.push(newName);
           } else if (childOcc.validations.length > 1) {
@@ -494,13 +496,15 @@ export class TableService {
             if (grandChild.validations.length === 0) {
               // @Todo it should never append because an 'idiotaxon' level occurrence must have at less one validation !
             } else if (grandChild.validations.length === 1) {
+              let name: string;
+              name = grandChild.validations[0].repository === 'otherunknown' ? grandChild.validations[0].inputName : grandChild.validations[0].validatedName;
               const newName = {
                 group: {id: 0, label: 'default'}, // Add a default group
                 layer: occLayer,
                 repository: grandChild.validations[0].repository,
                 repositoryIdNomen: grandChild.validations[0].repositoryIdNomen,
                 repositoryIdTaxo: grandChild.validations[0].repositoryIdTaxo,
-                name: grandChild.validations[0].validatedName
+                name
               };
               names.push(newName);
             } else if (grandChild.validations.length > 1) {
