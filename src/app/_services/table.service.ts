@@ -44,7 +44,7 @@ export class TableService {
   public savingCurrentTableMessage = '';
   public isLoadingData: EventEmitter<boolean> = new EventEmitter<boolean>();
   public tableAreaDimensions: EventEmitter<{width: number, height: number}> = new EventEmitter();
-  public tableSelectionElement: EventEmitter<TableSelectedElement> = new EventEmitter<TableSelectedElement>();
+  public tableSelectionElement: BehaviorSubject<TableSelectedElement> = new BehaviorSubject<TableSelectedElement>(null);
 
   constructor(
     private userService: UserService,
@@ -1258,6 +1258,13 @@ export class TableService {
     return groupStart.groupId !== groupEnd.groupId ? true : false;
   }
 
+  getRowOccurrenceByRowId(id: number): TableRowDefinition {
+    if (!this.currentTable || !this.currentTable.rowsDefinition) { return null; }
+    for (const row of this.currentTable.rowsDefinition) {
+      if (row.rowId === id) { return row; }
+    }
+  }
+
   // ------------
   // COLUMNS MOVE
   // ------------
@@ -1764,6 +1771,15 @@ export class TableService {
     const syeStart = this.getSyePositionsForColId(table, selectedColStart);
     const syeEnd = this.getSyePositionsForColId(table, selectedColEnd);
     return syeStart.id !== syeEnd.id ? true : false;
+  }
+
+  getReleveById(id: number): OccurrenceModel {
+    for (const sye of this.currentTable.sye) {
+      for (const occurrence of sye.occurrences) {
+        if (occurrence.id === id) { return occurrence;}
+      }
+    }
+    return null;
   }
 
   // -----------

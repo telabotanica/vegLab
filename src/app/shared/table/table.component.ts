@@ -244,7 +244,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
           if (startColPosition !== endColPosition) {
             this.tableService.tableSelectionElement.next({
               element: 'row',
-              occurrenceId: null,
+              occurrenceIds: [],
               syeId: null,
               rowId: null,
               groupId: null,
@@ -262,7 +262,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
           if (startRowPosition !== endColPosition) {
             this.tableService.tableSelectionElement.next({
               element: 'row',
-              occurrenceId: null,
+              occurrenceIds: [],
               syeId: null,
               rowId: null,
               groupId: null,
@@ -284,7 +284,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         if (startColPosition !== endColPosition) {
           this.tableService.tableSelectionElement.next({
             element: 'row',
-            occurrenceId,
+            occurrenceIds: [occurrenceId],
             syeId,
             rowId,
             groupId,
@@ -328,6 +328,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       if (startColPosition !== endColPosition) {
         // Set selected element ids
         const occurrenceId = this.tableInstance.getCellMeta(1, startColPosition)._occurrenceId;
+        const occurrenceIds: Array<any> = [];
         const syeId = this.tableInstance.getCellMeta(1, startColPosition)._syeId;
         const rowId = null;
         const groupId = null;
@@ -359,9 +360,14 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
           // Emit selection
           if (startRowPosition !== endRowPosition) {
+            const iterations = endColPosition - startColPosition + 1;
+            for (let index = 0; index < iterations; index++) {
+              occurrenceIds.push(this.tableInstance.getCellMeta(1, startColPosition + index)._occurrenceId)
+            }
+
             this.tableService.tableSelectionElement.next({
               element: 'column',
-              occurrenceId: null,
+              occurrenceIds,
               syeId: null,
               rowId: null,
               groupId: null,
@@ -376,9 +382,14 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         } else {
           // Selected columns are in the same sye
           if (startRowPosition !== endRowPosition) {
+            const iterations = endColPosition - startColPosition + 1;
+            for (let index = 0; index < iterations; index++) {
+              occurrenceIds.push(this.tableInstance.getCellMeta(1, startColPosition + index)._occurrenceId)
+            }
+
             this.tableService.tableSelectionElement.next({
               element: 'column',
-              occurrenceId: null,
+              occurrenceIds,
               syeId: null,
               rowId: null,
               groupId: null,
@@ -400,7 +411,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         if (startRowPosition !== endRowPosition) {
           this.tableService.tableSelectionElement.next({
             element: 'column',
-            occurrenceId,
+            occurrenceIds: [occurrenceId],
             syeId,
             rowId,
             groupId,
@@ -424,7 +435,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       const groupId = this.tableInstance.getCellMeta(startRowPosition, startColPosition)._groupId;
       this.tableService.tableSelectionElement.next({
         element: cellType,
-        occurrenceId,
+        occurrenceIds: [occurrenceId],
         syeId,
         rowId,
         groupId,

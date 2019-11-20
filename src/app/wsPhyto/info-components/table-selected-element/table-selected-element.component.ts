@@ -2,8 +2,13 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { TableService } from '../../../_services/table.service';
-import { EFloreService } from 'src/app/_services/e-flore.service';
+import { RepositoryService } from 'tb-tsb-lib';
 
+import { TableRowDefinition } from 'src/app/_models/table-row-definition.model';
+import { OccurrenceModel } from 'src/app/_models/occurrence.model';
+
+import * as _ from 'lodash';
+import { Level } from 'src/app/_enums/level-enum';
 
 @Component({
   selector: 'vl-table-selected-element',
@@ -14,38 +19,109 @@ export class TableSelectedElementComponent implements OnInit, OnDestroy {
   tableSelectionSubscriber: Subscription;
 
   elementType: 'row' | 'column' | 'groupTitle' | 'groupName' | 'occurrenceValue' | 'syntheticValue' = null;
+  elementTypeDisplay: string = null;
 
-  constructor(private tableService: TableService) { }
+  // Row elements to show
+  rowElements: Array<{
+    rowRepo: string,
+    rowName: string,
+    rowValidName: string,
+    rowIdiotaxonFamily: string,
+    rowIdiotaxonGenus: string
+  }> = [];
+
+  // Column elements to show
+  columnElements: Array<OccurrenceModel> = [];
+
+  constructor(private tableService: TableService, private repoService: RepositoryService) { }
 
   ngOnInit() {
     this.tableSelectionSubscriber = this.tableService.tableSelectionElement.subscribe(selectedElement => {
+      if (selectedElement === null) { return; } // null element may be send
       this.elementType = null;
-      console.log(selectedElement);
+      this.elementTypeDisplay = null;
+      this.rowElements = [];
+      this.columnElements = [];
+
       if (selectedElement.element === 'row') {
         // row
         this.elementType = 'row';
+        this.elementTypeDisplay = 'Ligne';
+        if (!selectedElement.multipleSelection) {
+          // one row selected
+          if (selectedElement.rowId) {
+            const rowOccurrence = this.tableService.getRowOccurrenceByRowId(selectedElement.startPosition);
+            this.rowElements.push({
+              rowRepo: rowOccurrence.repository,
+              rowName: rowOccurrence.displayName,
+              rowValidName: null,
+              rowIdiotaxonFamily: null,
+              rowIdiotaxonGenus: null
+            });
+          }
+        } else {
+          // several rows selected
+          const rowOccurences: Array<TableRowDefinition> = [];
+          const iterations = selectedElement.endPosition - selectedElement.startPosition + 1;
+          for (let index = 0; index < iterations; index++) {
+            rowOccurences.push(this.tableService.getRowOccurrenceByRowId(selectedElement.startPosition + index));
+          }
+          for (const rowOccurrence of rowOccurences) {
+            this.rowElements.push({
+              rowRepo: rowOccurrence.repository,
+              rowName: rowOccurrence.displayName,
+              rowValidName: null,
+              rowIdiotaxonFamily: null,
+              rowIdiotaxonGenus: null
+            });
+          }
+        }
       } else if (selectedElement.element === 'column') {
         // column
         this.elementType = 'column';
+        this.elementTypeDisplay = 'Colonne';
+        if (selectedElement.occurrenceIds) {
+          for (const occurrenceId of selectedElement.occurrenceIds) {
+            const occurrence = this.tableService.getReleveById(occurrenceId);
+            if (occurrence) { this.columnElements.push(occurrence); }
+          }
+        }
       } else if (selectedElement.element === 'groupTitle') {
         // row definition group title
         this.elementType = 'groupTitle';
+        this.elementTypeDisplay = 'Titre du groupe de taxons';
+        if (!selectedElement.multipleSelection) {
+          // one title group selected
+        } else {
+          // several titles groups selected
+        }
       } else if (selectedElement.element === 'groupName') {
         // row definition cell item (taxon / syntaxon name)
         this.elementType = 'groupName';
-
-        if (selectedElement.rowId) {
-          // get occurrence from table rowDefinitions
-          const rowDef = this.tableService.getCurrentTable().rowsDefinition[selectedElement.rowId];
-          // console.log(rowDef);
-          
+        this.elementTypeDisplay = 'Taxon';
+        if (!selectedElement.multipleSelection) {
+          // one name group selected
+        } else {
+          // several names groups selected
         }
       } else if (selectedElement.element === 'occurrenceValue') {
         // coef cell
         this.elementType = 'occurrenceValue';
+        this.elementTypeDisplay = 'Coefficient';
+        if (!selectedElement.multipleSelection) {
+          // one occurrence value (coef) selected
+        } else {
+          // several occurrences values (coef) selected
+        }
       } else if (selectedElement.element === 'syntheticValue') {
         // synthetic value cell
         this.elementType = 'syntheticValue';
+        this.elementTypeDisplay = 'Coefficient synthétique';
+        if (!selectedElement.multipleSelection) {
+          // one synthetic value (synthetic coef) selected
+        } else {
+          // several synthetics values (synthetics coef) selected
+        }
       }
     }, error => {
       // @Todo manage error
@@ -54,6 +130,15 @@ export class TableSelectedElementComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.tableSelectionSubscriber) { this.tableSelectionSubscriber.unsubscribe(); }
+  }
+
+  getMicrocenosisSubLevels(occurrence: OccurrenceModel): string {
+    const levels: Array<string> = [];
+    if (occurrence.level !== Level.MICROCENOSIS) { return; }
+    for (const child of occurrence.children) {
+      if (child.level) { levels.push(child.level); }
+    }
+    return levels.toString();
   }
 
 }

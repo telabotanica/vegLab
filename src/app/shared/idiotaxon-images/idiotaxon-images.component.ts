@@ -20,6 +20,7 @@ export class IdiotaxonImagesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.tableSelectionSubscriber = this.tableService.tableSelectionElement.subscribe(selectedElement => {
+      if (selectedElement === null) { return; } // null element may be send
       this.images = [];
       this.currentImageIndex = null;
       if (selectedElement.element === 'groupName') {

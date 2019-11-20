@@ -1,6 +1,6 @@
 export interface TableSelectedElement {
   element: 'row' | 'column' | 'groupTitle' | 'groupName' | 'occurrenceValue' | 'syntheticValue';
-  occurrenceId: number;
+  occurrenceIds: Array<number>;
   syeId: number;
   rowId: number;
   groupId: number;

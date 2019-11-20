@@ -1,1 +1,27 @@
-{{ elementType }}
+{{ elementTypeDisplay }}
+
+<!-- ROW -->
+<div *ngIf="elementType === 'row'" class="row-container">
+  <div class="content">
+    <mat-list class="row-item">
+      <mat-list-item *ngFor="let rowElement of rowElements">
+        <p mat-line><b>{{ rowElement.rowName }}</b></p>
+        <p mat-line>(référentiel : {{ rowElement.rowRepo }})</p>
+      </mat-list-item>
+    </mat-list>
+  </div>
+</div>
+
+<!-- COLUMN -->
+<div *ngIf="elementType === 'column'" class="column-container">
+    <div class="content">
+      <mat-list class="row-item">
+        <!-- CREATE A releve-details-list COMPONENT and show sub-releves on demand -->
+        <mat-list-item *ngFor="let releve of columnElements">
+          <p mat-line>Relevé n° {{ releve.id }}</p>
+          <p mat-line>Niveau d'intégration : {{ releve.level | level }}</p>
+          <p mat-line>Strate : {{ releve.layer }}</p>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </div>
