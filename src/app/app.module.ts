@@ -94,6 +94,8 @@ import { OccurrencesInlineComponent } from './shared/occurrences-inline/occurren
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { TableOverviewMapComponent } from './shared/map/table-overview-map/table-overview-map/table-overview-map.component';
 import { ValidationComponent } from './wsPhyto/info-components/validation/validation/validation.component';
+import { TableSelectedElementComponent } from './wsPhyto/info-components/table-selected-element/table-selected-element.component';
+import { IdiotaxonImagesComponent } from './shared/idiotaxon-images/idiotaxon-images.component';
 
 /*
 import * as Sentry from '@sentry/browser';
@@ -124,7 +126,7 @@ export class SentryErrorHandler implements ErrorHandler {
     LevelPipe, ShortLevelPipe, MomentPipe, MomentLocalDatePipe, // Pipes
     PhytoHomePageComponent, PhytoAppPageComponent, // WS phyto
     ForestHomePageComponent, ForestAppPageComponent, // WS forest
-    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, // admin
+    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, // admin
   ],
   entryComponents: [
     OccurrenceSearchMetadataModal1Component

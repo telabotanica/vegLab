@@ -188,11 +188,19 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
    * Note : sometimes we need to remove the actual hook before manually selectionning rows otherwise the hook will do to much recursions
    */
   onAfterSelection = (row: number, column: number, row2: number, column2: number) => {
+
+    let startRowPosition = _.min([row, row2]);
+    const endRowPosition = _.max([row, row2]);
+
+    let startColPosition = _.min([column, column2]);
+    const endColPosition = _.max([column, column2]);
+
+    let rowSelectionStartToEmit = startRowPosition;
+    let rowSelectionEndToEmit = endRowPosition;
+
     // Selecting rows
     if (column === this.tablePhytoStartCol) {
       const selectionDirection: 'topToBottom' | 'bottomToTop' | 'onlyOneRowSelected' = row === row2 ? 'onlyOneRowSelected' : row < row2 ? 'topToBottom' : 'bottomToTop';
-      let startRowPosition = _.min([row, row2]);
-      const endRowPosition = _.max([row, row2]);
 
       // Non-consecutive selection disabled
       const settingsSelectionModeOldValue = this.tableSettings.selectionMode;
@@ -213,15 +221,50 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
             if (nextGroup) {
               this.tableInstance.selectRows(nextGroup.titleRowPosition, endRowPosition);
               startRowPosition = nextGroup.titleRowPosition;
+              rowSelectionStartToEmit = nextGroup.titleRowPosition;
+              rowSelectionEndToEmit = endRowPosition;
             } else {
               this.tableInstance.selectRows(startRowPosition, groupPositions.endRowPosition);
+              rowSelectionStartToEmit = startRowPosition;
+              rowSelectionEndToEmit = groupPositions.endRowPosition;
             }
           } else if (selectionDirection === 'bottomToTop') {
             this.tableInstance.selectRows(startRowPosition, groupPositions.endRowPosition);
+            rowSelectionStartToEmit = startRowPosition;
+            rowSelectionEndToEmit = groupPositions.endRowPosition;
+          }
+
+          // Emit selection
+          if (startColPosition !== endColPosition) {
+            this.tableService.tableSelectionElement.next({
+              element: 'row',
+              startPosition: rowSelectionStartToEmit,
+              endPosition: rowSelectionEndToEmit
+            });
           }
 
           // Add removed hook
           this.tableInstance.addHook('afterSelection', this.onAfterSelection);
+        } else {
+          // No multiple group selected
+          // Emit selection
+          if (startRowPosition !== endColPosition) {
+            this.tableService.tableSelectionElement.next({
+              element: 'row',
+              startPosition: rowSelectionStartToEmit,
+              endPosition: rowSelectionEndToEmit
+            });
+          }
+        }
+      } else if (startRowPosition === endRowPosition) {
+        // Only one row selected
+        // Emit selection
+        if (startColPosition !== endColPosition) {
+          this.tableService.tableSelectionElement.next({
+            element: 'row',
+            startPosition: rowSelectionStartToEmit,
+            endPosition: rowSelectionEndToEmit
+          });
         }
       }
 
@@ -242,11 +285,13 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       // selectionMode set to the initial value
       this.tableSettings.selectionMode = settingsSelectionModeOldValue;
     }
+
     // Selecting columns
     if (column > this.tablePhytoStartCol) {
       const selectionDirection: 'leftToRight' | 'rightToLeft' | 'onlyOneColSelected' = column === column2 ? 'onlyOneColSelected' : column < column2 ? 'leftToRight' : 'rightToLeft';
-      let startColPosition = _.min([column, column2]);
-      const endColPosition = _.max([column, column2]);
+
+      let colSelectionStartToEmit = startColPosition;
+      let colSelectionEndToEmit = endColPosition;
 
       // Non-consecutive selection disabled
       const settingsSelectionModeOldValue = this.tableSettings.selectionMode;
@@ -267,20 +312,69 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
             if (nextSye) {
               this.tableInstance.selectColumns(nextSye.startColumnPosition, endColPosition);
               startColPosition = nextSye.startColumnPosition;
+              colSelectionStartToEmit = nextSye.startColumnPosition;
+              colSelectionEndToEmit = endColPosition;
             } else {
               this.tableInstance.selectColumns(startColPosition, columnPositions.syntheticColumnPosition);
+              colSelectionStartToEmit = startColPosition;
+              colSelectionEndToEmit = columnPositions.syntheticColumnPosition;
             }
+
           } else if (selectionDirection === 'rightToLeft') {
             this.tableInstance.selectColumns(startColPosition, startColPosition);
           }
 
+          // Emit selection
+          if (startRowPosition !== endRowPosition) {
+            this.tableService.tableSelectionElement.next({
+              element: 'column',
+              startPosition: colSelectionStartToEmit,
+              endPosition: colSelectionEndToEmit
+            });
+          }
+
           // Add removed hook
           this.tableInstance.addHook('afterSelection', this.onAfterSelection);
+        } else {
+          // Selected columns are in the same sye
+          if (startRowPosition !== endRowPosition) {
+            this.tableService.tableSelectionElement.next({
+              element: 'column',
+              startPosition: colSelectionStartToEmit,
+              endPosition: colSelectionEndToEmit
+            });
+          }
+        }
+      } else {
+        // Only one column selected
+        // Emit selection
+        if (startRowPosition !== endRowPosition) {
+          this.tableService.tableSelectionElement.next({
+            element: 'column',
+            startPosition: colSelectionStartToEmit,
+            endPosition: colSelectionEndToEmit
+          });
         }
       }
 
       // selectionMode set to the initial value
       this.tableSettings.selectionMode = settingsSelectionModeOldValue;
+    }
+
+    // Selecting cell
+    if (startRowPosition === endRowPosition && startColPosition === endColPosition) {
+      const cellType = this.tableInstance.getCellMeta(startRowPosition, startColPosition)._type;
+      const occurrenceId = this.tableInstance.getCellMeta(startRowPosition, startColPosition)._occurrenceId;
+      const syeId = this.tableInstance.getCellMeta(startRowPosition, startColPosition)._syeId;
+      const rowId = this.tableInstance.getCellMeta(startRowPosition, startColPosition)._rowId;
+      const groupId = this.tableInstance.getCellMeta(startRowPosition, startColPosition)._groupId;
+      this.tableService.tableSelectionElement.next({
+        element: cellType,
+        occurrenceId,
+        syeId,
+        rowId,
+        groupId
+      });
     }
 
   }

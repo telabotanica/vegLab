@@ -49,7 +49,7 @@
                   <as-split-area *ngIf="chartAreaActive">chart</as-split-area>
                   <as-split-area *ngIf="validationAreaActive"><vl-phyto-validation></vl-phyto-validation></as-split-area>
                   <as-split-area *ngIf="mapAreaActive"><vl-table-overview-map [invalidateSize]="panelsSizeChanged | async"></vl-table-overview-map></as-split-area>
-                  <as-split-area *ngIf="infoAreaActive">info</as-split-area>
+                  <as-split-area *ngIf="infoAreaActive"><vl-table-selected-element></vl-table-selected-element></as-split-area>
                 </as-split>
               </div>
               <div class="actions-bar">
@@ -88,7 +88,7 @@
                   <as-split-area *ngIf="chartAreaActive">chart</as-split-area>
                   <as-split-area *ngIf="validationAreaActive"><vl-phyto-validation></vl-phyto-validation></as-split-area>
                   <as-split-area *ngIf="mapAreaActive"><vl-table-overview-map [invalidateSize]="panelsSizeChanged | async"></vl-table-overview-map></as-split-area>
-                  <as-split-area *ngIf="infoAreaActive">info</as-split-area>
+                  <as-split-area *ngIf="infoAreaActive"><vl-table-selected-element></vl-table-selected-element></as-split-area>
                 </as-split>
               </div>
             </div>
