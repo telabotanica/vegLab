@@ -21,6 +21,7 @@ import { OccurrenceValidationModel } from '../_models/occurrence-validation.mode
 import { EsTableResultModel } from '../_models/es-table-result.model';
 import { EsTableModel } from '../_models/es-table.model';
 import { GroupPositions } from '../_models/table/group-positions.model';
+import { TableSelectedElement } from '../_models/table/table-selected-element.model';
 
 import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -43,7 +44,7 @@ export class TableService {
   public savingCurrentTableMessage = '';
   public isLoadingData: EventEmitter<boolean> = new EventEmitter<boolean>();
   public tableAreaDimensions: EventEmitter<{width: number, height: number}> = new EventEmitter();
-  public tableSelectionElement: EventEmitter<any> = new EventEmitter<any>();
+  public tableSelectionElement: EventEmitter<TableSelectedElement> = new EventEmitter<TableSelectedElement>();
 
   constructor(
     private userService: UserService,

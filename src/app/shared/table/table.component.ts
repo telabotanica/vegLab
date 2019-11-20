@@ -208,6 +208,12 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // Selected rows take over several groups ?
       if (startRowPosition !== endRowPosition) {
+        // Set selected element ids
+        const occurrenceId = null;
+        const syeId = null;
+        const rowId = this.tableInstance.getCellMeta(startRowPosition, this.tablePhytoStartCol + 1)._occurrenceId;
+        const groupId = this.tableInstance.getCellMeta(startRowPosition, this.tablePhytoStartCol + 1)._occurrenceId;
+
         const isMultipleGroupsSelected = this.tableService.isMultipleGroupsSelected(this.tableService.getCurrentTable(), startRowPosition, endRowPosition);
         if (isMultipleGroupsSelected) {
           // @Todo notify user that he can't make a selection over several groups
@@ -238,6 +244,11 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
           if (startColPosition !== endColPosition) {
             this.tableService.tableSelectionElement.next({
               element: 'row',
+              occurrenceId: null,
+              syeId: null,
+              rowId: null,
+              groupId: null,
+              multipleSelection: true,
               startPosition: rowSelectionStartToEmit,
               endPosition: rowSelectionEndToEmit
             });
@@ -251,6 +262,11 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
           if (startRowPosition !== endColPosition) {
             this.tableService.tableSelectionElement.next({
               element: 'row',
+              occurrenceId: null,
+              syeId: null,
+              rowId: null,
+              groupId: null,
+              multipleSelection: true,
               startPosition: rowSelectionStartToEmit,
               endPosition: rowSelectionEndToEmit
             });
@@ -258,10 +274,21 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       } else if (startRowPosition === endRowPosition) {
         // Only one row selected
+        // Set selected element ids
+        const occurrenceId = null;
+        const syeId = null;
+        const rowId = this.tableInstance.getCellMeta(startRowPosition, this.tablePhytoStartCol + 1)._occurrenceId;
+        const groupId = this.tableInstance.getCellMeta(startRowPosition, this.tablePhytoStartCol + 1)._occurrenceId;
+
         // Emit selection
         if (startColPosition !== endColPosition) {
           this.tableService.tableSelectionElement.next({
             element: 'row',
+            occurrenceId,
+            syeId,
+            rowId,
+            groupId,
+            multipleSelection: false,
             startPosition: rowSelectionStartToEmit,
             endPosition: rowSelectionEndToEmit
           });
@@ -299,6 +326,12 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // Selected columns take over several sye
       if (startColPosition !== endColPosition) {
+        // Set selected element ids
+        const occurrenceId = this.tableInstance.getCellMeta(1, startColPosition)._occurrenceId;
+        const syeId = this.tableInstance.getCellMeta(1, startColPosition)._syeId;
+        const rowId = null;
+        const groupId = null;
+
         const isMultipleSyeSelected = this.tableService.isMultipleSyeSelected(this.tableService.getCurrentTable(), startColPosition, endColPosition);
         if (isMultipleSyeSelected) {
           // @Todo notify user that he can't make a selection over several sye
@@ -328,6 +361,11 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
           if (startRowPosition !== endRowPosition) {
             this.tableService.tableSelectionElement.next({
               element: 'column',
+              occurrenceId: null,
+              syeId: null,
+              rowId: null,
+              groupId: null,
+              multipleSelection: true,
               startPosition: colSelectionStartToEmit,
               endPosition: colSelectionEndToEmit
             });
@@ -340,6 +378,11 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
           if (startRowPosition !== endRowPosition) {
             this.tableService.tableSelectionElement.next({
               element: 'column',
+              occurrenceId: null,
+              syeId: null,
+              rowId: null,
+              groupId: null,
+              multipleSelection: true,
               startPosition: colSelectionStartToEmit,
               endPosition: colSelectionEndToEmit
             });
@@ -347,10 +390,21 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       } else {
         // Only one column selected
+        // Set selected element ids
+        const occurrenceId = this.tableInstance.getCellMeta(1, startColPosition)._occurrenceId;
+        const syeId = this.tableInstance.getCellMeta(1, startColPosition)._syeId;
+        const rowId = null;
+        const groupId = null;
+
         // Emit selection
         if (startRowPosition !== endRowPosition) {
           this.tableService.tableSelectionElement.next({
             element: 'column',
+            occurrenceId,
+            syeId,
+            rowId,
+            groupId,
+            multipleSelection: false,
             startPosition: colSelectionStartToEmit,
             endPosition: colSelectionEndToEmit
           });
@@ -373,7 +427,10 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         occurrenceId,
         syeId,
         rowId,
-        groupId
+        groupId,
+        multipleSelection: false,
+        startPosition: null,
+        endPosition: null
       });
     }
 

@@ -13,20 +13,27 @@ import { EFloreService } from 'src/app/_services/e-flore.service';
 export class TableSelectedElementComponent implements OnInit, OnDestroy {
   tableSelectionSubscriber: Subscription;
 
+  elementType: 'row' | 'column' | 'groupTitle' | 'groupName' | 'occurrenceValue' | 'syntheticValue' = null;
+
   constructor(private tableService: TableService) { }
 
   ngOnInit() {
     this.tableSelectionSubscriber = this.tableService.tableSelectionElement.subscribe(selectedElement => {
-      // console.log(selectedElement);
+      this.elementType = null;
+      console.log(selectedElement);
       if (selectedElement.element === 'row') {
         // row
+        this.elementType = 'row';
       } else if (selectedElement.element === 'column') {
         // column
+        this.elementType = 'column';
       } else if (selectedElement.element === 'groupTitle') {
         // row definition group title
+        this.elementType = 'groupTitle';
       } else if (selectedElement.element === 'groupName') {
         // row definition cell item (taxon / syntaxon name)
-        // console.log(selectedElement);
+        this.elementType = 'groupName';
+
         if (selectedElement.rowId) {
           // get occurrence from table rowDefinitions
           const rowDef = this.tableService.getCurrentTable().rowsDefinition[selectedElement.rowId];
@@ -35,8 +42,10 @@ export class TableSelectedElementComponent implements OnInit, OnDestroy {
         }
       } else if (selectedElement.element === 'occurrenceValue') {
         // coef cell
+        this.elementType = 'occurrenceValue';
       } else if (selectedElement.element === 'syntheticValue') {
         // synthetic value cell
+        this.elementType = 'syntheticValue';
       }
     }, error => {
       // @Todo manage error
