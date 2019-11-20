@@ -22,6 +22,7 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
   // Panels vars
   infoPanelActive = true;
   infoAreaActive = false;
+  idioPhotoAreaActive = false;
   chartAreaActive = false;
   mapAreaActive = true;
   pdfAreaActive = false;
@@ -96,6 +97,11 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
 
   toggleInfo(): void {
     this.infoAreaActive = !this.infoAreaActive;
+    this.panelsSizeOrPositionHaveBeenUpdated();
+  }
+
+  toggleIdioPhoto(): void {
+    this.idioPhotoAreaActive = !this.idioPhotoAreaActive;
     this.panelsSizeOrPositionHaveBeenUpdated();
   }
 

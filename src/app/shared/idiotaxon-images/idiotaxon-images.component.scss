@@ -1,0 +1,62 @@
+.idiotaxon-images {
+  .galery {
+    .top-bar {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      max-height: 50px !important;
+      .content {
+        font-size: .7em;
+        .author {
+          // max-height: 20px;
+        }
+        .date {
+          // max-height: 20px;
+        }
+      }
+      .actions {
+
+      }
+    }
+    .image {
+      text-align: center;
+    }
+  }
+  .image-content {
+    .title {
+      font-weight: bold;
+      text-align: center;
+    }
+  }
+}
+.loading-images {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: lightgrey;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+.error-loading-images {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: lightgrey;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+.no-images {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: lightgrey;
+  font-weight: bold;
+  font-size: 1.2em;
+}

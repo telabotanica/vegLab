@@ -1,0 +1,30 @@
+<div *ngIf="images && images.length > 0 && !errorLoadingImages && !isLoadingImages" class="idiotaxon-images">
+  <div class="galery">
+    <mat-toolbar class="top-bar">
+      <div class="content">
+        <div></div>
+        <div class="author">Par {{ images[currentImageIndex]['auteur.libelle'] }}</div>
+        <div class="date">Le {{ images[currentImageIndex].date | momentStringInputDate }} à {{ images[currentImageIndex]['station.commune'] }}</div>
+        <div></div>
+      </div>
+      <div class="actions">
+        <button mat-icon-button (click)="previousImage()" [disabled]="currentImageIndex !== null && currentImageIndex === 0"><mat-icon>navigate_before</mat-icon></button>
+        <button mat-icon-button (click)="nextImage()" [disabled]="currentImageIndex !== null && currentImageIndex >= images.length - 1"><mat-icon>navigate_next</mat-icon></button>
+      </div>
+    </mat-toolbar>
+    <div class="image">
+      <img [src]="images[currentImageIndex]['binaire.href']">
+    </div>
+  </div>
+</div>
+<div *ngIf="errorLoadingImages" class="error-loading-images">
+  Nous ne parvenons pas à récupérer les images associées à cette occurrence
+</div>
+
+<div *ngIf="!images && !errorLoadingImages" class="no-images">
+  Afficher les images issues d'eFlore
+</div>
+
+<div *ngIf="images && images.length === 0 && !errorLoadingImages" class="no-images">
+  Aucune image n'est associée à ce taxon dans eFlore
+</div>

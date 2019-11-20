@@ -96,6 +96,7 @@ import { TableOverviewMapComponent } from './shared/map/table-overview-map/table
 import { ValidationComponent } from './wsPhyto/info-components/validation/validation/validation.component';
 import { TableSelectedElementComponent } from './wsPhyto/info-components/table-selected-element/table-selected-element.component';
 import { IdiotaxonImagesComponent } from './shared/idiotaxon-images/idiotaxon-images.component';
+import { MomentStringInputDatePipe } from './_pipes/moment-string-input-date.pipe';
 
 /*
 import * as Sentry from '@sentry/browser';
@@ -126,7 +127,7 @@ export class SentryErrorHandler implements ErrorHandler {
     LevelPipe, ShortLevelPipe, MomentPipe, MomentLocalDatePipe, // Pipes
     PhytoHomePageComponent, PhytoAppPageComponent, // WS phyto
     ForestHomePageComponent, ForestAppPageComponent, // WS forest
-    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, // admin
+    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, MomentStringInputDatePipe, // admin
   ],
   entryComponents: [
     OccurrenceSearchMetadataModal1Component

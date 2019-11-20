@@ -26,11 +26,11 @@ export class TableSelectedElementComponent implements OnInit, OnDestroy {
         // row definition group title
       } else if (selectedElement.element === 'groupName') {
         // row definition cell item (taxon / syntaxon name)
-        console.log(selectedElement);
+        // console.log(selectedElement);
         if (selectedElement.rowId) {
           // get occurrence from table rowDefinitions
           const rowDef = this.tableService.getCurrentTable().rowsDefinition[selectedElement.rowId];
-          console.log(rowDef);
+          // console.log(rowDef);
           
         }
       } else if (selectedElement.element === 'occurrenceValue') {
