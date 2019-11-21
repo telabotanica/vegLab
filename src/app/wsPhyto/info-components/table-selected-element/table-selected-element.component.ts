@@ -141,4 +141,24 @@ export class TableSelectedElementComponent implements OnInit, OnDestroy {
     return levels.toString();
   }
 
+  getOccurrenceVlObservers(occurrence: OccurrenceModel): string {
+    if (occurrence && occurrence.vlObservers) {
+      const authorStr: Array<string> = [];
+      for (const vlObs of occurrence.vlObservers) {
+        authorStr.push(vlObs.name);
+      }
+      return authorStr.toString().replace(',', ', ');
+    } else {
+      return null;
+    }
+  }
+
+  getOccurrenceValidation(occurrence: OccurrenceModel): string {
+    if (occurrence && occurrence.validations && occurrence.validations.length > 0) {
+      return `[${occurrence.validations[0].repository}] ${occurrence.validations[0].validatedName}`;
+    } else {
+      return 'Relevé non identifié';
+    }
+  }
+
 }

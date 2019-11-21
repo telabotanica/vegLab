@@ -1,0 +1,9 @@
+.column-container {
+  .content {
+    .row-item {
+      &.child {
+        padding-left: 20px;
+      }
+    }
+  }
+}
