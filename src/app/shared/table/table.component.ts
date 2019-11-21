@@ -729,9 +729,17 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         this.tableSettings.width = value.width;
         this.tableSettings.height = value.height - 40;
         if (this.currentDataView && this.currentDataView.length > 0) {
-          this.tableInstance.updateSettings(this.tableSettings);
-          this.setTableMetadataAndStyle();
-          this.tableInstance.render();
+          try {
+            this.tableInstance.updateSettings(this.tableSettings);
+            this.setTableMetadataAndStyle();
+            this.tableInstance.render();
+          } catch (error) {
+            // @Todo manage error
+            // this.tableInstance.updateSettings can throw an error when route change (from welcome page to phyto app page for example)
+            // Error : The "updateSettings" method cannot be called because this Handsontable instance has been destroyed
+            // Have to investigate further
+          }
+          
         }
       }
     });
