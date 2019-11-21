@@ -3,13 +3,17 @@
     <!--   SPLIT Action -- Table + Info   -->
     <as-split #actionTablePanels unit="percent" direction="horizontal" (dragEnd)="actionPanelDragEnd($event)">
       <!-- ACTION PANEL -->
-      <as-split-area size="67" [order]="0" *ngIf="wsPhytoService.isActionPanelOpened()">
+      <as-split-area size="40" [order]="0" *ngIf="wsPhytoService.isActionPanelOpened()">
         <div id="action_panel">
-          <button mat-icon-button (click)="panelsSizeOrPositionHaveBeenUpdated(); router.navigate(['/phyto/app'])"><mat-icon>close</mat-icon></button>
-          <router-outlet></router-outlet>
+          <div id="close-button-wrapper">
+              <button id="close-action-panel" mat-icon-button (click)="panelsSizeOrPositionHaveBeenUpdated(); router.navigate(['/phyto/app'])" matTooltip="Fermer"><mat-icon>close</mat-icon></button>
+          </div>
+          <div id="action-panel-router">
+            <router-outlet></router-outlet>
+          </div>
         </div>
       </as-split-area>
-      <as-split-area size="33" [order]="1" #content>
+      <as-split-area size="60" [order]="1" id="content" [class.horizontal]="wsPhytoService.getInfoPanelSplitDirection() === 'horizontal'">
         <!--   SPLIT Table -- Info   -->
         <as-split #tableInfoPanels unit="percent" [direction]="wsPhytoService.getInfoPanelSplitDirection()" (dragEnd)="infoPanelDragEnd($event)">
           <!-- TABLE PANEL -->
@@ -21,7 +25,7 @@
               <button mat-button (click)="quickSaveTable()" [disabled]="isSavingTable"><mat-spinner *ngIf="isSavingTable" diameter="16"></mat-spinner> Enregistrer</button>
               <button mat-button (click)="router.navigate(['/phyto/app/create-table'])" [disabled]="isSavingTable"><mat-spinner *ngIf="isSavingTable" diameter="16"></mat-spinner> Enregistrer sous</button>
             </div>
-            <div #tableArea style="width: 100%; height: 100%">
+            <div class="table-area" #tableArea>
               <vl-table></vl-table>
             </div>
             <div *ngIf="!infoPanelActive" class="info-panel-button">
@@ -45,37 +49,39 @@
                   </div>
                 </div>
                 <as-split direction="horizontal" (dragEnd)="infoSubPanelDragEnd($event)" *ngIf="!noActiveArea()">
-                  <as-split-area *ngIf="pdfAreaActive"><vl-pdf-viewer></vl-pdf-viewer></as-split-area>
-                  <as-split-area *ngIf="chartAreaActive">chart</as-split-area>
-                  <as-split-area *ngIf="validationAreaActive"><vl-phyto-validation></vl-phyto-validation></as-split-area>
-                  <as-split-area *ngIf="mapAreaActive"><vl-table-overview-map [invalidateSize]="panelsSizeChanged | async"></vl-table-overview-map></as-split-area>
-                  <as-split-area *ngIf="infoAreaActive"><vl-table-selected-element></vl-table-selected-element></as-split-area>
-                  <as-split-area *ngIf="idioPhotoAreaActive"><vl-idiotaxon-images></vl-idiotaxon-images></as-split-area>
+                  <as-split-area order=0 *ngIf="mapAreaActive"><vl-table-overview-map [invalidateSize]="panelsSizeChanged | async"></vl-table-overview-map></as-split-area>
+                  <as-split-area order=1 *ngIf="infoAreaActive"><vl-table-selected-element></vl-table-selected-element></as-split-area>
+                  <as-split-area order=2 *ngIf="idioPhotoAreaActive"><vl-idiotaxon-images></vl-idiotaxon-images></as-split-area>
+                  <as-split-area order=3 *ngIf="validationAreaActive"><vl-phyto-validation></vl-phyto-validation></as-split-area>
+                  <as-split-area order=4 *ngIf="pdfAreaActive"><vl-pdf-viewer></vl-pdf-viewer></as-split-area>
+                  <as-split-area order=5 *ngIf="chartAreaActive">chart</as-split-area>
                 </as-split>
               </div>
               <div class="actions-bar">
-                <div class="button close" (click)="closeInfoPanel()"><mat-icon>close</mat-icon></div>
-                <div class="button toggle-direction" (click)="toggleSplitInfoPanel()"><mat-icon>arrow_forward</mat-icon></div>
-                <div class="button info"  [class.active]="infoAreaActive"  (click)="toggleInfo()"><mat-icon>info</mat-icon></div>
-                <div class="button photo"  [class.active]="idioPhotoAreaActive"  (click)="toggleIdioPhoto()"><mat-icon>photo</mat-icon></div>
-                <div class="button map"   [class.active]="mapAreaActive"   (click)="toggleMap()"><mat-icon>map</mat-icon></div>
-                <div class="button chart" [class.active]="chartAreaActive" (click)="toggleChart()"><mat-icon>bar_chart</mat-icon></div>
-                <div class="button validation" [class.active]="validationAreaActive" (click)="toggleValidation()"><mat-icon>check</mat-icon></div>
-                <div class="button pdf"   [class.active]="pdfAreaActive"   (click)="togglePdf()"><mat-icon>picture_as_pdf</mat-icon></div>
+                <div class="button close" (click)="closeInfoPanel()" matTooltip="Fermer"><mat-icon>close</mat-icon></div>
+                <div class="button toggle-direction" (click)="toggleSplitInfoPanel()" matTooltip="Basculer le paneau"><mat-icon>arrow_forward</mat-icon></div>
+                <div class="separator"></div>
+                <div class="button map"   [class.active]="mapAreaActive"   (click)="toggleMap()" matTooltip="Carte"><mat-icon>map</mat-icon></div>
+                <div class="button info"  [class.active]="infoAreaActive"  (click)="toggleInfo()" matTooltip="Informations du tableau"><mat-icon>info</mat-icon></div>
+                <div class="button idio-photo"  [class.active]="idioPhotoAreaActive"  (click)="toggleIdioPhoto()" matTooltip="Images eFlore"><mat-icon>photo</mat-icon></div>
+                <div class="button validation" [class.active]="validationAreaActive" (click)="toggleValidation()" matTooltip="Identifications"><mat-icon>check</mat-icon></div>
+                <div class="button pdf"   [class.active]="pdfAreaActive"   (click)="togglePdf()" matTooltip="Diagnose PDF"><mat-icon>picture_as_pdf</mat-icon></div>
+                <div class="button chart" [class.active]="chartAreaActive" (click)="toggleChart()" matTooltip="Indicateurs"><mat-icon>bar_chart</mat-icon></div>
               </div>
             </div>
 
             <!-- info panel horizontal -->
             <div class="info-panel horizontal" *ngIf="wsPhytoService.getInfoPanelSplitDirection() === 'horizontal'">
               <div class="actions-bar">
-                <div class="button close" (click)="closeInfoPanel()"><mat-icon>close</mat-icon></div>
-                <div class="button toggle-direction" (click)="toggleSplitInfoPanel()"><mat-icon>arrow_downward</mat-icon></div>
-                <div class="button info"  [class.active]="infoAreaActive"  (click)="toggleInfo()"><mat-icon>info</mat-icon></div>
-                <div class="button idio-photo"  [class.active]="idioPhotoAreaActive"  (click)="toggleIdioPhoto()"><mat-icon>photo</mat-icon></div>
-                <div class="button map"   [class.active]="mapAreaActive"   (click)="toggleMap()"><mat-icon>map</mat-icon></div>
-                <div class="button chart" [class.active]="chartAreaActive" (click)="toggleChart()"><mat-icon>bar_chart</mat-icon></div>
-                <div class="button validation" [class.active]="validationAreaActive" (click)="toggleValidation()"><mat-icon>check</mat-icon></div>
-                <div class="button pdf"   [class.active]="pdfAreaActive"   (click)="togglePdf()"><mat-icon>picture_as_pdf</mat-icon></div>
+                <div class="button close" (click)="closeInfoPanel()" matTooltip="Fermer"><mat-icon>close</mat-icon></div>
+                <div class="button toggle-direction" (click)="toggleSplitInfoPanel()" matTooltip="Basculer le paneau"><mat-icon>arrow_downward</mat-icon></div>
+                <div class="separator"></div>
+                <div class="button map"   [class.active]="mapAreaActive"   (click)="toggleMap()" matTooltip="Carte"><mat-icon>map</mat-icon></div>
+                <div class="button info"  [class.active]="infoAreaActive"  (click)="toggleInfo()" matTooltip="Informations du tableau"><mat-icon>info</mat-icon></div>
+                <div class="button idio-photo"  [class.active]="idioPhotoAreaActive"  (click)="toggleIdioPhoto()" matTooltip="Images eFlore"><mat-icon>photo</mat-icon></div>
+                <div class="button validation" [class.active]="validationAreaActive" (click)="toggleValidation()" matTooltip="Identifications"><mat-icon>check</mat-icon></div>
+                <div class="button pdf"   [class.active]="pdfAreaActive"   (click)="togglePdf()" matTooltip="Diagnose PDF"><mat-icon>picture_as_pdf</mat-icon></div>
+                <div class="button chart" [class.active]="chartAreaActive" (click)="toggleChart()" matTooltip="Indicateurs"><mat-icon>bar_chart</mat-icon></div>
               </div>
               <div class="content">
                 <div class="no-active-area" *ngIf="noActiveArea()">
@@ -87,12 +93,12 @@
                   </div>
                 </div>
                 <as-split direction="vertical" (dragEnd)="infoSubPanelDragEnd($event)" *ngIf="!noActiveArea()">
-                  <as-split-area *ngIf="pdfAreaActive"><vl-pdf-viewer></vl-pdf-viewer></as-split-area>
-                  <as-split-area *ngIf="chartAreaActive">chart</as-split-area>
-                  <as-split-area *ngIf="validationAreaActive"><vl-phyto-validation></vl-phyto-validation></as-split-area>
-                  <as-split-area *ngIf="mapAreaActive"><vl-table-overview-map [invalidateSize]="panelsSizeChanged | async"></vl-table-overview-map></as-split-area>
-                  <as-split-area *ngIf="infoAreaActive"><vl-table-selected-element></vl-table-selected-element></as-split-area>
-                  <as-split-area *ngIf="idioPhotoAreaActive"><vl-idiotaxon-images></vl-idiotaxon-images></as-split-area>
+                  <as-split-area order=0 *ngIf="mapAreaActive"><vl-table-overview-map [invalidateSize]="panelsSizeChanged | async"></vl-table-overview-map></as-split-area>
+                  <as-split-area order=1 *ngIf="infoAreaActive"><vl-table-selected-element></vl-table-selected-element></as-split-area>
+                  <as-split-area order=2 *ngIf="idioPhotoAreaActive"><vl-idiotaxon-images></vl-idiotaxon-images></as-split-area>
+                  <as-split-area order=3 *ngIf="validationAreaActive"><vl-phyto-validation></vl-phyto-validation></as-split-area>
+                  <as-split-area order=4 *ngIf="pdfAreaActive"><vl-pdf-viewer></vl-pdf-viewer></as-split-area>
+                  <as-split-area order=5 *ngIf="chartAreaActive">chart</as-split-area>
                 </as-split>
               </div>
             </div>

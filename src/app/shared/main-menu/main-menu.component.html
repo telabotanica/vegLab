@@ -1,12 +1,11 @@
-<mat-toolbar>
+<mat-toolbar class="app-toolbar">
   <mat-toolbar-row>
     <a class="navbar-brand" [routerLink]="['/']">VegLab<span class="ws">{{ currentWorkspace }}</span></a>
-    <mat-toolbar>
-
+    <mat-toolbar class="app-toolbar">
       <ng-container *ngFor="let menuItem of menuTree">
-        <button mat-menu-item [matMenuTriggerFor]="sub_menu" style="width: auto !important;">{{ menuItem.label }}</button>
+        <button mat-menu-item [matMenuTriggerFor]="sub_menu" class="app-toolbar-button" style="width: auto !important;">{{ menuItem.label }}</button>
         <mat-menu #sub_menu="matMenu">
-            <button mat-menu-item *ngFor="let subItem of menuItem.children" (click)="goTaPage(subItem.path)">{{ subItem.label }}</button>
+          <button mat-menu-item *ngFor="let subItem of menuItem.children" (click)="goTaPage(subItem.path)">{{ subItem.label }}</button>
         </mat-menu>
       </ng-container>
 
