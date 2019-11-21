@@ -17,14 +17,23 @@
     </div>
   </div>
 </div>
-<div *ngIf="errorLoadingImages" class="error-loading-images">
+<div *ngIf="errorLoadingImages && !isLoadingImages" class="error-loading-images">
   Nous ne parvenons pas à récupérer les images associées à cette occurrence
 </div>
 
-<div *ngIf="!images && !errorLoadingImages" class="no-images">
-  Afficher les images issues d'eFlore
+<div *ngIf="images.length === 0 && !errorLoadingImages && !isLoadingImages && !badSelection" class="no-images">
+  <p>Afficher les images issues d'eFlore</p>
+  <p class="min">Selectionnez une espèce ou une ligne du tableau pour afficher les images</p>
 </div>
 
-<div *ngIf="images && images.length === 0 && !errorLoadingImages" class="no-images">
+<div *ngIf="images.length > 0 && images.length === 0 && !errorLoadingImages && !badSelection && !isLoadingImages" class="no-images">
   Aucune image n'est associée à ce taxon dans eFlore
+</div>
+
+<div *ngIf="badSelection && !isLoadingImages" class="bad-selection">
+  Selectionnez une espèce ou une ligne du tableau pour afficher les images
+</div>
+
+<div *ngIf="isLoadingImages" class="loading-images">
+  <mat-spinner diameter="16"></mat-spinner>
 </div>

@@ -146,7 +146,7 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
    * Returns true if no one sub-info panel (ie info, map, chart, pdf, ...) is active
    */
   noActiveArea(): boolean {
-    return !this.infoAreaActive && !this.chartAreaActive && !this.mapAreaActive && !this.pdfAreaActive && !this.validationAreaActive;
+    return !this.infoAreaActive && !this.idioPhotoAreaActive && !this.chartAreaActive && !this.mapAreaActive && !this.pdfAreaActive && !this.validationAreaActive;
   }
 
 
