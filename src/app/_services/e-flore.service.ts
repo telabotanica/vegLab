@@ -13,8 +13,8 @@ export class EFloreService {
    * Get images from bdtfx ids taxo
    * API doc : https://www.tela-botanica.org/wikini/eflore/wakka.php?wiki=EfloreApi01Images
    */
-  getBdtfxImages(idsTaxo: Array<number>): Observable<EfloreImages> {
-    return this.http.get<EfloreImages>(`http://api.tela-botanica.org/service:eflore:0.1/cel/images?masque.nn=${idsTaxo.toString()}&navigation.depart=0&navigation.limite=5`);
+  getBdtfxImages(idsTaxo: Array<number>, limit = 5): Observable<EfloreImages> {
+    return this.http.get<EfloreImages>(`http://api.tela-botanica.org/service:eflore:0.1/cel/images?masque.nn=${idsTaxo.toString()}&navigation.depart=0&navigation.limite=${limit}`);
   }
 }
 
