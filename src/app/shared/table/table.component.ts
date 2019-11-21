@@ -277,7 +277,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         // Set selected element ids
         const occurrenceId = null;
         const syeId = null;
-        const rowId = this.tableInstance.getCellMeta(startRowPosition, this.tablePhytoStartCol + 1)._occurrenceId;
+        const rowId = this.tableInstance.getCellMeta(startRowPosition, this.tablePhytoStartCol + 1)._rowId;
         const groupId = this.tableInstance.getCellMeta(startRowPosition, this.tablePhytoStartCol + 1)._occurrenceId;
 
         // Emit selection
