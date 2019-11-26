@@ -7,6 +7,7 @@ export const environment = {
   baseUrl: 'http://localhost',
   apiBaseUrl: 'http://localhost:80/index.php/api',
   esBaseUrl: 'http://localhost:9200',
+  esBaseflorTraitsApi:'http://localhost:9200/baseflor',
   tbRepositoriesConfigVegetation: [
     {
       id: 'baseveg',

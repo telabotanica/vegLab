@@ -97,6 +97,8 @@ import { ValidationComponent } from './wsPhyto/info-components/validation/valida
 import { TableSelectedElementComponent } from './wsPhyto/info-components/table-selected-element/table-selected-element.component';
 import { IdiotaxonImagesComponent } from './shared/idiotaxon-images/idiotaxon-images.component';
 import { MomentStringInputDatePipe } from './_pipes/moment-string-input-date.pipe';
+import { EcologicalDiagramComponent } from './shared/table-charts/ecological-diagram/ecological-diagram.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 /*
 import * as Sentry from '@sentry/browser';
@@ -127,7 +129,7 @@ export class SentryErrorHandler implements ErrorHandler {
     LevelPipe, ShortLevelPipe, MomentPipe, MomentLocalDatePipe, // Pipes
     PhytoHomePageComponent, PhytoAppPageComponent, // WS phyto
     ForestHomePageComponent, ForestAppPageComponent, // WS forest
-    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, MomentStringInputDatePipe, // admin
+    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, MomentStringInputDatePipe, EcologicalDiagramComponent, // admin
   ],
   entryComponents: [
     OccurrenceSearchMetadataModal1Component
@@ -148,7 +150,8 @@ export class SentryErrorHandler implements ErrorHandler {
     HotTableModule.forRoot(),
     NgbPopoverModule,
     AngularSplitModule.forRoot(),
-    PdfViewerModule
+    PdfViewerModule,
+    NgxChartsModule
   ],
   providers: [UserService, NotificationService, MenuService, OccurrenceService, TableService, MetadataService, PhotoService, LayerService,
               {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
