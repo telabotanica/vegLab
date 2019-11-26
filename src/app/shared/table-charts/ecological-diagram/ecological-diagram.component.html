@@ -1,3 +1,132 @@
-<p>
-  ecological-diagram works!
-</p>
+<div class="eco-diag-wrapper">
+  <!-- light -->
+  <div class="row_">
+    <div class="label" matTooltip="{{ baseflorTraits.pj_light.name }}">{{ baseflorTraits.pj_light.label }}</div>
+    <div class="content">
+      <div *ngFor="let value of baseflorTraits.pj_light.values; let i = index"
+           class="cell"
+           [style.width.px]="diagramWidth / baseflorTraits.pj_light.values.length"
+           [class.active]="baseflorTraits.pj_light.active && baseflorTraits.pj_light.active === i + 1"
+           matTooltip="{{ value }}">
+           <span class="value">{{ baseflorTraits.pj_light.start + i }}</span>
+      </div>
+    </div>
+  </div>
+  <!-- temperature -->
+  <div class="row_">
+    <div class="label" matTooltip="{{ baseflorTraits.pj_temperature.name }}">{{ baseflorTraits.pj_temperature.label }}</div>
+    <div class="content">
+      <div *ngFor="let value of baseflorTraits.pj_temperature.values; let i = index"
+            class="cell"
+            [style.width.px]="diagramWidth / baseflorTraits.pj_temperature.values.length"
+            [class.active]="baseflorTraits.pj_temperature.active && baseflorTraits.pj_temperature.active === i + 1"
+            matTooltip="{{ value }}">
+            <span class="value">{{ baseflorTraits.pj_temperature.start + i }}</span>
+      </div>
+    </div>
+  </div>
+  <!-- continentality -->
+  <div class="row_">
+    <div class="label" matTooltip="{{ baseflorTraits.pj_continentality.name }}">{{ baseflorTraits.pj_continentality.label }}</div>
+    <div class="content">
+      <div *ngFor="let value of baseflorTraits.pj_continentality.values; let i = index"
+            class="cell"
+            [style.width.px]="diagramWidth / baseflorTraits.pj_continentality.values.length"
+            [class.active]="baseflorTraits.pj_continentality.active && baseflorTraits.pj_continentality.active === i + 1"
+            matTooltip="{{ value }}">
+            <span class="value">{{ baseflorTraits.pj_continentality.start + i }}</span>
+      </div>
+    </div>
+  </div>
+  <!-- atm humidity -->
+  <div class="row_">
+    <div class="label" matTooltip="{{ baseflorTraits.pj_atmospheric_humidity.name }}">{{ baseflorTraits.pj_atmospheric_humidity.label }}</div>
+    <div class="content">
+      <div *ngFor="let value of baseflorTraits.pj_atmospheric_humidity.values; let i = index"
+            class="cell"
+            [style.width.px]="diagramWidth / baseflorTraits.pj_atmospheric_humidity.values.length"
+            [class.active]="baseflorTraits.pj_atmospheric_humidity.active && baseflorTraits.pj_atmospheric_humidity.active === i + 1"
+            matTooltip="{{ value }}">
+            <span class="value">{{ baseflorTraits.pj_atmospheric_humidity.start + i }}</span>
+      </div>
+    </div>
+  </div>
+  <!-- soil humidity -->
+  <div class="row_">
+    <div class="label" matTooltip="{{ baseflorTraits.pj_soil_humidity.name }}">{{ baseflorTraits.pj_soil_humidity.label }}</div>
+    <div class="content">
+      <div *ngFor="let value of baseflorTraits.pj_soil_humidity.values; let i = index"
+            class="cell"
+            [style.width.px]="diagramWidth / baseflorTraits.pj_soil_humidity.values.length"
+            [class.active]="baseflorTraits.pj_soil_humidity.active && baseflorTraits.pj_soil_humidity.active === i + 1"
+            matTooltip="{{ value }}">
+            <span class="value">{{ baseflorTraits.pj_soil_humidity.start + i }}</span>
+      </div>
+    </div>
+  </div>
+  <!-- soil pH -->
+  <div class="row_">
+    <div class="label" matTooltip="{{ baseflorTraits.pj_soil_ph.name }}">{{ baseflorTraits.pj_soil_ph.label }}</div>
+    <div class="content">
+      <div *ngFor="let value of baseflorTraits.pj_soil_ph.values; let i = index"
+            class="cell"
+            [style.width.px]="diagramWidth / baseflorTraits.pj_soil_ph.values.length"
+            [class.active]="baseflorTraits.pj_soil_ph.active && baseflorTraits.pj_soil_ph.active === i + 1"
+            matTooltip="{{ value }}">
+            <span class="value">{{ baseflorTraits.pj_soil_ph.start + i }}</span>
+      </div>
+    </div>
+  </div>
+  <!-- trophic level -->
+  <div class="row_">
+    <div class="label" matTooltip="{{ baseflorTraits.pj_trophic_level.name }}">{{ baseflorTraits.pj_trophic_level.label }}</div>
+    <div class="content">
+      <div *ngFor="let value of baseflorTraits.pj_trophic_level.values; let i = index"
+            class="cell"
+            [style.width.px]="diagramWidth / baseflorTraits.pj_trophic_level.values.length"
+            [class.active]="baseflorTraits.pj_trophic_level.active && baseflorTraits.pj_trophic_level.active === i + 1"
+            matTooltip="{{ value }}">
+            <span class="value">{{ baseflorTraits.pj_trophic_level.start + i }}</span>
+      </div>
+    </div>
+  </div>
+  <!-- salinity 0-9 -->
+  <div class="row_">
+    <div class="label" matTooltip="{{ baseflorTraits.pj_salinity.name }}">{{ baseflorTraits.pj_salinity.label }}</div>
+    <div class="content">
+      <div *ngFor="let value of baseflorTraits.pj_salinity.values; let i = index"
+            class="cell"
+            [style.width.px]="diagramWidth / baseflorTraits.pj_salinity.values.length"
+            [class.active]="baseflorTraits.pj_salinity.active !== null && baseflorTraits.pj_salinity.active === i"
+            matTooltip="{{ value }}">
+            <span class="value">{{ baseflorTraits.pj_salinity.start + i }}</span>
+      </div>
+    </div>
+  </div>
+  <!-- texture -->
+  <div class="row_">
+    <div class="label" matTooltip="{{ baseflorTraits.pj_texture.name }}">{{ baseflorTraits.pj_texture.label }}</div>
+    <div class="content">
+      <div *ngFor="let value of baseflorTraits.pj_texture.values; let i = index"
+            class="cell"
+            [style.width.px]="diagramWidth / baseflorTraits.pj_texture.values.length"
+            [class.active]="baseflorTraits.pj_texture.active && baseflorTraits.pj_texture.active === i + 1"
+            matTooltip="{{ value }}">
+            <span class="value">{{ baseflorTraits.pj_texture.start + i }}</span>
+      </div>
+    </div>
+  </div>
+  <!-- organic material -->
+  <div class="row_">
+    <div class="label" matTooltip="{{ baseflorTraits.pj_organic_material.name }}">{{ baseflorTraits.pj_organic_material.label }}</div>
+    <div class="content">
+      <div *ngFor="let value of baseflorTraits.pj_organic_material.values; let i = index"
+            class="cell"
+            [style.width.px]="diagramWidth / baseflorTraits.pj_organic_material.values.length"
+            [class.active]="baseflorTraits.pj_organic_material.active && baseflorTraits.pj_organic_material.active === i + 1"
+            matTooltip="{{ value }}">
+            <span class="value">{{ baseflorTraits.pj_organic_material.start + i }}</span>
+      </div>
+    </div>
+  </div>
+</div>

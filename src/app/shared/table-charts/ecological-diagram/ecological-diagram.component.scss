@@ -1,0 +1,42 @@
+.eco-diag-wrapper {
+  .row_ {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    height: 12px;
+    .label {
+      font-size: 10px;
+      text-align: right;
+      width: 60px;
+    }
+    .content {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      .cell {
+        // width: 20px;
+        height: 12px;
+        background-color: #EEEEEE;
+        line-height: 0.5;
+        text-align: center;
+        // border-bottom: 1px solid grey;
+        .value {
+          font-size: 8px;
+          color: grey;
+        }
+        &:hover {
+          background-color: rgb(223, 222, 222);
+        }
+        &.active {
+          background-color: #3f51b5;
+          .value {
+            color: white;
+            font-weight: bold;
+          }
+        }
+        
+      }
+    }
+  }
+}

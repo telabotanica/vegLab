@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { TableService } from './table.service';
+import { WorkspaceService } from './workspace.service';
 import { RepositoryService } from 'tb-tsb-lib';
 
 import * as _ from 'lodash';
@@ -18,17 +19,18 @@ export class EcologicalTraitsService {
   currentTraitsValues = new BehaviorSubject<Array<{
     initial: { repo: string, idTaxo: string, idNomen: number, name: string },
     traitsRepo: any
-  }>>(null)
+  }>>(null);
 
   constructor(private tableService: TableService,
               private repoService: RepositoryService,
+              private wsService: WorkspaceService,
               private http: HttpClient) { }
 
   listEcoTraitsAvailableRepository(): Array<string> {
     const availableRepo = this.repoService.listAllRepositories();
     const response: Array<string> = [];
     if (availableRepo && availableRepo.length > 0) {
-      if (_.find(availableRepo, ar => ar.id === 'baseveg')) { response.push('baseveg'); }
+      if (_.find(availableRepo, ar => ar.id === 'baseflor')) { response.push('baseflor'); }
     }
     return response;
   }
@@ -38,19 +40,20 @@ export class EcologicalTraitsService {
    * eg. for the 'bdtfx' repo on ws 'phyto', the function should returns 'baseveg' because it's the ecoTraits repo related to 'bdtfx'
    */
   getEcoTraitsRepoAccordingToRepoAndWs(repo: string, ws: string): string {
-    const availableEcoTraitsRepo = this.listEcoTraitsAvailableRepository();
-    if (availableEcoTraitsRepo && availableEcoTraitsRepo.length > 0) {
-      if (ws === 'phyto') {
-        switch (repo) {
-          case 'bdtfx':
-            return _.find(availableEcoTraitsRepo, ar => ar === 'baseveg') ? 'baseveg' : null;
-          default:
-            return null;
-        }
+    if (!repo || !ws) { return null; }
+    // const availableEcoTraitsRepo = this.listEcoTraitsAvailableRepository();
+    // if (availableEcoTraitsRepo && availableEcoTraitsRepo.length > 0) {
+    if (ws === 'phyto') {
+      switch (repo) {
+        case 'bdtfx':
+          return 'baseflor';
+        default:
+          return null;
       }
-    } else {
-      return null;
     }
+    // } else {
+    //   return null;
+    // }
   }
 
   setCurrentTraitsRepoValues(values: Array<any>): void {
@@ -87,7 +90,6 @@ export class EcologicalTraitsService {
 
       // compare actual & new repo values
       const shouldUpdateTraits = !_.isEqual(actualRepoTraitsValues, newRepoTraitsValues);
-      console.log(`shouldUpdate: ${shouldUpdateTraits}`);
 
       // @Todo update just necessary
       // For now, we just get the entire set
@@ -128,15 +130,16 @@ export class EcologicalTraitsService {
           if (i === rowDef.length - 1) { this.currentTraitsValues.next(nextTraits); return; }
         } else if (_.find(availableRepositories, ar => ar.id === rd.repository)) {
           // Repository exists
-          
+
           // Get an observable to grab traits according to input repository
           // eg for input 'bdtfx', the related traits repository is 'baseflor'
           const repoTraitsObservable = this.getRepoTraitsObservable(rd.repository, rd.repositoryIdNomen);
+          const traitsRepository = this.getEcoTraitsRepoAccordingToRepoAndWs(rd.repository, this.wsService.currentWS.getValue());
 
-          if (repoTraitsObservable) {
+          if (repoTraitsObservable && traitsRepository) {
             repoTraitsObservable.subscribe(
               result => {
-                const traits = { repository: rd.repository, traits: result };
+                const traits = { repository: traitsRepository, traits: result };
                 nextTraits.push({
                   initial: {repo: rd.repository, idTaxo: rd.repositoryIdTaxo, idNomen: rd.repositoryIdNomen, name: rd.displayName },
                   traitsRepo: result == null ? null : traits
@@ -170,12 +173,11 @@ export class EcologicalTraitsService {
           i++;
           if (i === rowDef.length - 1) { this.currentTraitsValues.next(nextTraits); return; }
         }
-        
       } else {
         i++;
         // next traits
         if (i === rowDef.length - 1) { this.currentTraitsValues.next(nextTraits); return; }
-      }  
+      }
     }
   }
 
