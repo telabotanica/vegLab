@@ -2,7 +2,7 @@
   <div class="topbar">
     <div class="menu">
       <mat-form-field>
-        <mat-label>Donnée à afficher</mat-label>
+        <mat-label>Selectionnez un indicateur</mat-label>
         <mat-select [(value)]="selectedValue">
           <!-- ecology -->
           <mat-optgroup label="Ecologie">
@@ -37,7 +37,7 @@
     </div>
   </div>
   
-  <div class="content">
+  <div *ngIf="tableSet" class="content">
     <div *ngIf="selectedValue === 'ecological_diagram'">
       <vl-ecological-diagram></vl-ecological-diagram>
     </div>
@@ -45,6 +45,10 @@
     <div *ngIf="selectedValue !== 'ecological_diagram' && selectedValue !== null">
         <vl-baseflor-diagram [trait]="selectedValue" [chartType]="chartType"></vl-baseflor-diagram>
     </div>
+  </div>
+
+  <div *ngIf="!tableSet" class="content no-table">
+    Aucune donnée à afficher
   </div>
 </div>
 
