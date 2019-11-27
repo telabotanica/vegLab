@@ -1,0 +1,60 @@
+<div class="bf-diag-selector-wrapper">
+  <div class="topbar">
+    <div class="menu">
+      <mat-form-field>
+        <mat-label>Donnée à afficher</mat-label>
+        <mat-select [(value)]="selectedValue">
+          <!-- ecology -->
+          <mat-optgroup label="Ecologie">
+            <mat-option value="ecological_diagram">Valences écologiques</mat-option>
+            <mat-option value="plant_formation">Formation végétale</mat-option>
+            <mat-option value="repartition">Répartition</mat-option>
+          </mat-optgroup>
+          
+          <!-- life traits -->
+          <mat-optgroup label="Traits de vie">
+            <mat-option value="biological_type">Types biologiques</mat-option>
+            <mat-option value="dissemination">Dissémination</mat-option>  
+            <mat-option value="flower_color">Couleur des fleurs</mat-option>
+            <mat-option value="fruit">Fruit</mat-option>
+            <mat-option value="inflorescence">Inflorescence</mat-option>
+            <mat-option value="pollination">Pollinisation</mat-option>
+            <mat-option value="sexuality">Sexualité</mat-option>
+          </mat-optgroup>
+          
+          <!-- taxonomy -->
+          <mat-optgroup label="Classification">
+            <mat-option value="class">Classe</mat-option>
+            <mat-option value="order">Ordre</mat-option>
+            <mat-option value="family">Famille</mat-option>
+          </mat-optgroup>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="options">
+      <button *ngIf="chartType === 'horizontalBar'" mat-icon-button (click)="toggleChartType()"><mat-icon>bar_chart</mat-icon></button>
+      <button *ngIf="chartType === 'pie'" mat-icon-button (click)="toggleChartType()"><mat-icon>pie_chart</mat-icon></button>
+    </div>
+  </div>
+  
+  <div class="content">
+    <div *ngIf="selectedValue === 'ecological_diagram'">
+      <vl-ecological-diagram></vl-ecological-diagram>
+    </div>
+    
+    <div *ngIf="selectedValue !== 'ecological_diagram' && selectedValue !== null">
+        <vl-baseflor-diagram [trait]="selectedValue" [chartType]="chartType"></vl-baseflor-diagram>
+    </div>
+  </div>
+</div>
+
+
+  
+
+<!-- 
+<vl-ecological-diagram></vl-ecological-diagram>
+<vl-baseflor-diagram trait="family"></vl-baseflor-diagram>
+<vl-baseflor-diagram trait="plant_formation" chartType="pie"></vl-baseflor-diagram>
+<vl-baseflor-diagram trait="biological_type" chartType="pie"></vl-baseflor-diagram>
+<vl-baseflor-diagram trait="repartition"></vl-baseflor-diagram>
+-->

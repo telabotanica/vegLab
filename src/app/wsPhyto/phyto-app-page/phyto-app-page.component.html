@@ -54,7 +54,9 @@
                   <as-split-area order=2 *ngIf="idioPhotoAreaActive"><vl-idiotaxon-images></vl-idiotaxon-images></as-split-area>
                   <as-split-area order=3 *ngIf="validationAreaActive"><vl-phyto-validation></vl-phyto-validation></as-split-area>
                   <as-split-area order=4 *ngIf="pdfAreaActive"><vl-pdf-viewer></vl-pdf-viewer></as-split-area>
-                  <as-split-area order=5 *ngIf="chartAreaActive"><vl-ecological-diagram></vl-ecological-diagram></as-split-area>
+                  <as-split-area order=5 *ngIf="chartAreaActive">
+                    <vl-baseflor-diagram-selector></vl-baseflor-diagram-selector>
+                  </as-split-area>
                 </as-split>
               </div>
               <div class="actions-bar">
@@ -98,7 +100,9 @@
                   <as-split-area order=2 *ngIf="idioPhotoAreaActive"><vl-idiotaxon-images></vl-idiotaxon-images></as-split-area>
                   <as-split-area order=3 *ngIf="validationAreaActive"><vl-phyto-validation></vl-phyto-validation></as-split-area>
                   <as-split-area order=4 *ngIf="pdfAreaActive"><vl-pdf-viewer></vl-pdf-viewer></as-split-area>
-                  <as-split-area order=5 *ngIf="chartAreaActive"><vl-ecological-diagram></vl-ecological-diagram></as-split-area>
+                  <as-split-area order=5 *ngIf="chartAreaActive">
+                    <vl-baseflor-diagram-selector></vl-baseflor-diagram-selector>
+                  </as-split-area>
                 </as-split>
               </div>
             </div>

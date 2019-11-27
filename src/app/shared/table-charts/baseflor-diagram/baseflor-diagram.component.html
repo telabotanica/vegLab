@@ -1,0 +1,39 @@
+<div *ngIf="_trait && baseflorTraits.length > 0 && chartType === 'horizontalBar'">
+  <div class="title">{{ trait}}</div>
+  <div class="chart">
+    <ngx-charts-bar-horizontal
+      [view]="[width, getHeight()]"
+      [scheme]="colorScheme"
+      [customColors]="customColors()"
+      [results]="baseflorTraits"
+      [xAxis]="showXAxis"
+      [yAxis]="showYAxis"
+      [legend]="showLegend"
+      [showXAxisLabel]="showXAxisLabel"
+      [showYAxisLabel]="showYAxisLabel"
+      [xAxisLabel]="xAxisLabel"
+      [yAxisLabel]="yAxisLabel"
+      [showDataLabel]="showDataLabel"
+      barPadding=1>
+    </ngx-charts-bar-horizontal>
+  </div>
+</div>
+
+<div *ngIf="_trait && baseflorTraits.length > 0 && chartType === 'pie'">
+  <div class="title">{{ trait}}</div>
+  <div class="chart">
+    <ngx-charts-pie-chart
+      [view]="[width, getHeight()]"
+      [scheme]="colorScheme"
+      [customColors]="customColors()"
+      [results]="baseflorTraits"
+      [legend]="showLegend"
+      [labels]="true"
+      barPadding=1>
+    </ngx-charts-pie-chart>
+  </div>
+</div>
+
+<div *ngIf="!_trait" class="no-trait">
+  Aucun trait selectionné
+</div>

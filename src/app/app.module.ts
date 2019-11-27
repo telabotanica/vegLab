@@ -99,6 +99,8 @@ import { IdiotaxonImagesComponent } from './shared/idiotaxon-images/idiotaxon-im
 import { MomentStringInputDatePipe } from './_pipes/moment-string-input-date.pipe';
 import { EcologicalDiagramComponent } from './shared/table-charts/ecological-diagram/ecological-diagram.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { BaseflorDiagramComponent } from './shared/table-charts/baseflor-diagram/baseflor-diagram.component';
+import { BaseflorDiagramSelectorComponent } from './shared/table-charts/baseflor-diagram-selector/baseflor-diagram-selector.component';
 
 /*
 import * as Sentry from '@sentry/browser';
@@ -129,7 +131,7 @@ export class SentryErrorHandler implements ErrorHandler {
     LevelPipe, ShortLevelPipe, MomentPipe, MomentLocalDatePipe, // Pipes
     PhytoHomePageComponent, PhytoAppPageComponent, // WS phyto
     ForestHomePageComponent, ForestAppPageComponent, // WS forest
-    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, MomentStringInputDatePipe, EcologicalDiagramComponent, // admin
+    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, MomentStringInputDatePipe, EcologicalDiagramComponent, BaseflorDiagramComponent, BaseflorDiagramSelectorComponent, // admin
   ],
   entryComponents: [
     OccurrenceSearchMetadataModal1Component
