@@ -29,7 +29,7 @@ export class BaseflorDiagramSelectorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-
+    if (this.tableSubscriber) { this.tableSubscriber.unsubscribe(); }
   }
 
   toggleChartType(): void {
