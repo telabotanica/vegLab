@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { NominatimObject } from 'tb-geoloc-lib';
+import { NominatimObject, VlAccuracyEnum } from 'tb-geoloc-lib';
 
 import * as turf from '@turf/turf';
 import { AllGeoJSON, Geometry, Feature, Point } from '@turf/turf';
@@ -40,5 +40,51 @@ export class LocationService {
 
   getCentroid(geoJson: {type: string, coordinates: Array<Array<number>>}): Feature<Point> {
     return turf.centroid(geoJson);
+  }
+
+  getAccuracyByNominatimObject(nominatimObj: NominatimObject): VlAccuracyEnum {
+    const _class = nominatimObj.class;
+    let accuracy: VlAccuracyEnum;
+
+    switch (_class) {
+      case 'boundary':
+        // could be commune departement, region or country
+        if (nominatimObj.address['city']
+            || nominatimObj.address['town']
+            || nominatimObj.address['village']
+            || nominatimObj.address['hamlet']) {
+          accuracy = VlAccuracyEnum.CITY;
+        } else if (nominatimObj.address['county']) {
+          accuracy = VlAccuracyEnum.DEPARTEMENT;
+        } else if (nominatimObj.address['state']) {
+          accuracy = VlAccuracyEnum.REGION;
+        } else if (nominatimObj.address['country']) {
+          accuracy = VlAccuracyEnum.COUNTRY;
+        } else { accuracy = VlAccuracyEnum.OTHER; }
+        break;
+      case 'landuse':
+        accuracy = VlAccuracyEnum.PLACE;
+        break;
+      case 'place':
+        accuracy = VlAccuracyEnum.PLACE;
+        break;
+      case (_class.match(/way/)).input:
+        accuracy = VlAccuracyEnum.PLACE;
+        break;
+      default:
+        accuracy = VlAccuracyEnum.OTHER;
+        break;
+    }
+
+    return accuracy;
+  }
+
+  getVlAccuracyKey(vlAccuracyValue: string): VlAccuracyEnum {
+    const vlAcc = Object.keys(VlAccuracyEnum);
+    for (const c of vlAcc) {
+      console.log(vlAcc);
+    }
+    const acuracyEnum = VlAccuracyEnum[vlAccuracyValue];
+    return acuracyEnum ? acuracyEnum : null;
   }
 }

@@ -1229,7 +1229,7 @@ export class TableImportComponent implements OnInit {
     );
 
     // Get vl_accuracy
-    const vlAccuracy = this.getAccuracyByNominatimObject(data.value.nominatimLocation);
+    const vlAccuracy = this.locationService.getAccuracyByNominatimObject(data.value.nominatimLocation);
     location.vlAccuracy = vlAccuracy;
 
     // simplify polygon
@@ -1290,43 +1290,6 @@ export class TableImportComponent implements OnInit {
     for (const l of this.locationList) {
       l.manualLocalization = l === location ? true : false;
     }
-  }
-
-  getAccuracyByNominatimObject(nominatimObj: NominatimObject): VlAccuracyEnum {
-    const _class = nominatimObj.class;
-    let accuracy: VlAccuracyEnum;
-
-    switch (_class) {
-      case 'boundary':
-        // could be commune departement, region or country
-        if (nominatimObj.address['city']
-            || nominatimObj.address['town']
-            || nominatimObj.address['village']
-            || nominatimObj.address['hamlet']) {
-          accuracy = VlAccuracyEnum.CITY;
-        } else if (nominatimObj.address['county']) {
-          accuracy = VlAccuracyEnum.DEPARTEMENT;
-        } else if (nominatimObj.address['state']) {
-          accuracy = VlAccuracyEnum.REGION;
-        } else if (nominatimObj.address['country']) {
-          accuracy = VlAccuracyEnum.COUNTRY;
-        } else { accuracy = VlAccuracyEnum.OTHER; }
-        break;
-      case 'landuse':
-        accuracy = VlAccuracyEnum.PLACE;
-        break;
-      case 'place':
-        accuracy = VlAccuracyEnum.PLACE;
-        break;
-      case (_class.match(/way/)).input:
-        accuracy = VlAccuracyEnum.PLACE;
-        break;
-      default:
-        accuracy = VlAccuracyEnum.OTHER;
-        break;
-    }
-
-    return accuracy;
   }
 
   isLocationComplete(location: Location): boolean {
