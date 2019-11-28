@@ -32,6 +32,9 @@
           mapQuestApiKey="ApIFfQWsb8jW6bkYDD2i0Sq5BD9moJ3l"
           (location)="addLocation($event)">
         </tb-geoloc-map>
+        <div *ngIf="currentLocation" class="vl-location-accuracy">
+          Précision géographique : {{ currentLocation.vlLocationAccuracy }}
+        </div>
       </mat-step>
 
       <!-- 2 Metadata (photos + metadata) -->
