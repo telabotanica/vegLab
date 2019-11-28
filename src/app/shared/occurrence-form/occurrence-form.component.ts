@@ -141,7 +141,7 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
       addMetadataInput: new FormControl('')
     });
 
-    if (this.user !== null) {
+    if (this.user && this.user !== null) {
       this.occurrenceForm.controls.observer.setValue(this.user.name, {emitEvent: false});
     }
   }
