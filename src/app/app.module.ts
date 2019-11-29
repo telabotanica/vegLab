@@ -1,11 +1,13 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, ErrorHandler, Injectable } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
+// interceptors & error managment
+import { AuthInterceptor } from './_interceptors/auth.interceptor';
 import { ErrorsModule } from './_errors/errors.module';
 
 // user pages and components
@@ -57,6 +59,7 @@ import { TableService } from './_services/table.service';
 import { MetadataService } from './_services/metadata.service';
 import { PhotoService } from './_services/photo.service';
 import { LayerService} from './_services/layer.service';
+import { SsoService } from './_services/sso.service';
 
 // pipes
 import { LevelPipe } from './_pipes/level.pipe';
@@ -155,11 +158,12 @@ export class SentryErrorHandler implements ErrorHandler {
     PdfViewerModule,
     NgxChartsModule
   ],
-  providers: [UserService, NotificationService, MenuService, OccurrenceService, TableService, MetadataService, PhotoService, LayerService,
+  providers: [UserService, NotificationService, MenuService, OccurrenceService, TableService, MetadataService, PhotoService, LayerService, SsoService,
               {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
               {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
               {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
               {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}},
+              {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}
               /*{provide: ErrorHandler, useClass: SentryErrorHandler}*/
             ],
   bootstrap: [AppComponent]

@@ -9,6 +9,7 @@ export const environment = {
   esBaseUrl: 'http://localhost:9200',
   esBaseflorTraitsApi:'http://localhost:9200/baseflor',
   sso: {
+    baseUrl:          'https://beta.tela-botanica.org/service:annuaire:auth',
     identiteEndpoint: 'https://beta.tela-botanica.org/service:annuaire:auth/identite',
     authWidgetUrl:    'http://beta.tela-botanica.org/widget:reseau:auth',
     refreshEndpoint:  'https://beta.tela-botanica.org/service:annuaire:auth/rafraichir',

@@ -6,9 +6,11 @@ import { environment } from '../../environments/environment';
 
 import { IdentiteResponse } from '../_models/identite-response';
 
-@Injectable({
+// See github issue HTTP_INTERCEPTORS can't use providedIn injectable/service
+// https://github.com/angular/angular/issues/24306
+@Injectable(/*{
   providedIn: 'root'
-})
+}*/)
 export class SsoService {
   private readonly identiteEndpoint: string = environment.sso.identiteEndpoint;
   private readonly refreshEndpoint: string = environment.sso.refreshEndpoint;
