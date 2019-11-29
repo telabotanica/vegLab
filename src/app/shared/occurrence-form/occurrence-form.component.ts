@@ -10,6 +10,7 @@ import { NotificationService } from '../../_services/notification.service';
 import { MetadataService } from 'src/app/_services/metadata.service';
 import { OccurrenceFormBindingService } from './occurrence-form-binding.service';
 import { PhotoService } from '../../_services/photo.service';
+import { LocationService } from 'src/app/_services/location.service';
 
 import { UserModel } from 'src/app/_models/user.model';
 import { OccurrenceModel } from '../../_models/occurrence.model';
@@ -98,7 +99,8 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private http: HttpClient,
     private occurenceFormBinding: OccurrenceFormBindingService,
-    private photoService: PhotoService) { }
+    private photoService: PhotoService,
+    private locationService: LocationService) { }
 
   ngOnInit() {
     // subscribe to user events
@@ -353,6 +355,12 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
       // Bind uploaded photos
       if (this.uploadedPhotos.length > 0) {
         // this.occurrence.photos = this.uploadedPhotos;
+      }
+
+      // simplify polygon
+      if (this.occurrence.geometry) {
+        const simplifiedGeometry = this.locationService.simplifyPolygon(this.occurrence.geometry);
+        this.occurrence.geometry = simplifiedGeometry;
       }
 
       console.log(this.occurrence);
