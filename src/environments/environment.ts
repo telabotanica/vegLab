@@ -8,6 +8,12 @@ export const environment = {
   apiBaseUrl: 'http://localhost:80/index.php/api',
   esBaseUrl: 'http://localhost:9200',
   esBaseflorTraitsApi:'http://localhost:9200/baseflor',
+  sso: {
+    identiteEndpoint: 'https://beta.tela-botanica.org/service:annuaire:auth/identite',
+    authWidgetUrl:    'http://beta.tela-botanica.org/widget:reseau:auth',
+    refreshEndpoint:  'https://beta.tela-botanica.org/service:annuaire:auth/rafraichir',
+    refreshInterval:  600000
+  },
   tbRepositoriesConfigVegetation: [
     {
       id: 'baseveg',
