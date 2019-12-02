@@ -28,7 +28,7 @@ export class SsoService {
    *  confirme l'authentification et la session;
    *  rafraîchit le jeton fourni (dans le cookie tb_auth_beta_test, le header Authorization ou en paramètre)
    */
-  private identity(): void {
+  public identity(): void {
     const headers = new HttpHeaders({ withCredentials: 'true' });
     this.http.get<IdentiteResponse>(this.identiteEndpoint, { headers }).subscribe(
       result => {

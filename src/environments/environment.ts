@@ -7,7 +7,12 @@ export const environment = {
   baseUrl: 'http://localhost',
   apiBaseUrl: 'http://localhost:80/index.php/api',
   esBaseUrl: 'http://localhost:9200',
-  esBaseflorTraitsApi:'http://localhost:9200/baseflor',
+  esBaseflorTraitsApi: 'http://localhost:9200/baseflor',
+  app : {
+    title:           'VegLab',
+    unsetTokenValue: 'unset',
+    absoluteBaseUrl: '',
+  },
   sso: {
     baseUrl:          'https://beta.tela-botanica.org/service:annuaire:auth',
     identiteEndpoint: 'https://beta.tela-botanica.org/service:annuaire:auth/identite',
