@@ -15,6 +15,7 @@ export const environment = {
   },
   sso: {
     baseUrl:          'https://beta.tela-botanica.org/service:annuaire:auth',
+    loginEndpoint:    'https://beta.tela-botanica.org/service:annuaire:auth/connexion',
     identiteEndpoint: 'https://beta.tela-botanica.org/service:annuaire:auth/identite',
     authWidgetUrl:    'http://beta.tela-botanica.org/widget:reseau:auth',
     refreshEndpoint:  'https://beta.tela-botanica.org/service:annuaire:auth/rafraichir',

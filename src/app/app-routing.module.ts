@@ -17,10 +17,12 @@ import { TableFormComponent } from './shared/table-form/table-form.component';
 import { TableSearchComponent } from './shared/table-search/table-search.component';
 import { TableImportComponent } from './shared/table-import/table-import.component';
 
+import { AuthGuard } from './_guards/auth.guard';
+
 const routes: Routes = [
   { path: '', component: HomePageComponent },
   { path: 'phyto', component: PhytoHomePageComponent},
-  { path: 'phyto/app', component: PhytoAppPageComponent, children: [
+  { path: 'phyto/app', component: PhytoAppPageComponent, canActivate: [AuthGuard], canActivateChild: [AuthGuard], children: [
     { path: 'create-occurrence', component: OccurrenceFormComponent },
     { path: 'search-occurrence', component: OccurrenceSearchComponent },
     { path: 'create-table', component: TableFormComponent },

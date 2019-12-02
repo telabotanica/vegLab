@@ -1,17 +1,16 @@
-<div *ngIf="!user">
+<div *ngIf="!currentUser">
   <button mat-button [matMenuTriggerFor]="menu"><mat-icon>account_circle</mat-icon></button>
   <mat-menu #menu="matMenu">
-    <button mat-menu-item (click)="authAsUser()">Se connecter comme utilisateur</button>
-    <button mat-menu-item (click)="authAsAdmin()">Se connecter comme admin</button>
+    <button mat-menu-item>Se connecter</button>
   </mat-menu>
 </div>
 
-<div *ngIf="user">
-    <button mat-button [matMenuTriggerFor]="menu"><mat-icon>account_circle</mat-icon> {{ user.name }}</button>
+<div *ngIf="currentUser">
+    <button mat-button [matMenuTriggerFor]="menu"><mat-icon>account_circle</mat-icon> {{ getUserName() }}</button>
     <mat-menu #menu="matMenu">
       <!--<button mat-menu-item *ngIf="isAdmin()" (click)="router.navigate(['/admin'])">Tableau de bord</button>-->
       <button mat-menu-item (click)="router.navigate(['/admin'])">Tableau de bord</button>
       <button mat-menu-item>Mon compte</button>
-      <button mat-menu-item (click)="logout()">Se deconnecter</button>
+      <button mat-menu-item>Se deconnecter</button>
     </mat-menu>
   </div>

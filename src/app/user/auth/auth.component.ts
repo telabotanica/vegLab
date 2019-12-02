@@ -15,33 +15,38 @@ import { UserModel } from '../../_models/user.model';
 })
 export class AuthComponent implements OnInit, OnDestroy {
 
-  user: UserModel;
-  userEventsSubscription: Subscription;
+  userSubscriber: Subscription;
+  currentUser: UserModel = null;
 
-  constructor(private userService: UserService, private router: Router) { }
+  constructor(private userService: UserService,
+              private router: Router) { }
 
   ngOnInit() {
-    this.userEventsSubscription = this.userService.userEvents.subscribe(user => this.user = user);
+    this.userSubscriber = this.userService.currentUser.subscribe(
+      user => {
+        this.currentUser = user;
+      }, error => {
+        // @Todo manage error
+        // Should logout ?
+        console.log(error);
+      }
+      );
   }
 
   ngOnDestroy() {
-    if (this.userEventsSubscription) { this.userEventsSubscription.unsubscribe(); }
-  }
-
-  authAsUser() {
-    this.userService.authenticate('user').subscribe();
-  }
-
-  authAsAdmin() {
-    this.userService.authenticate('admin').subscribe();
-  }
-
-  logout() {
-    this.userService.logout();
+    if (this.userSubscriber) { this.userSubscriber.unsubscribe(); }
   }
 
   isAdmin(): boolean {
     return this.userService.isAdmin();
+  }
+
+  getUserName(): string {
+    if (this.currentUser) {
+      return this.currentUser.pseudoUtilise ? this.currentUser.pseudo : this.currentUser.prenom + ' ' + this.currentUser.nom;
+    } else {
+      return null;
+    }
   }
 
 }

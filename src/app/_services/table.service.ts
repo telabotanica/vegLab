@@ -380,7 +380,7 @@ export class TableService {
       isDiagnosis: false,
       validations: [],
 
-      createdBy: this.userService.userEvents.getValue() ? this.userService.userEvents.getValue().id : null, // @Todo user must be connected
+      createdBy: this.userService.userEvents.getValue() ? Number(this.userService.userEvents.getValue().id) : null, // @Todo user must be connected
       createdAt: new Date(Date.now()),
       updatedBy: null,
       updatedAt: null,
@@ -1776,7 +1776,7 @@ export class TableService {
   getReleveById(id: number): OccurrenceModel {
     for (const sye of this.currentTable.sye) {
       for (const occurrence of sye.occurrences) {
-        if (occurrence.id === id) { return occurrence;}
+        if (occurrence.id === id) { return occurrence; }
       }
     }
     return null;
