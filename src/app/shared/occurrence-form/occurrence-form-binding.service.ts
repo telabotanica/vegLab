@@ -43,7 +43,7 @@ export class OccurrenceFormBindingService {
       // bind validation
       if (citedSyntaxon && citedSyntaxon !== null) {
         this.xOccurrence.validations = [{
-          validatedBy: user.id,
+          validatedBy: Number(user.id),
           validatedAt: new Date(),
           repository: citedSyntaxon.repository,
           repositoryIdNomen: +citedSyntaxon.idNomen,
@@ -68,7 +68,7 @@ export class OccurrenceFormBindingService {
         if (occ.taxa.idTaxo !== null) { yIdTaxo = occ.taxa.idTaxo.toString(); }
         if (yIdTaxo === null && occ.taxa.validOccurence.idNomen !== null) { yIdTaxo =  occ.taxa.validOccurence.idNomen.toString(); }
         yOcc.validations = [{
-          validatedBy: user.id,
+          validatedBy: Number(user.id),
           validatedAt: new Date(),
           repository: occ.taxa.repository,
           repositoryIdNomen: +occ.taxa.idNomen,
@@ -102,7 +102,7 @@ export class OccurrenceFormBindingService {
       // bind validation
       if (citedSyntaxon && citedSyntaxon !== null) {
         this.xOccurrence.validations = [{
-          validatedBy: user.id,
+          validatedBy: Number(user.id),
           validatedAt: new Date(),
           repository: citedSyntaxon.repository,
           repositoryIdNomen: +citedSyntaxon.idNomen,
@@ -140,7 +140,7 @@ export class OccurrenceFormBindingService {
           if (z.taxa.idTaxo !== null) { zIdTaxo = z.taxa.idTaxo.toString(); }
           if (zIdTaxo === null && z.taxa.validOccurence.idNomen !== null) { zIdTaxo =  z.taxa.validOccurence.idNomen.toString(); }
           zOcc.validations = [{
-            validatedBy: user.id,
+            validatedBy: Number(user.id),
             validatedAt: new Date(),
             repository: z.taxa.repository,
             repositoryIdNomen: +z.taxa.idNomen,

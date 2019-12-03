@@ -31,15 +31,11 @@ export class AppComponent implements OnInit {
     this.metadataService.refreshMetadataList();   // Get metadatas from API
     this.tableService.setCurrentTable(this.tableService.createTable()); // Create a fresh table and set it as current table
     moment.locale('fr');
-  }
 
-  login() {
-    // const headers = {'Content-Type': 'text/plain'}; // 'Accept': 'text/plain'     'Content-Type': 'text/plain'
-    this.ssoService.login('login', 'pass');
-  }
-
-  logout() {
-    this.ssoService.logout();
+    // Do we have a token ?
+    if (this.ssoService.isTokenSet()) {
+      this.ssoService.refreshToken();
+    }
   }
 
 }

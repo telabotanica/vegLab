@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { UserService } from '../../_services/user.service';
+import { SsoService } from 'src/app/_services/sso.service';
+
 import { UserModel } from '../../_models/user.model';
 
 /**
@@ -19,6 +21,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   currentUser: UserModel = null;
 
   constructor(private userService: UserService,
+              private ssoService: SsoService,
               private router: Router) { }
 
   ngOnInit() {
@@ -42,11 +45,16 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   getUserName(): string {
-    if (this.currentUser) {
-      return this.currentUser.pseudoUtilise ? this.currentUser.pseudo : this.currentUser.prenom + ' ' + this.currentUser.nom;
-    } else {
-      return null;
-    }
+    return this.userService.getUserName();
+  }
+
+  login() {
+    const redirectUrl = this.router.routerState.snapshot.url;
+    this.router.navigate(['/login'], {queryParams: {redirectUrl}});
+  }
+
+  logout() {
+    this.ssoService.logout();
   }
 
 }

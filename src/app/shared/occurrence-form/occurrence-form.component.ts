@@ -144,7 +144,7 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
     });
 
     if (this.user && this.user !== null) {
-      this.occurrenceForm.controls.observer.setValue(this.user.name, {emitEvent: false});
+      this.occurrenceForm.controls.observer.setValue(this.userService.getUserName(), {emitEvent: false});
     }
   }
 

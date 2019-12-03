@@ -37,18 +37,18 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   private applies(request: HttpRequest<any>, token: string): boolean {
-    console.log(`APPLIES INTERCEPTOR ?`);
-    console.log(`token?: ${token}`);
-    console.log(`Login connexion?: ${request.url.startsWith(this.ssoLoginUrl)}`);
-    console.log(`Identite?: ${request.url.startsWith(this.ssoIdentiteUrl)}`);
-    console.log(`--`);
+    // console.log(`APPLIES INTERCEPTOR ?`);
+    // console.log(`token?: ${token}`);
+    // console.log(`Login connexion?: ${request.url.startsWith(this.ssoLoginUrl)}`);
+    // console.log(`Identite?: ${request.url.startsWith(this.ssoIdentiteUrl)}`);
+    // console.log(`--`);
 
     if (request.url.startsWith(this.ssoLoginUrl)) { // request.url.startsWith(this.ssoIdentiteUrl)
       // The current request is a SSO-Login with remote Tela Bota's SSO service
       // To avoid Preflight (OPTIONS) request send by the browser, the request must be a SIMPLE request
       // see https://medium.com/@praveen.beatle/avoiding-pre-flight-options-calls-on-cors-requests-baba9692c21a
       // So, we don't add any header
-      console.log('AUTH interceptor, Login request or Identite request : do nothing...');
+      // console.log('AUTH interceptor, Login request or Identite request : do nothing...');
     } else if (token && request.url.startsWith(this.ssoIdentiteUrl)) {
       // SSO Identity Request
       return false;

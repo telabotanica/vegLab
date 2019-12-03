@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Observable, of, BehaviorSubject } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 
 import { IdentiteResponse } from '../_models/identite-response';
+
 
 // See github issue HTTP_INTERCEPTORS can't use providedIn injectable/service
 // https://github.com/angular/angular/issues/24306
@@ -19,7 +21,7 @@ export class SsoService {
 
   currentToken = new BehaviorSubject<string>(null);
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   /**
    * Refresh token both server and client sides
@@ -86,33 +88,28 @@ export class SsoService {
     return !(this.getToken() == null);
   }
 
-  public login(login: string, password: string) {
-    // DEV
-    this.identity();
-
-    // PROD
-    /* // Set Content-Type ans Accept headers to 'text/plain' to avoid sending a pre-flight OPTIONS request (currently not supported by the SSO server)
+  public loginWithEmailAndPassword(email: string, password: string): Observable<IdentiteResponse> {
+    // Set Content-Type ans Accept headers to 'text/plain' to avoid sending a pre-flight OPTIONS request (currently not supported by the SSO server)
     // see https://medium.com/@praveen.beatle/avoiding-pre-flight-options-calls-on-cors-requests-baba9692c21a
     // The Auth interceptor also prevent adding headers for this request
     const headers = new HttpHeaders();
     headers.set('Content-Type', 'text/plain').set('Accept', 'text/plain');
-    this.http.get<any>(`${this.loginEndpoint}?login=${login}&password=${password}`, {headers}).subscribe(
-      loged => {
-        console.log('LOGED in TB');
-        console.log(loged);
-        // Set response token
-        this.setToken(MOCKEDTOKEN.token);
-        this.identity();
-      }, error => {
-        // @Todo manage error, notify user
-        console.log(error);
-        console.log('error while logging. NOT LOGGED.');
-      }
-    );*/
+
+    const _email = email ? encodeURIComponent(email) : null;
+    const _password = password ? encodeURIComponent(password) : null;
+
+    return this.http.get<IdentiteResponse>(`${this.loginEndpoint}?login=${_email}&password=${_password}`, {headers});
   }
 
   public logout(): void {
+    // DEV
     this.removeToken();
+    this.router.navigate(['/']);
+
+    // PROD
+    // + CALL SSO ENDPOINT LOGOUT
+    // this.removeToken();
+    // this.router.navigate(['/']);
   }
 }
 

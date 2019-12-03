@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { HomePageComponent } from './shared/home-page/home-page.component';
+import { LoginPageComponent } from './shared/login-page/login-page.component';
 import { PhytoHomePageComponent } from './wsPhyto/phyto-home-page/phyto-home-page.component';
 import { PhytoAppPageComponent } from './wsPhyto/phyto-app-page/phyto-app-page.component';
 import { FatalErrorPageComponent } from './shared/fatal-error-page/fatal-error-page.component';
@@ -21,6 +22,7 @@ import { AuthGuard } from './_guards/auth.guard';
 
 const routes: Routes = [
   { path: '', component: HomePageComponent },
+  { path: 'login', component: LoginPageComponent },
   { path: 'phyto', component: PhytoHomePageComponent},
   { path: 'phyto/app', component: PhytoAppPageComponent, canActivate: [AuthGuard], canActivateChild: [AuthGuard], children: [
     { path: 'create-occurrence', component: OccurrenceFormComponent },

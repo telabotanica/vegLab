@@ -19,6 +19,8 @@ export class UserService {
 
   lastToken: string = null;
 
+  private readonly loginEndpoint = environment.sso.loginEndpoint;
+
   constructor(private http: HttpClient, private ssoService: SsoService) {
     this.ssoService.currentToken.subscribe(
       newToken => {
@@ -44,12 +46,14 @@ export class UserService {
               this.lastToken = newToken;
               const userData = this.decode(newToken);
               this.currentUser.next(userData);
+              console.log(`NEXT USER: ${this.getUserName()}`);
             }
           } else {
             // User wasn't logged in
             this.lastToken = newToken;
             const userData = this.decode(newToken);
             this.currentUser.next(userData);
+            console.log(`NEXT USER: ${this.getUserName()}`);
           }
         }
       }, error => {
@@ -65,6 +69,15 @@ export class UserService {
       return response;
     } catch (error) {
       console.log(error);
+      return null;
+    }
+  }
+
+  getUserName(): string {
+    const cUser = this.currentUser.getValue();
+    if (cUser) {
+      return cUser.pseudoUtilise ? cUser.pseudo : cUser.prenom + ' ' + cUser.nom;
+    } else {
       return null;
     }
   }

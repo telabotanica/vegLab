@@ -46,7 +46,7 @@ export class TableFormComponent implements OnInit {
     private notificationService: NotificationService) { }
 
   ngOnInit() {
-    const user: string = this.currentUser ? this.currentUser.name : '';
+    const user: string = this.currentUser ? this.userService.getUserName() : '';
     this.tableForm = new FormGroup({
       createdAt: new FormControl({value: new Date(), disabled: true}, [Validators.required]),
       createdBy: new FormControl(user, [Validators.required]),
