@@ -12,7 +12,6 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
-  private readonly ssoAuthWidgetUrl: string = environment.sso.authWidgetUrl;
   private readonly refreshInterval: number  = environment.sso.refreshInterval;
   private readonly unsetTokenValue: string  = environment.app.unsetTokenValue;
   private readonly absoluteBaseUrl: string  = environment.app.absoluteBaseUrl;
@@ -27,7 +26,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
     // Get the token form localStorage
     const token = this.ssoService.getToken();
 
-    if (!token || token === this.unsetTokenValue) {
+    if (token == null || token === this.unsetTokenValue) {
       // First access to the app, the token hasn't been retrieved yet
       return this.ssoService.getIdentity().pipe(
         map(identity => {
@@ -35,7 +34,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
             this.ssoService.setToken(identity.token);
 
             // The token expires after 15 minutes. We need to refresh it periodically to always keep it fresh
-            interval(this.refreshInterval).subscribe((resp) => { console.log('REFRESHING TOKEN'); this.ssoService.refreshToken(); });
+            interval(this.refreshInterval).subscribe((resp) => { this.ssoService.refreshToken(); });
 
             return true;
           } else {
@@ -62,7 +61,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
     // Get the token form localStorage
     const token = this.ssoService.getToken();
 
-    if (!token || token === this.unsetTokenValue) {
+    if (token == null || token === this.unsetTokenValue) {
       // First access to the app, the token hasn't been retrieved yet
       return this.ssoService.getIdentity().pipe(
         map(identity => {

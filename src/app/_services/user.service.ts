@@ -46,14 +46,12 @@ export class UserService {
               this.lastToken = newToken;
               const userData = this.decode(newToken);
               this.currentUser.next(userData);
-              console.log(`NEXT USER: ${this.getUserName()}`);
             }
           } else {
             // User wasn't logged in
             this.lastToken = newToken;
             const userData = this.decode(newToken);
             this.currentUser.next(userData);
-            console.log(`NEXT USER: ${this.getUserName()}`);
           }
         }
       }, error => {
@@ -76,7 +74,13 @@ export class UserService {
   getUserName(): string {
     const cUser = this.currentUser.getValue();
     if (cUser) {
-      return cUser.pseudoUtilise ? cUser.pseudo : cUser.prenom + ' ' + cUser.nom;
+      if (cUser.intitule) {
+        return cUser.intitule;
+      } else if (cUser.pseudoUtilise && cUser.pseudo) {
+        return cUser.pseudo;
+      } else if (cUser.nom && cUser.prenom) {
+        return cUser.prenom + ' ' + cUser.nom;
+      }
     } else {
       return null;
     }

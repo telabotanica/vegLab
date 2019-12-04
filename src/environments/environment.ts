@@ -14,11 +14,11 @@ export const environment = {
     absoluteBaseUrl: '',
   },
   sso: {
-    baseUrl:          'https://beta.tela-botanica.org/service:annuaire:auth',
-    loginEndpoint:    'https://beta.tela-botanica.org/service:annuaire:auth/connexion',
-    identiteEndpoint: 'https://beta.tela-botanica.org/service:annuaire:auth/identite',
-    authWidgetUrl:    'http://beta.tela-botanica.org/widget:reseau:auth',
-    refreshEndpoint:  'https://beta.tela-botanica.org/service:annuaire:auth/rafraichir',
+    baseUrl:          'http://localhost:8080/service:annuaire:auth',               // https://beta.tela-botanica.org/service:annuaire:auth
+    loginEndpoint:    'http://localhost:8080/service:annuaire:auth/connexion',
+    logoutEndpoint:   'http://localhost:8080/service:annuaire:auth/deconnexion',
+    identiteEndpoint: 'http://localhost:8080/service:annuaire:auth/identite',
+    refreshEndpoint:  'http://localhost:8080/service:annuaire:auth/rafraichir',
     refreshInterval:  600000
   },
   tbRepositoriesConfigVegetation: [

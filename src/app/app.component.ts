@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import * as moment from 'moment';
 
+import { environment } from '../environments/environment';
+
 import { UserService } from './_services/user.service';
 import { MetadataService } from './_services/metadata.service';
 import { TableService } from './_services/table.service';
@@ -16,6 +18,8 @@ import { SsoService } from './_services/sso.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+
+  private readonly unsetTokenValue = environment.app.unsetTokenValue;
 
   constructor(private userService: UserService,
               private metadataService: MetadataService,
@@ -34,7 +38,17 @@ export class AppComponent implements OnInit {
 
     // Do we have a token ?
     if (this.ssoService.isTokenSet()) {
-      this.ssoService.refreshToken();
+      const token = this.ssoService.getToken();
+      // Token is not empty ?
+      if (token !== null) {
+        // Do we need to refresh this token ?
+        // Uncomment to refresh the token only if necessary (due expiration date)
+        // const needsRefresh = this.ssoService.tokenShouldBeRefreshed(token);
+        // if (needsRefresh) { this.ssoService.refreshToken(); }
+
+        // Allways refresh token at startup
+        this.ssoService.refreshToken();
+      }
     }
   }
 

@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
 import { SsoService } from 'src/app/_services/sso.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { NotificationService } from 'src/app/_services/notification.service';
 
 @Component({
   selector: 'vl-login-page',
@@ -24,7 +25,8 @@ export class LoginPageComponent implements OnInit {
 
   constructor(private ssoService: SsoService,
               private routerService: Router,
-              private route: ActivatedRoute) { }
+              private route: ActivatedRoute,
+              private notificationService: NotificationService) { }
 
   ngOnInit() {
     this.redirectUrl = this.route.snapshot.queryParams['redirectUrl'] || '/';
@@ -50,19 +52,26 @@ export class LoginPageComponent implements OnInit {
         // @DEV : setToken will be ignored (identite === null) and Identity() is call from ssoService wich returns a valid mocked token
         // @TODO IMPORTANT : FIX SSO LOGIN
         if (identite && identite.token) {
+          // At this point, we should have a valid identite.token value
           this.ssoService.setToken(identite.token);
-          this.ssoService.identity();
+          this.routerService.navigateByUrl(this.redirectUrl);
         } else {
-          this.ssoService.identity();
-          const token = this.ssoService.getToken();
-          if (token && token !== this.unsetToken) {
-            // Logged and token
-            // Navigate
-            this.routerService.navigateByUrl(this.redirectUrl);
-          } else {
-            // Logged but no token
-            //
-          }
+          // If, for any reason (?), we don't get the token,
+          // try to get it trought identity
+          this.ssoService.getIdentity().subscribe(
+            _identite => {
+              if (_identite && _identite.token) {
+                this.ssoService.setToken(_identite.token);
+                this.routerService.navigateByUrl(this.redirectUrl);
+              } else {
+                // @TODO Log error to admin
+                this.notificationService.warn('Nous ne parvenons pas à vous connecter au serveur');
+              }
+            }, error => {
+              // @Todo manage error
+              console.log(error);
+            }
+          );
         }
       }, error => {
         if (error.status) {
