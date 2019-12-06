@@ -32,10 +32,6 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
         map(identity => {
           if (identity && identity.token) {
             this.ssoService.setToken(identity.token);
-
-            // The token expires after 15 minutes. We need to refresh it periodically to always keep it fresh
-            interval(this.refreshInterval).subscribe((resp) => { this.ssoService.refreshToken(); });
-
             return true;
           } else {
             // Navigate to the login page

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponseBase } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, BehaviorSubject } from 'rxjs';
+import { Observable, of, BehaviorSubject, interval, Subscription } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 
@@ -20,7 +20,11 @@ export class SsoService {
   private readonly logoutEndpoint: string = environment.sso.logoutEndpoint;
   private readonly identiteEndpoint: string = environment.sso.identiteEndpoint;
   private readonly refreshEndpoint: string = environment.sso.refreshEndpoint;
+  private readonly refreshInterval: number = environment.sso.refreshInterval;
   private readonly localStorageTokenKey: string = 'token';
+
+  refreshTokenSet = false;
+  refreshTokenSubscription: Subscription;
 
   currentToken = new BehaviorSubject<string>(null);
 
@@ -42,6 +46,10 @@ export class SsoService {
     this.http.get<IdentiteResponse>(this.identiteEndpoint, { headers, withCredentials: true }).subscribe(
       result => {
         this.setToken(result.token);
+        // The token expires after 15 minutes. We need to refresh it periodically to always keep it fresh
+        if (!this.refreshTokenSet) {
+          this.refreshTokenSubscription = interval(this.refreshInterval).subscribe((resp) => { this.refreshTokenSet = true; this.refreshToken(); });
+        }
       }, (error: HttpResponseBase) => {
         // @Todo manage error | notify user ?
         if (error.status && error.status === 400) {
@@ -115,6 +123,11 @@ export class SsoService {
     const _email = email ? encodeURIComponent(email) : null;
     const _password = password ? encodeURIComponent(password) : null;
 
+    // The token expires after 15 minutes. We need to refresh it periodically to always keep it fresh
+    if (!this.refreshTokenSet) {
+      this.refreshTokenSubscription = interval(this.refreshInterval).subscribe((resp) => { this.refreshTokenSet = true; this.refreshToken(); });
+    }
+
     return this.http.get(`${this.loginEndpoint}?login=${_email}&password=${_password}`, {headers}); // withCredentials: true, responseType: 'text' // observe: 'events' | response | events
   }
 
@@ -122,6 +135,7 @@ export class SsoService {
     this.http.get<any>(this.logoutEndpoint).subscribe(
       logout => {
         this.removeToken();
+        if (this.refreshTokenSubscription) { this.refreshTokenSubscription.unsubscribe(); this.refreshTokenSet = false; }
         this.router.navigate(['/']);
       }, error => {
         // @Todo manage error
