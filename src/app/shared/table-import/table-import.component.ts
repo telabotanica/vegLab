@@ -1860,7 +1860,7 @@ export class TableImportComponent implements OnInit {
     // note: user values are set on the backend regardless of input values (back looks for user trough SSO process)
     // however, I think it's better to have the user values here, at less for debugging
     const user = this.userService.currentUser.getValue();
-    let userId: number;          // database field *not nullable*
+    let userId: number;          // database field nullable
     let userEmail: string;       // database field *not nullable*
     let userPseudo: string;      // database field nullable
     // let userInstitution: string; // database field nullable
