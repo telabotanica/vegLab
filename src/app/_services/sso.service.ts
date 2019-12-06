@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponseBase } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, of, BehaviorSubject, interval, Subscription } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
@@ -66,7 +67,14 @@ export class SsoService {
   public getIdentity(): Observable<IdentiteResponse> {
     const headers = new HttpHeaders();
     headers.set('Content-Type', 'text/plain').set('Accept', 'text/plain');
-    return this.http.get<IdentiteResponse>(this.identiteEndpoint, { headers, withCredentials: true});
+    return this.http.get<IdentiteResponse>(this.identiteEndpoint, { headers, withCredentials: true}).pipe(
+      tap(identite => {
+        // The token expires after 15 minutes. We need to refresh it periodically to always keep it fresh
+        if (!this.refreshTokenSet) {
+          this.refreshTokenSubscription = interval(this.refreshInterval).subscribe((resp) => { this.refreshTokenSet = true; this.refreshToken(); });
+        }
+      })
+    );
   }
 
   /**

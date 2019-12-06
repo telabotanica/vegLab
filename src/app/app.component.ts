@@ -42,7 +42,7 @@ export class AppComponent implements OnInit {
       const token = this.ssoService.getToken();
       // Token is not empty ?
       if (token !== null) {
-        // Refresh token at startup
+        // Refresh token at startup ; This will also refresh the token periodically
         this.ssoService.refreshToken();
       }
     }
