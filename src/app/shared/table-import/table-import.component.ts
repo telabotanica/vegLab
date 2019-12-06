@@ -13,6 +13,8 @@ import { LocationService } from 'src/app/_services/location.service';
 import { ObserverService } from 'src/app/_services/observer.service';
 import { BiblioService } from 'src/app/_services/biblio.service';
 import { WorkspaceService } from 'src/app/_services/workspace.service';
+import { SsoService } from 'src/app/_services/sso.service';
+import { UserService } from 'src/app/_services/user.service';
 
 import { FileData } from 'tb-dropfile-lib/lib/_models/fileData';
 import { RejectedFileData } from 'tb-dropfile-lib/lib/_models/rejectedFileData';
@@ -201,7 +203,9 @@ export class TableImportComponent implements OnInit {
     private locationService: LocationService,
     private observerService: ObserverService,
     private biblioService: BiblioService,
-    private wsService: WorkspaceService) { }
+    private wsService: WorkspaceService,
+    private ssoService: SsoService,
+    private userService: UserService) { }
 
   ngOnInit() {
     this.availableRepository = environment.tbRepositoriesConfig;
@@ -1852,7 +1856,32 @@ export class TableImportComponent implements OnInit {
   setTable(): Table {
     const newTable: Table = { id: null, createdBy: null, createdAt: null, rowsDefinition: null, sye: [], syeOrder: '', syntheticColumn: null, vlWorkspace: this.wsService.currentWS.getValue() };
 
-    newTable.createdBy = 22;
+    // user values
+    // note: user values are set on the backend regardless of input values (back looks for user trough SSO process)
+    // however, I think it's better to have the user values here, at less for debugging
+    const user = this.userService.currentUser.getValue();
+    let userId: number;          // database field *not nullable*
+    let userEmail: string;       // database field *not nullable*
+    let userPseudo: string;      // database field nullable
+    // let userInstitution: string; // database field nullable
+
+    if (null == user) {
+      // No user
+      // Should refresh the token ?
+      this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre l\'import du tableau.');
+      return;
+    } else {
+      userId = Number(user.id);
+      userEmail = user.sub;
+      userPseudo = user.intitule;
+
+      if (null == userId || null == userEmail) {
+        this.notificationService.warn('Nous ne parvenons pas à vous identifier (votre identifiant unique ou votre email est inconnu)');
+        return;
+      }
+    }
+
+    newTable.createdBy = userId;
     newTable.createdAt = new Date();
     newTable.rowsDefinition = this.getTableRowsDefinition();
 
@@ -1879,8 +1908,9 @@ export class TableImportComponent implements OnInit {
         // new occurrence level ?
         const newOccurrence0Level: Level = this.getReleveLevelById(releve.id, tablePreview);
         const newOccurrence0: OccurrenceModel = {
-          userId: 22,
-          userEmail: 'a@b.com',
+          userId,
+          userEmail,
+          userPseudo,
           observer: 'Stephane',
           dateCreated: new Date(),
           taxoRepo: '',
@@ -1905,8 +1935,9 @@ export class TableImportComponent implements OnInit {
             for (const layer of releveLayers) {
               // create synusy
               const newSynusy: OccurrenceModel = {
-                userId: 22,
-                userEmail: 'a@b.com',
+                userId,
+                userEmail,
+                userPseudo,
                 observer: 'Stephane',
                 dateCreated: new Date(),
                 taxoRepo: '',
@@ -1932,8 +1963,9 @@ export class TableImportComponent implements OnInit {
               const noNullCoefsTaxoList = _.filter(taxoList, tl => tl.coefs[releveCount] !== '');
               for (const taxoItem of noNullCoefsTaxoList) {
                 const idio: OccurrenceModel = {
-                  userId: 22,
-                  userEmail: 'a@b.com',
+                  userId,
+                  userEmail,
+                  userPseudo,
                   observer: 'Stephane',
                   dateCreated: new Date(),
                   taxoRepo: '',
@@ -1968,8 +2000,9 @@ export class TableImportComponent implements OnInit {
 
           for (const taxoItem of noNullCoefsTaxoList) {
             const idio: OccurrenceModel = {
-              userId: 22,
-              userEmail: 'a@b.com',
+              userId,
+              userEmail,
+              userPseudo,
               observer: 'Stephane',
               dateCreated: new Date(),
               taxoRepo: '',
@@ -2000,9 +2033,6 @@ export class TableImportComponent implements OnInit {
       syeCount++;
     }
 
-    console.log('NEW TABLE:');
-    console.log(newTable);
-
     // Create synthetic columns
     this.tableService.createSyntheticColumnsForSyeOnTable(newTable);
     this.tableService.createTableSyntheticColumn(newTable);
@@ -2012,7 +2042,7 @@ export class TableImportComponent implements OnInit {
     const validationDate = new Date();
     if (this.validationList.table.validation && this.validationList.table.validation.consolidedValidation) {
       const tableValidation: OccurrenceValidationModel = this.validationList.table.validation.consolidedValidation ? {
-        validatedBy:       22,
+        validatedBy:       userId,
         validatedAt:       validationDate,
         repository:        this.validationList.table.validation.consolidedValidation.repository,
         repositoryIdNomen: Number(this.validationList.table.validation.consolidedValidation.idNomen),
@@ -2035,7 +2065,7 @@ export class TableImportComponent implements OnInit {
         if (sye.validation) {
           const syeToBind = this.getSyeInTableById(sye.id, newTable);
           const syeValidation: OccurrenceValidationModel = sye.validation.consolidedValidation ? {
-            validatedBy:       22,
+            validatedBy:       userId,
             validatedAt:       validationDate,
             repository:        sye.validation.consolidedValidation.repository,
             repositoryIdNomen: Number(this.validationList.table.validation.consolidedValidation.idNomen),
@@ -2066,7 +2096,7 @@ export class TableImportComponent implements OnInit {
             for (const releve of sye.releves) {
               const relevesToBind = this.getRelevesInTableById(releve.id, newTable, false);
               const releveValidation: OccurrenceValidationModel = releve.validation.consolidedValidation ? {
-                validatedBy:       22,
+                validatedBy:       userId,
                 validatedAt:       validationDate,
                 repository:        releve.validation.consolidedValidation.repository,
                 repositoryIdNomen: Number(this.validationList.table.validation.consolidedValidation.idNomen),
