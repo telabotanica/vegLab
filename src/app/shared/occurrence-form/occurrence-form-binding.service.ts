@@ -170,9 +170,9 @@ export class OccurrenceFormBindingService {
   }
 
   private bindUserAndObserverData(occ: OccurrenceModel, formData: FormGroup, user: UserModel) {
-    occ.userId = 22;
-    occ.userEmail = 'stephane@mail.com';
-    occ.userPseudo = 'pseudo';
+    occ.userId = Number(user.id);
+    occ.userEmail = user.sub;
+    occ.userPseudo = user.pseudo;
     occ.userProfile = [];
 
     occ.observer = formData.controls.observer.value;
