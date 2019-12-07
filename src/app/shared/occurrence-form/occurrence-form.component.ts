@@ -40,7 +40,7 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
   // --------
   // Var user
   // --------
-  user: UserModel;
+  currentUser: UserModel;
 
   // --------------
   // VAR occurrence
@@ -102,6 +102,14 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
     private locationService: LocationService) { }
 
   ngOnInit() {
+    // Get current user
+    this.currentUser = this.userService.currentUser.getValue();
+    if (this.currentUser == null) {
+      // No user
+      // Should refresh the token ?
+      this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre la création d\'un relevé.');
+      return;
+    }
     // Create forms
     this.initOccurrenceForm();
 
@@ -135,7 +143,7 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
       addMetadataInput: new FormControl('')
     });
 
-    if (this.user && this.user !== null) {
+    if (this.currentUser && this.currentUser !== null) {
       this.occurrenceForm.controls.observer.setValue(this.userService.getUserName(), {emitEvent: false});
     }
   }
@@ -341,7 +349,7 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
         this.currentLocation,
         this.occurrences,
         this.occurrenceForm,
-        this.user,
+        this.currentUser,
         this.metadatas);
 
       // Bind uploaded photos
