@@ -30,7 +30,6 @@ export class TableFormComponent implements OnInit {
   tableForm: FormGroup;
   maxTitleLength = 100;
   maxDescriptionLength = 300;
-  // currentUser = this.userService.userEvents.getValue();
   currentUser: UserModel;
   relatedSyntaxon: Array<RepositoryItemModel> = [];
   relatedPdfFile: Array<FileData> = [];

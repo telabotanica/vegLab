@@ -109,5 +109,4 @@ describe('OccurrenceFormComponent', () => {
 class FakeUserService {
   fakeUser = { id: 1, name: 'Stephane', email: 'stephane@ptt.fr', roles: ['user']};
   fakeAdmin = {id: 2, name: 'Admin', email: 'admin@ptt.fr', roles: ['user', 'admin']};
-  userEvents: Observable<any> = of(this.fakeUser);
 }

@@ -375,17 +375,18 @@ export class TableService {
   }
 
   createTable(): Table {
+    const currentUser = this.userService.currentUser.getValue();
     const table: Table = {
       id: null,
 
-      userId: null,
-      userEmail: null,
-      userPseudo: null,
+      userId: currentUser ? Number(currentUser.id) : null,
+      userEmail: currentUser ? currentUser.sub : null,
+      userPseudo: currentUser ? currentUser.pseudo : null,
 
       isDiagnosis: false,
       validations: [],
 
-      createdBy: this.userService.userEvents.getValue() ? Number(this.userService.userEvents.getValue().id) : null, // @Todo user must be connected
+      createdBy: currentUser ? Number(currentUser.id) : null,
       createdAt: new Date(Date.now()),
       updatedBy: null,
       updatedAt: null,

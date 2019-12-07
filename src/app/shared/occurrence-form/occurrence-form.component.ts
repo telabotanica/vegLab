@@ -86,7 +86,6 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
   // -----------
   // SUBSCRIBERS
   // -----------
-  userEventsSubscription: Subscription;
   metadataSubscriber: Subscription;
 
   // ----
@@ -103,12 +102,6 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
     private locationService: LocationService) { }
 
   ngOnInit() {
-    // subscribe to user events
-    this.userEventsSubscription = this.userService.userEvents.subscribe(user => this.user = user);
-
-    // user undefined ?
-    // @Todo manage undefined user
-
     // Create forms
     this.initOccurrenceForm();
 
@@ -127,7 +120,6 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.userEventsSubscription) { this.userEventsSubscription.unsubscribe(); }
     if (this.metadataSubscriber) { this.metadataSubscriber.unsubscribe(); }
   }
 

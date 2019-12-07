@@ -14,7 +14,6 @@ import * as jwt_decode from 'jwt-decode';
 })
 export class UserService {
 
-  public userEvents = new BehaviorSubject<UserModel>(undefined);
   public currentUser = new BehaviorSubject<UserModel>(null);
 
   lastToken: string = null;
