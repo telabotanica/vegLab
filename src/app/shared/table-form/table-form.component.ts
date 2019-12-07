@@ -10,6 +10,7 @@ import { Table } from 'src/app/_models/table.model';
 import { OccurrenceValidationModel } from 'src/app/_models/occurrence-validation.model';
 import { PdfFile } from 'src/app/_models/pdf-file.model';
 import { TableRelatedSyntaxon } from 'src/app/_models/table-related-syntaxon';
+import { UserModel } from 'src/app/_models/user.model';
 
 import { RepositoryItemModel } from 'tb-tsb-lib';
 import { FileData } from 'tb-dropfile-lib/lib/_models/fileData';
@@ -29,7 +30,8 @@ export class TableFormComponent implements OnInit {
   tableForm: FormGroup;
   maxTitleLength = 100;
   maxDescriptionLength = 300;
-  currentUser = this.userService.userEvents.getValue();
+  // currentUser = this.userService.userEvents.getValue();
+  currentUser: UserModel;
   relatedSyntaxon: Array<RepositoryItemModel> = [];
   relatedPdfFile: Array<FileData> = [];
   allowedUploadedFileTypes = ['pdf'];
@@ -46,10 +48,18 @@ export class TableFormComponent implements OnInit {
     private notificationService: NotificationService) { }
 
   ngOnInit() {
-    const user: string = this.currentUser ? this.userService.getUserName() : '';
+    // Get current user
+    this.currentUser = this.userService.currentUser.getValue();
+    if (this.currentUser == null) {
+      // No user
+      // Should refresh the token ?
+      this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre l\'enregistrement du tableau.');
+      return;
+    }
+
     this.tableForm = new FormGroup({
       createdAt: new FormControl({value: new Date(), disabled: true}, [Validators.required]),
-      createdBy: new FormControl(user, [Validators.required]),
+      // createdBy: new FormControl(user, [Validators.required]),
       isDiagnosis: new FormControl(false, [Validators.required]),
       title: new FormControl(''),
       description: new FormControl(''),
@@ -193,7 +203,6 @@ export class TableFormComponent implements OnInit {
     const prePatchedTableValidations: Array<OccurrenceValidationModel> = [];
 
     prePatchedTable.updatedAt = new Date();
-    prePatchedTable.updatedBy = 22;
 
     // Bind metadata
     this.bindMetadataToTable(prePatchedTable);
@@ -308,7 +317,7 @@ export class TableFormComponent implements OnInit {
       validName: name,
       validatedName: name,
       validatedAt: new Date(),
-      validatedBy: 22
+      validatedBy: Number(this.currentUser.id)
     };
     return ovm;
   }
@@ -317,7 +326,6 @@ export class TableFormComponent implements OnInit {
     table.title = this.tableForm.controls.title.value;
     table.description = this.tableForm.controls.description.value;
     table.createdAt = this.tableForm.controls.createdAt.value;
-    table.createdBy = 22;
   }
 
   bindForm(table: Table) {

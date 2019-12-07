@@ -5,6 +5,11 @@ import { Biblio } from './biblio.model';
 
 export interface Sye {
   id:                 number;
+
+  userId:             number;  // not mandatory in backend but we force mandatory in front
+  userEmail:          string;  // mandatory in backend
+  userPseudo:         string;  // not mandatory in backend but we force mandatory in front
+
   originalReference?: string; // needed for table import
   syeId:              number;
   occurrencesCount:   number;

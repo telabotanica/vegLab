@@ -16,6 +16,9 @@ export class SyeService {
   createSye(id?: number): Sye {
     const sye = {
       id: null,
+      userId: null,
+      userEmail: null,
+      userPseudo: null,
       syeId: typeof(id) === 'number' ? id : null,
       occurrencesCount: 0,
       occurrences: [],

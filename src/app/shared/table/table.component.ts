@@ -5,12 +5,15 @@ import Handsontable from 'handsontable';
 import { HotTableRegisterer } from '@handsontable/angular';
 
 import { TableService } from 'src/app/_services/table.service';
+import { UserService } from 'src/app/_services/user.service';
+import { NotificationService } from 'src/app/_services/notification.service';
 
 import { Subscription } from 'rxjs';
 import { TableRow } from 'src/app/_models/table-row-definition.model';
 
 import * as _ from 'lodash';
 import { Sye } from 'src/app/_models/sye.model';
+import { UserModel } from 'src/app/_models/user.model';
 
 @Component({
   selector: 'vl-table',
@@ -23,6 +26,9 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   currentDataView: Array<TableRow> = null;
   manuallyMoveColumnsAt = null;
   currentSyes: Array<Sye> = [];
+
+  // VAR user
+  currentUser: UserModel;
 
   // VAR PERF
   t0colMove = 0;
@@ -362,7 +368,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
           if (startRowPosition !== endRowPosition) {
             const iterations = endColPosition - startColPosition + 1;
             for (let index = 0; index < iterations; index++) {
-              occurrenceIds.push(this.tableInstance.getCellMeta(1, startColPosition + index)._occurrenceId)
+              occurrenceIds.push(this.tableInstance.getCellMeta(1, startColPosition + index)._occurrenceId);
             }
 
             this.tableService.tableSelectionElement.next({
@@ -384,7 +390,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
           if (startRowPosition !== endRowPosition) {
             const iterations = endColPosition - startColPosition + 1;
             for (let index = 0; index < iterations; index++) {
-              occurrenceIds.push(this.tableInstance.getCellMeta(1, startColPosition + index)._occurrenceId)
+              occurrenceIds.push(this.tableInstance.getCellMeta(1, startColPosition + index)._occurrenceId);
             }
 
             this.tableService.tableSelectionElement.next({
@@ -507,7 +513,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onBeforeColumnMove = (columns: Array<number>, target: number) => {
     this.t0colMove = performance.now();
-    const moved: boolean | {movedColumnsStart: number, movedColumnsEnd: number} = this.tableService.beforeColumnMove(columns, target);
+    const moved: boolean | {movedColumnsStart: number, movedColumnsEnd: number} = this.tableService.beforeColumnMove(columns, target, this.currentUser);
     if (typeof(moved) === 'boolean' && moved === true) {
       return true;
     } else if (typeof(moved) === 'boolean' && moved === false) {
@@ -688,10 +694,21 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  constructor(private tableService: TableService, private cdr: ChangeDetectorRef, public router: Router) { }
+  constructor(private tableService: TableService,
+              private cdr: ChangeDetectorRef,
+              public router: Router,
+              private userService: UserService,
+              private notificationService: NotificationService) { }
 
   ngOnInit() {
-    // TEST DATA
+    // Get current user
+    this.currentUser = this.userService.currentUser.getValue();
+    if (this.currentUser == null) {
+      // No user
+      // Should refresh the token ?
+      this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre l\'import du tableau.');
+      return;
+    }
   }
 
   ngOnDestroy() {
@@ -739,7 +756,6 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
             // Error : The "updateSettings" method cannot be called because this Handsontable instance has been destroyed
             // Have to investigate further
           }
-          
         }
       }
     });
@@ -916,7 +932,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     const startCol = _.min(columnsVisulaIndexes); // if we select in rtl direction, "startCol" > "endCol"
     const endCol = _.max(columnsVisulaIndexes);
 
-    const createNewSye = this.tableService.moveRangeColumnsToNewSye(startCol, endCol);
+    const createNewSye = this.tableService.moveRangeColumnsToNewSye(startCol, endCol, this.currentUser);
 
     if (createNewSye.success) {
       // sye successfully created

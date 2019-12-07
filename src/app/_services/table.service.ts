@@ -22,6 +22,7 @@ import { EsTableResultModel } from '../_models/es-table-result.model';
 import { EsTableModel } from '../_models/es-table.model';
 import { GroupPositions } from '../_models/table/group-positions.model';
 import { TableSelectedElement } from '../_models/table/table-selected-element.model';
+import { UserModel } from '../_models/user.model';
 
 import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -377,6 +378,10 @@ export class TableService {
     const table: Table = {
       id: null,
 
+      userId: null,
+      userEmail: null,
+      userPseudo: null,
+
       isDiagnosis: false,
       validations: [],
 
@@ -429,10 +434,10 @@ export class TableService {
     // this.setCurrentTableOccurrencesIds();
   }
 
-  public addOccurrencesToCurrentTable(occurrences: Array<OccurrenceModel>) {
+  public addOccurrencesToCurrentTable(occurrences: Array<OccurrenceModel>, currentUser: UserModel) {
     const newTable = this.addOccurrencesToTable(occurrences, this.currentTable);
-    this.createSyntheticColumnsForSyeOnTable(newTable);
-    this.createTableSyntheticColumn(newTable);
+    this.createSyntheticColumnsForSyeOnTable(newTable, currentUser);
+    this.createTableSyntheticColumn(newTable, currentUser);
     this.currentTable = Object.assign({}, newTable);
     this.currentTable.rowsDefinition = this.createRowsDefinition(this.currentTable);
     this.updateColumnsPositions(this.currentTable);
@@ -450,15 +455,15 @@ export class TableService {
   // SYNTHETIC COLUMN
   // ----------------
 
-  public createSyntheticColumnsForSyeOnTable(table: Table) {
+  public createSyntheticColumnsForSyeOnTable(table: Table, currentUser: UserModel) {
     for (const sye of table.sye) {
-      const syntheticColumn = this.createSyntheticColumn(sye.occurrences, sye);
+      const syntheticColumn = this.createSyntheticColumn(sye.occurrences, currentUser, sye);
       sye.syntheticColumn = syntheticColumn;
     }
   }
 
-  public createTableSyntheticColumn(table: Table) {
-    table.syntheticColumn = this.createSyntheticColumn(this.getAllOccurrences(table));
+  public createTableSyntheticColumn(table: Table, currentUser: UserModel) {
+    table.syntheticColumn = this.createSyntheticColumn(this.getAllOccurrences(table), currentUser);
   }
 
   // ---------------------------
@@ -1135,7 +1140,7 @@ export class TableService {
             }
       }
       if (!exists) {
-        const fakeSyntheticItem: SyntheticItem = {id: null, repository: null, repositoryIdNomen: null, repositoryIdTaxo: null, displayName: null, layer: null, isOccurrenceCountEstimated: false, occurrencesCount: 0, frequency: 0};
+        const fakeSyntheticItem: SyntheticItem = {id: null, userId: null, userEmail: null, userPseudo: null, repository: null, repositoryIdNomen: null, repositoryIdTaxo: null, displayName: null, layer: null, isOccurrenceCountEstimated: false, occurrencesCount: 0, frequency: 0};
         syntheticColumnPart.push(fakeSyntheticItem);
       }
     }
@@ -1278,7 +1283,7 @@ export class TableService {
    * So we emit new dataView for any column move
    * It should be better to implement a time-saver solution because loading new data into handsontable take 100x more time than just for ie moving a column whithout reloading data
    */
-  public beforeColumnMove(columns: Array<number>, target: number): boolean | {movedColumnsStart: number, movedColumnsEnd: number} {
+  public beforeColumnMove(columns: Array<number>, target: number, currentUser: UserModel): boolean | {movedColumnsStart: number, movedColumnsEnd: number} {
     const startColPosition = _.min(columns);
     const endColPosition = _.max(columns);
     const movingDirection: 'ltr' | 'rtl' = startColPosition < target ? 'ltr' : 'rtl';
@@ -1419,8 +1424,8 @@ export class TableService {
       syeTarget.occurrences.splice(targetIndex, 0, ...syeSource.occurrences.splice(sourceIndex, nbColumnsToMove));
 
       // create new synthetic columns
-      syeSource.syntheticColumn = this.createSyntheticColumn(syeSource.occurrences, syeSource);
-      syeTarget.syntheticColumn = this.createSyntheticColumn(syeTarget.occurrences, syeTarget);
+      syeSource.syntheticColumn = this.createSyntheticColumn(syeSource.occurrences, currentUser, syeSource);
+      syeTarget.syntheticColumn = this.createSyntheticColumn(syeTarget.occurrences, currentUser, syeTarget);
 
       // update sye occurrences count
       this.updateSyeCount(this.currentTable);
@@ -1439,7 +1444,7 @@ export class TableService {
     return false;
   }
 
-  public moveRangeColumnsToNewSye(startColPosition: number, endColPosition: number): {success: boolean, newSyeId: number} {
+  public moveRangeColumnsToNewSye(startColPosition: number, endColPosition: number, currentUser: UserModel): {success: boolean, newSyeId: number} {
     if (this.columnsPositions.length === 0) { this.updateColumnsPositions(this.currentTable); }
 
     // get source sye, source index and source columns whithin this sye
@@ -1456,7 +1461,7 @@ export class TableService {
       // create a new sye with spliced occurrences
       const newSye = this.syeService.createSye(this.currentTable.sye.length);
       newSye.occurrences = splicedOccurrences;
-      newSye.syntheticColumn = this.createSyntheticColumn(newSye.occurrences, newSye);
+      newSye.syntheticColumn = this.createSyntheticColumn(newSye.occurrences, currentUser, newSye);
 
       // place new sye after spliced one in current table
       this.currentTable.sye.splice(syeIndexInTable  + 1, 0, newSye);
@@ -1465,7 +1470,7 @@ export class TableService {
       this.updateSyeCount(this.currentTable);
 
       // update source sye synthetic column
-      sourceSye.syntheticColumn = this.createSyntheticColumn(sourceSye.occurrences, sourceSye);
+      sourceSye.syntheticColumn = this.createSyntheticColumn(sourceSye.occurrences, currentUser, sourceSye);
 
       // emit new dataView
       this.tableDataView.next(this.createDataView(this.currentTable));
@@ -1830,12 +1835,15 @@ export class TableService {
    * Create a new synthetic column from given occurrences
    * If a sye is provided AND has an id, we keep this id (and also @id) for PATCH/PUT requests
    */
-  createSyntheticColumn(occurrences: Array<OccurrenceModel>, sye?: Sye): SyntheticColumn {
+  createSyntheticColumn(occurrences: Array<OccurrenceModel>, currentUser: UserModel, sye?: Sye): SyntheticColumn {
     console.log('occurrences', occurrences);
     const syntheticColumn: SyntheticColumn = {
       '@id': sye && sye['@id'] ? sye['@id'] : null,
       id: (sye && sye.id && sye.syntheticColumn) ? sye.syntheticColumn.id : null,    // If the sye already has a synthetic column, set id & sye properties
       // sye: (sye && sye.id) ? sye : null,                                          // so the table PATCH operations will also patch sye & synthetic column
+      userId: Number(currentUser.id),
+      userEmail: currentUser.sub,
+      userPseudo: currentUser.pseudo,
       sye: null,
       validations: [],
       items: [],
@@ -1846,7 +1854,22 @@ export class TableService {
     const uniquNames = _.uniqBy(names, n => n.layer && n.name && n.repositoryIdTaxo);
 
     for (const name of uniquNames) {
-      const syntheticItem: SyntheticItem = {id: null, layer: null, repository: null, repositoryIdNomen: null, repositoryIdTaxo: null, displayName: null, occurrencesCount: null, isOccurrenceCountEstimated: false, frequency: 0, coef: null, minCoef: null, maxCoef: null};
+      const syntheticItem: SyntheticItem = {
+        id: null,
+        userId: Number(currentUser.id),
+        userEmail: currentUser.sub,
+        userPseudo: currentUser.pseudo,
+        layer: null,
+        repository: null,
+        repositoryIdNomen: null,
+        repositoryIdTaxo: null,
+        displayName: null,
+        occurrencesCount: null,
+        isOccurrenceCountEstimated: false,
+        frequency: 0,
+        coef: null,
+        minCoef: null,
+        maxCoef: null};
       syntheticItem.layer = name.layer;
       syntheticItem.repository = name.repository;
       syntheticItem.repositoryIdNomen = name.repositoryIdNomen;

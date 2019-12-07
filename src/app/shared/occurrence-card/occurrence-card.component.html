@@ -41,8 +41,10 @@
   </div>
   <div class="flex bottom">
     <button mat-flat-button (click)="togglePreview()">Aperçu</button>
-    <button mat-flat-button [disabled]="isLoadingOccurrenceFromDb" (click)="addOccurrenceToCurrentTable()">
-      <span>Ajouter au tableau</span></button>
+    <button mat-flat-button [disabled]="isLoadingOccurrenceFromDb || currentUser == null" (click)="addOccurrenceToCurrentTable()">
+      <span *ngIf="currentUser">Ajouter au tableau</span>
+      <span *ngIf="currentUser == null" matTooltip="Vous devez être connecté pour ajouter des relevés au tableau courant">Ajouter au tableau</span>
+    </button>
   </div>
   <div class="occurrence-preview" [style.display]="preview ? 'block' : 'none'">
     <table class="table">

@@ -33,6 +33,7 @@ import { VlAccuracyEnum } from 'tb-geoloc-lib';
 import { FieldDataType } from 'src/app/_enums/field-data-type-enum';
 import { Observer } from 'src/app/_models/observer.model';
 import { Biblio } from 'src/app/_models/biblio.model';
+import { UserModel } from 'src/app/_models/user.model';
 
 import { environment } from '../../../environments/environment';
 
@@ -71,6 +72,9 @@ export class TableImportComponent implements OnInit {
   rawBiblio: Array<Array<string>> = [];
   rawMetadata: Array<Array<string>> = [];
   rawContent: Array<Array<string>> = [];
+
+  // User vars
+  currentUser: UserModel;
 
   // Stepper vars
   STEPS = {
@@ -208,6 +212,15 @@ export class TableImportComponent implements OnInit {
     private userService: UserService) { }
 
   ngOnInit() {
+    // Get current user
+    this.currentUser = this.userService.currentUser.getValue();
+    if (this.currentUser == null) {
+      // No user
+      // Should refresh the token ?
+      this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre l\'import du tableau.');
+      return;
+    }
+
     this.availableRepository = environment.tbRepositoriesConfig;
     // Get metadata list
     if (this.metadataService.metadataList.getValue().length === 0) {
@@ -695,20 +708,21 @@ export class TableImportComponent implements OnInit {
             } else { this.isLoadingTaxonomicList = true; }
           },
           error => {
+            const randomInteger = _.random(-1, -1000000, false);
             currentContent.validation = {
               validatedBy: 1,
               validatedAt: now,
               repository: 'otherunknown',
-              repositoryIdNomen: null,
-              repositoryIdTaxo: null,
+              repositoryIdNomen: randomInteger,
+              repositoryIdTaxo: randomInteger.toString(),
               inputName: t[2],
               validatedName: null,
               validName: null
             };
             currentContent.rim = {
               repository: 'otherunknown',
-              idNomen: null,
-              idTaxo: null,
+              idNomen: randomInteger,
+              idTaxo: randomInteger.toString(),
               name: t[2],
               author: ''
             };
@@ -1854,12 +1868,10 @@ export class TableImportComponent implements OnInit {
   // TABLE
   // *****
   setTable(): Table {
-    const newTable: Table = { id: null, createdBy: null, createdAt: null, rowsDefinition: null, sye: [], syeOrder: '', syntheticColumn: null, vlWorkspace: this.wsService.currentWS.getValue() };
-
     // user values
     // note: user values are set on the backend regardless of input values (back looks for user trough SSO process)
     // however, I think it's better to have the user values here, at less for debugging
-    const user = this.userService.currentUser.getValue();
+    const user = this.currentUser;
     let userId: number;          // database field nullable
     let userEmail: string;       // database field *not nullable*
     let userPseudo: string;      // database field nullable
@@ -1881,8 +1893,20 @@ export class TableImportComponent implements OnInit {
       }
     }
 
-    newTable.createdBy = userId;
-    newTable.createdAt = new Date();
+    const newTable: Table = {
+      id: null,
+      userId,
+      userEmail,
+      userPseudo,
+      createdBy: userId,
+      createdAt: new Date(),
+      rowsDefinition: null,
+      sye: [],
+      syeOrder: '',
+      syntheticColumn: null,
+      vlWorkspace: this.wsService.currentWS.getValue()
+    };
+
     newTable.rowsDefinition = this.getTableRowsDefinition();
 
     // prepare and merge data from lists (taxonomicList, validationList, etc.)
@@ -1893,6 +1917,9 @@ export class TableImportComponent implements OnInit {
     for (const sye of this.validationList.table.sye) {
       const newSye: Sye = {
         id: null,
+        userId,
+        userEmail,
+        userPseudo,
         originalReference: sye.id,
         syeId: syeCount,
         occurrencesCount: sye.releves.length,
@@ -2034,8 +2061,8 @@ export class TableImportComponent implements OnInit {
     }
 
     // Create synthetic columns
-    this.tableService.createSyntheticColumnsForSyeOnTable(newTable);
-    this.tableService.createTableSyntheticColumn(newTable);
+    this.tableService.createSyntheticColumnsForSyeOnTable(newTable, this.currentUser);
+    this.tableService.createTableSyntheticColumn(newTable, this.currentUser);
 
     // Bind validations
     // table validation

@@ -20,6 +20,8 @@ import { LayerService } from 'src/app/_services/layer.service';
 import { MetadataService } from 'src/app/_services/metadata.service';
 import { OccurrenceService } from 'src/app/_services/occurrence.service';
 import { TableService } from 'src/app/_services/table.service';
+import { UserService } from 'src/app/_services/user.service';
+import { NotificationService } from 'src/app/_services/notification.service';
 
 import { RepositoryItemModel } from 'tb-tsb-lib';
 import { OccurrenceModel } from 'src/app/_models/occurrence.model';
@@ -29,6 +31,7 @@ import { Polygon } from 'geojson';
 import { Observer as ObserverModel } from '../../_models/observer.model';
 import { Biblio } from 'src/app/_models/biblio.model';
 import { LayerEnum } from 'src/app/_enums/layer-list';
+import { UserModel } from 'src/app/_models/user.model';
 
 import * as _ from 'lodash';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSelectChange } from '@angular/material';
@@ -39,6 +42,9 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSelectChange } from '@angu
   styleUrls: ['./occurrence-search.component.scss']
 })
 export class OccurrenceSearchComponent implements OnInit, OnDestroy {
+
+  // VAR user
+  currentUser: UserModel;
 
   // VAR Occurrence Filters
   tbRepositoriesConfig = environment.tbRepositoriesConfig;
@@ -149,9 +155,20 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
     private metadataService: MetadataService,
     private occurrenceService: OccurrenceService,
     private tableService: TableService,
-    public dialog: MatDialog) { }
+    public dialog: MatDialog,
+    private userService: UserService,
+    private notificationService: NotificationService) { }
 
   ngOnInit() {
+    // Get current user
+    this.currentUser = this.userService.currentUser.getValue();
+    if (this.currentUser == null) {
+      // No user
+      // Should refresh the token ?
+      this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre la recherche de relevés.');
+      return;
+    }
+
     // Get layers list
     this.layerList = this.layerService.getLayers();
     // Get metadata list
@@ -696,7 +713,7 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
       this.occurrenceService.getOccurrenceById(sOccId).subscribe(
         rOcc => {
           occurrences.push(rOcc);
-          if (i === this.selectedOccurrencesIds.length - 1) { this.tableService.addOccurrencesToCurrentTable(occurrences); }
+          if (i === this.selectedOccurrencesIds.length - 1) { this.tableService.addOccurrencesToCurrentTable(occurrences, this.currentUser); }
           i++;
           this.tableService.isLoadingData.next(false);
         },

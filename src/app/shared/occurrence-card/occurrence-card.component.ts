@@ -1,9 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
 
 import { OccurrenceModel } from 'src/app/_models/occurrence.model';
+import { UserModel } from 'src/app/_models/user.model';
 
 import { OccurrenceService } from 'src/app/_services/occurrence.service';
 import { TableService } from '../../_services/table.service';
+import { UserService } from 'src/app/_services/user.service';
+import { NotificationService } from 'src/app/_services/notification.service';
 
 @Component({
   selector: 'vl-occurrence-card',
@@ -18,10 +21,20 @@ export class OccurrenceCardComponent implements OnInit {
 
   preview = false;
   isLoadingOccurrenceFromDb = false;
+  currentUser: UserModel;
 
-  constructor(private occurrenceService: OccurrenceService, private tableService: TableService) { }
+  constructor(private occurrenceService: OccurrenceService,
+              private tableService: TableService,
+              private userService: UserService,
+              private notificationService: NotificationService) { }
 
   ngOnInit() {
+    // Get current user
+    this.currentUser = this.userService.currentUser.getValue();
+    if (this.currentUser == null) {
+      // No user, addOccurrencesToCurrentTable should be disabled
+    }
+
     if (this.score) { this.score = Math.round(this.score); }
     if (this.openWithPreview) { this.preview = true; }
   }
@@ -37,7 +50,7 @@ export class OccurrenceCardComponent implements OnInit {
     this.isLoadingOccurrenceFromDb = true;
     this.occurrenceService.getEsOccurrenceWithChildrenById(this.occurrence.id).subscribe(
       occurrence => {
-        this.tableService.addOccurrencesToCurrentTable([occurrence]);
+        this.tableService.addOccurrencesToCurrentTable([occurrence], this.currentUser);
         this.isLoadingOccurrenceFromDb = false;
       }, error => {
         this.isLoadingOccurrenceFromDb = false;

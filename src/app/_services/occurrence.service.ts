@@ -35,8 +35,9 @@ export class OccurrenceService {
       signature: null,
       taxoRepo: null,
 
-      userEmail: null,
       userId: null,
+      userEmail: null,
+      userPseudo: null,
       userProfile: null,
 
       validations: [],
