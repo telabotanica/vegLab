@@ -28,7 +28,7 @@ export class TableCardComponent implements OnInit {
     this.tableService.isLoadingData.next(true);
     this.tableService.getTableById(id).subscribe(
       table => {
-        console.log(this.tableService.toString(table));
+        console.log(table, this.tableService.toString(table));
         this.tableService.setCurrentTable(table, true);
         this.tableService.isLoadingData.next(false);
       }, errorTable => {

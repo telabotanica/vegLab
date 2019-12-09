@@ -63,10 +63,20 @@ export class TableService {
    * Get a table
    */
   getTableById(id: number): Observable<Table> {
+    const currentUser = this.userService.currentUser.getValue();
     return this.http.get<Table>(`${environment.apiBaseUrl}/tables/${id}`).pipe(
       map(t => this.parseGeometryAndIntegerifyElevation(t)),
       map(t => this.orderSye(t)),
-      map(t => this.orderSyeOccurrences(t))
+      map(t => this.orderSyeOccurrences(t)),
+      map(t => {
+        // Is table owned by current user ?
+        if (currentUser !== null) {
+          t.ownedByCurrentUser = currentUser && Number(currentUser.id) === t.createdBy;
+        } else {
+          t.ownedByCurrentUser = false;
+        }
+        return t;
+      })
     );
   }
 
@@ -150,15 +160,31 @@ export class TableService {
   // TABLE I/O (ES)
   // --------------
   getEsTables(): Observable<Array<EsTableModel>> {
+    const currentUser = this.userService.currentUser.getValue();
     return this.http.get<EsTableResultModel>(`${environment.esBaseUrl}/vl_tables/_search`).pipe(
-      map(result => _.map(result.hits.hits, hit => hit._source))
+      map(result => _.map(result.hits.hits, hit => hit._source)),
+      map(result => {
+        // Are tables owned by current user ?
+        for (const esTable of result) {
+          esTable.ownedByCurrentUser = currentUser && Number(currentUser.id) === esTable.userId;
+        }
+        return result;
+      })
     );
   }
 
   findEsTableByQuery(esQuery: string): Observable<Array<EsTableModel>> {
     const headers = new HttpHeaders({ 'Content-type': 'application/json' });
+    const currentUser = this.userService.currentUser.getValue();
     return this.http.post<EsTableResultModel>(`${environment.esBaseUrl}/vl_tables/_search`, esQuery, {headers}).pipe(
-      map(result => _.map(result.hits.hits, hit => hit._source))
+      map(result => _.map(result.hits.hits, hit => hit._source)),
+      map(result => {
+        // Are tables owned by current user ?
+        for (const esTable of result) {
+          esTable.ownedByCurrentUser = currentUser && Number(currentUser.id) === esTable.userId;
+        }
+        return result;
+      })
     );
   }
 
@@ -382,6 +408,7 @@ export class TableService {
       userId: currentUser ? Number(currentUser.id) : null,
       userEmail: currentUser ? currentUser.sub : null,
       userPseudo: currentUser ? currentUser.pseudo : null,
+      ownedByCurrentUser: currentUser !== null,     // a new table is owned by its creator
 
       isDiagnosis: false,
       validations: [],

@@ -164,6 +164,7 @@ export class TableSearchComponent implements OnInit {
 
     this.tableService.findEsTableByQuery(query).subscribe(
       esTables => {
+        console.log('ES TABLES', esTables);
         this.isSearching = false;
         this.tables = esTables;
       },

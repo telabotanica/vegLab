@@ -30,8 +30,6 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
   panelsSizeChanged = new EventEmitter<boolean>();
   actionPanelOpenCloseSubscription: Subscription;
 
-  // Table vars
-  isSavingTable: boolean;
 
   constructor(private menuService: MenuService,
               private tableService: TableService,
@@ -147,29 +145,6 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
    */
   noActiveArea(): boolean {
     return !this.infoAreaActive && !this.idioPhotoAreaActive && !this.chartAreaActive && !this.mapAreaActive && !this.pdfAreaActive && !this.validationAreaActive;
-  }
-
-
-  // -----
-  // TABLE
-  // -----
-  public isCurrentTableExistsInDb(): boolean {
-    const table = this.tableService.getCurrentTable();
-    if (table && table.id) { return true; } else { return false; }
-  }
-
-  public quickSaveTable(): void {
-    if (this.isCurrentTableExistsInDb()) {
-      this.isSavingTable = true;
-      this.tableService.putTable(this.tableService.getCurrentTable()).subscribe(
-        savedTable => {
-          this.isSavingTable = false;
-        }, error => {
-          this.isSavingTable = false;
-          this.notificationService.error('Nous ne parvenons pas à sauvegarder votre tableau');
-        }
-      );
-    }
   }
 
 }

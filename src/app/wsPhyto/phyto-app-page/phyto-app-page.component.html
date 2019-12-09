@@ -21,10 +21,6 @@
             <div class="progress-bar-container" *ngIf="tableService.isLoadingData | async">
               <mat-progress-bar mode="indeterminate"></mat-progress-bar>
             </div>
-            <div class="table-menu">
-              <button mat-button (click)="quickSaveTable()" [disabled]="isSavingTable"><mat-spinner *ngIf="isSavingTable" diameter="16"></mat-spinner> Enregistrer</button>
-              <button mat-button (click)="router.navigate(['/phyto/app/create-table'])" [disabled]="isSavingTable"><mat-spinner *ngIf="isSavingTable" diameter="16"></mat-spinner> Enregistrer sous</button>
-            </div>
             <div class="table-area" #tableArea>
               <vl-table></vl-table>
             </div>

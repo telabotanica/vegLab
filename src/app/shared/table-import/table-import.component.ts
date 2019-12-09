@@ -1898,6 +1898,7 @@ export class TableImportComponent implements OnInit {
       userId,
       userEmail,
       userPseudo,
+      ownedByCurrentUser: user !== null,    // a new table is owned by its creator
       createdBy: userId,
       createdAt: new Date(),
       rowsDefinition: null,

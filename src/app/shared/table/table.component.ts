@@ -28,7 +28,9 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   currentSyes: Array<Sye> = [];
 
   // VAR user
+  userSubscription: Subscription;
   currentUser: UserModel;
+  isCurrentTableOwned = false;
 
   // VAR PERF
   t0colMove = 0;
@@ -182,6 +184,9 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // VAR sub-header
   tableSpacerPx = 49 + this.firstColWidth;
+
+  // VAR saving table
+  isSavingTable: boolean;
 
   // ------------------
   // HANDSONTABLE HOOKS
@@ -706,9 +711,23 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.currentUser == null) {
       // No user
       // Should refresh the token ?
-      this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre l\'import du tableau.');
+      this.notificationService.warn('Il semble que vous ne soyez plus connecté. Veuillez vous connecter à nouveau.');
       return;
     }
+
+    // Subscribe to current user
+    this.userSubscription = this.userService.currentUser.subscribe(
+      user => {
+        this.currentUser = user;
+        this.isCurrentTableOwned = this.ownedTable();
+      },
+      error => {
+        // @Todo manage error
+      }
+    );
+
+    // Current table owned by current user ?
+    this.isCurrentTableOwned = this.ownedTable();
   }
 
   ngOnDestroy() {
@@ -734,9 +753,10 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Subscribe to current table changes
     this.currentTableSubscription = this.tableService.tableDataView.subscribe(dataView => {
+      this.isCurrentTableOwned = this.ownedTable();
+
       this.currentSyes = this.tableService.getCurrentTable().sye;
       this.updateTableValuesAndMetadata(dataView);
-      console.log('UPDATE TABLE VALUES AND METADATA');
       this.cdr.detectChanges();
     });
 
@@ -981,9 +1001,46 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  // ----------
+  // SAVE TABLE
+  // ----------
+  public isCurrentTableExistsInDb(): boolean {
+    const table = this.tableService.getCurrentTable();
+    return table && table.id ? true : false;
+  }
+
+  public quickSaveTable(): void {
+    if (this.isCurrentTableExistsInDb()) {
+      this.isSavingTable = true;
+      this.tableService.putTable(this.tableService.getCurrentTable()).subscribe(
+        savedTable => {
+          this.isSavingTable = false;
+        }, error => {
+          this.isSavingTable = false;
+          this.notificationService.error('Nous ne parvenons pas à sauvegarder votre tableau');
+        }
+      );
+    }
+  }
+
   // -----
   // UTILS
   // -----
+  /**
+   * Is current table owned by current user ?
+   */
+  private ownedTable(): boolean {
+    const currentTable = this.tableService.getCurrentTable();
+    if (this.currentUser && this.currentUser.id && currentTable) {
+      if (Number(this.currentUser.id) === currentTable.userId) {
+        // owned
+        return true;
+      } else {
+        return false;
+      }
+    } else { return false; }
+  }
+
   applyClass(elem, className) {
     if (!Handsontable.dom.hasClass(elem, className)) {
       Handsontable.dom.addClass(elem, className);
