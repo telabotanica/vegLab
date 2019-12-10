@@ -16,8 +16,6 @@ export class MatPaginatorIntlService extends MatPaginatorIntl {
   previousPageLabel = 'Page précédente';
 
   getRangeLabel = (page: number, pageSize: number, length: number) => {
-    console.log('GET RANGE LABEL');
-    console.log(`page ${page}, pageSize ${pageSize}, length ${length}`);
     if (length === 0 || pageSize === 0) { return `0 sur ${length}`; }
 
     length = Math.max(length, 0);
