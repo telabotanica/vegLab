@@ -77,6 +77,8 @@ import { ForestAppPageComponent } from './wsForest/forest-app-page/forest-app-pa
 
 // third parts modules
 import { MaterialModule } from './material-module';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { MatPaginatorIntlService } from './_services/mat-paginator-intl.service';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { TbGeolocLibModule } from 'tb-geoloc-lib';
 import { TbTsbLibModule } from 'tb-tsb-lib';
@@ -104,6 +106,9 @@ import { EcologicalDiagramComponent } from './shared/table-charts/ecological-dia
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { BaseflorDiagramComponent } from './shared/table-charts/baseflor-diagram/baseflor-diagram.component';
 import { BaseflorDiagramSelectorComponent } from './shared/table-charts/baseflor-diagram-selector/baseflor-diagram-selector.component';
+import { OccurrencesTableViewComponent } from './shared/occurrences-table-view/occurrences-table-view.component';
+import { TablesTableViewComponent } from './shared/tables-table-view/tables-table-view.component';
+
 
 /*
 import * as Sentry from '@sentry/browser';
@@ -134,7 +139,7 @@ export class SentryErrorHandler implements ErrorHandler {
     LevelPipe, ShortLevelPipe, MomentPipe, MomentLocalDatePipe, // Pipes
     PhytoHomePageComponent, PhytoAppPageComponent, // WS phyto
     ForestHomePageComponent, ForestAppPageComponent, // WS forest
-    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, MomentStringInputDatePipe, EcologicalDiagramComponent, BaseflorDiagramComponent, BaseflorDiagramSelectorComponent, // admin
+    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, MomentStringInputDatePipe, EcologicalDiagramComponent, BaseflorDiagramComponent, BaseflorDiagramSelectorComponent, OccurrencesTableViewComponent, TablesTableViewComponent, // admin
   ],
   entryComponents: [
     OccurrenceSearchMetadataModal1Component
@@ -163,7 +168,8 @@ export class SentryErrorHandler implements ErrorHandler {
               {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
               {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
               {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}},
-              {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}
+              {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+              {provide: MatPaginatorIntl, useClass: MatPaginatorIntlService}
               /*{provide: ErrorHandler, useClass: SentryErrorHandler}*/
             ],
   bootstrap: [AppComponent]

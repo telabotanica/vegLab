@@ -173,6 +173,29 @@ export class TableService {
     );
   }
 
+  getEsTablesForCurrentUser(from?: number, size?: number): Observable<EsTableResultModel> | Observable<null> {
+    const currentUser = this.userService.currentUser.getValue();
+    if (!currentUser && !currentUser.id) {
+      return of(null);
+    }
+    const headers = new HttpHeaders({ 'Content-type': 'application/json' });
+    const fromSizeQueryPart = from && size ? `"from": ${from}, "size": ${size},` : '';
+    const query = `
+    {
+      ${fromSizeQueryPart}
+      "query": {
+        "bool": {
+          "must": [{
+            "term": {
+              "userId": "${Number(currentUser.id)}"
+            }
+          }]
+        }
+      }
+    }`;
+    return this.http.post<EsTableResultModel>(`${environment.esBaseUrl}/vl_tables/_search`, query, {headers});
+  }
+
   findEsTableByQuery(esQuery: string): Observable<Array<EsTableModel>> {
     const headers = new HttpHeaders({ 'Content-type': 'application/json' });
     const currentUser = this.userService.currentUser.getValue();

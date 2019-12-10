@@ -10,7 +10,7 @@
     <mat-menu #menu="matMenu">
       <!--<button mat-menu-item *ngIf="isAdmin()" (click)="router.navigate(['/admin'])">Tableau de bord</button>-->
       <button mat-menu-item (click)="router.navigate(['/admin'])">Tableau de bord</button>
-      <button mat-menu-item>Mon compte</button>
+      <button mat-menu-item (click)="router.navigate(['/my-data'])">Mes données</button>
       <button mat-menu-item (click)="logout()">Se deconnecter</button>
     </mat-menu>
   </div>

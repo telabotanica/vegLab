@@ -2,15 +2,18 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { OccurrenceModel } from '../_models/occurrence.model';
+import { EsOccurrencesResultModel } from '../_models/es-occurrences-result.model';
+import { EsOccurrencesDocsResultModel } from '../_models/es-occurrences-docs.model';
+
 import { InputSource } from '../_enums/input-source-enum';
 
 import { Observable, of, zip } from 'rxjs';
 import { map, flatMap, tap, concatMap } from 'rxjs/operators';
-import { EsOccurrencesResultModel } from '../_models/es-occurrences-result.model';
-
 import * as _ from 'lodash';
-import { EsOccurrencesDocsResultModel } from '../_models/es-occurrences-docs.model';
+
 import { WorkspaceService } from './workspace.service';
+import { UserService } from './user.service';
+
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -18,7 +21,7 @@ import { environment } from 'src/environments/environment';
 })
 export class OccurrenceService {
 
-  constructor(private http: HttpClient, private wsService: WorkspaceService) { }
+  constructor(private http: HttpClient, private wsService: WorkspaceService, private userService: UserService) { }
 
   getFreshOccurrence(): OccurrenceModel {
     return {
@@ -119,6 +122,36 @@ export class OccurrenceService {
       })
     );
   }
+
+  getEsOccurrencesForCurrentUser(from?: number, size?: number): Observable<EsOccurrencesResultModel> | Observable<null> {
+    const currentUser = this.userService.currentUser.getValue();
+    if (!currentUser && !currentUser.id) {
+      return of(null);
+    }
+    const headers = new HttpHeaders({ 'Content-type': 'application/json' });
+    console.log(`from ${from} size ${size} // ${from !== null && size !== null}`);
+    const fromSizeQueryPart = from !== null && size !== null ? `"from": ${from}, "size": ${size},` : '';
+    const query = `
+    {
+      ${fromSizeQueryPart}
+      "query": {
+        "bool": {
+          "must": [
+            {
+              "term": {
+                "userId": "${Number(currentUser.id)}"
+              }
+            }
+          ], "must_not": [
+            { "match_phrase": { "level": "idiotaxon" } },
+            { "exists": { "field": "parentLevel" } }
+          ]
+        }
+      }
+    }`;
+    return this.http.post<EsOccurrencesResultModel>(`${environment.esBaseUrl}/cel2_occurrences/_search`, query, {headers});
+  }
+
 
   //
   public parseGeometryAndIntegerifyElevation(occurrence: OccurrenceModel): OccurrenceModel {

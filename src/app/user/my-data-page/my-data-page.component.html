@@ -1,3 +1,112 @@
-<p>
-  my-data-page works!
-</p>
+<div id="my-data-container">
+  
+  <div class="header">
+    <h1>Mes données<br /><small>connecté en tant que {{ getUserName() }}</small></h1>
+  </div>
+
+  <div fxLayout="row">
+    <mat-sidenav-container class="sidenav-container" (backdropClick)="close()">
+      <mat-sidenav #sidenav position="end" (keydown.escape)="close()">
+        <div class="sidenav-content-wrapper">
+          <!-- Table info -->
+          <div *ngIf="tableInfo">
+            <h3>Tableau n°{{ tableInfo.id }}</h3>
+            <p>Informations</p>
+          </div>
+
+          <!-- Occurrence info -->
+          <div *ngIf="occurrenceInfo">
+            <h3>Relevé n°{{ occurrenceInfo.id }}</h3>
+            <p>Informations</p>
+          </div>
+
+          <!-- Delete a table -->
+          <div *ngIf="tableToDelete">
+            <h3>Tableau n°{{ tableToDelete.id }}</h3>
+            <p>Suppression</p>
+          </div>
+
+          <!-- Delete an occurrence -->
+          <div *ngIf="occurrenceToDelete">
+            <h3>Relevé n°{{ occurrenceToDelete.id }}</h3>
+            <p>Suppression</p>
+          </div>
+
+        </div>
+      </mat-sidenav>
+  
+      <mat-sidenav-content>
+        <div fxFlex="15%" class="column-spacer"></div>
+
+        <div fxFlex>
+          <div fxLayout="column" fxLayoutAlign="center start" fxLayoutGap="40px" class="content">
+
+              <p><button mat-button (click)="sidenav.open()">Open</button></p>
+              <p>Closed due to: {{reason}}</p>
+
+
+            <!-- main content -->
+            <div class="section">
+              <!-- TABLES -->
+              <h3 class="title" matBadge="{{ myTablesCount }}" matBadgeOverlap="false" matBadgeSize="medium">Mes tableaux</h3>
+
+              <div class="no-tables" *ngIf="!myTablesLoading && myTablesSet && myTables.length === 0">
+                Vous n'avez aucun tableau pour l'instant.
+              </div>
+
+              <div class="my-tables-content">
+                <vl-tables-table-view [count]="myTablesCount"
+                                      [size]="myTablesPaginatorSize"
+                                      [pageIndex]="myTablesPageIndex"
+                                      [tables]="myTables"
+                                      [isLoading]="myTablesLoading"
+                                      (pageChange)="_tablePageChanged($event)"
+                                      (previewTable)="previewTableAction($event)"
+                                      (deleteTable)="deleteTableAction($event)"
+                                      ></vl-tables-table-view>
+                <div class="info-paragraph">
+                  Vous ne pouvez modifier que les tableaux que vous avez vous-même créés ou ceux qui vous avez dupliqués.
+                </div>
+              </div>
+            </div>
+            <!-- RELEVES -->
+            <div class="section">
+              <h3 class="title" matBadge="{{ myOccurrencesCount }}" matBadgeOverlap="false" matBadgeSize="medium">Mes relevés</h3>
+
+              <div class="no-occurrences" *ngIf="!myOccurrencesLoading && myOccurrencesSet && myOccurrences.length === 0">
+                Vous n'avez aucun relevé pour l'instant.
+              </div>
+
+              <div class="my-occurrences-content">
+                <vl-occurrences-table-view [count]="myOccurrencesCount"
+                                          [size]="myOccurrencesPaginatorSize"
+                                          [pageIndex]="myOccurrencesPageIndex"
+                                          [occurrences]="myOccurrences"
+                                          [isLoading]="myOccurrencesLoading"
+                                          (pageChange)="_occurrencePageChanged($event)"
+                                          (previewOccurrence)="previewOccurrenceAction($event)"
+                                          (deleteOccurrence)="deleteOccurrenceAction($event)"
+                                          ></vl-occurrences-table-view>
+                <div class="info-paragraph">
+                  Vous ne pouvez modifier que les relevés que vous avez vous-même créés.
+                </div>
+              </div>
+            </div>
+            <div class="section">
+                <h3 class="title">Projets</h3>
+            </div>
+            <div class="section">
+              <h3 class="title">4</h3>
+            </div>
+
+          </div>
+        </div>
+
+        <div fxFlex="15%" class="column-spacer"></div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+    
+  </div>
+
+  
+</div>

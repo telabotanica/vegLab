@@ -1,0 +1,66 @@
+#my-data-container {
+
+  .header, .fullwidth-block, .footer {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .header {
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    background-image: url('../../../assets/wsPhyto/img/phytosocio.png');
+    background-size: cover;
+    color: white;
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 0px;
+    }
+    h2 {
+      font-size: 1.5em;
+      text-align: center;
+    }
+  }
+
+  .sidenav-container {
+    width: 100%;
+    background-color: white;
+    .content {
+      margin-top: 30px;
+      .section {
+        width: 100%;
+        h3 {
+          width: max-content;
+        }
+        .title {
+          img {
+            width: 35px;
+          }
+        }
+        .info-paragraph {
+          padding-top: 15px;
+          font-style: italic;
+        }
+      }
+      .my-tables-content {
+        width: 100%;
+      }
+      .my-occurrences-content {
+        width: 100%;
+      }
+    }
+  
+    .sidenav-content-wrapper {
+      padding: 15px;
+      background-color: pink;
+      min-width: 350px;
+    }
+
+    .inline-spinner {
+      margin-right: 8px;
+    }
+  }
+  
+}

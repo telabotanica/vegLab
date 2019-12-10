@@ -18,6 +18,8 @@ import { TableFormComponent } from './shared/table-form/table-form.component';
 import { TableSearchComponent } from './shared/table-search/table-search.component';
 import { TableImportComponent } from './shared/table-import/table-import.component';
 
+import { MyDataPageComponent } from './user/my-data-page/my-data-page.component';
+
 import { AuthGuard } from './_guards/auth.guard';
 
 const routes: Routes = [
@@ -31,6 +33,7 @@ const routes: Routes = [
     { path: 'search-table', component: TableSearchComponent },
     { path: 'import-table', component: TableImportComponent }
   ]},
+  { path: 'my-data', component: MyDataPageComponent, canActivate: [AuthGuard]},
   { path: 'error', component: FatalErrorPageComponent },
   // { path: 'admin', component: AdminHomePageComponent, canActivate: [AdminGuard], canActivateChild: [AdminGuard], children: [
   { path: 'admin', component: AdminHomePageComponent, children: [
