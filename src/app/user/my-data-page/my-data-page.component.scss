@@ -45,15 +45,12 @@
           }
         }
         .sidenav-content {
-          table {
-            margin: 25px;
-            margin-top: 0;
-            width: 100%;
-            td.item-header {
-              font-weight: bold;
-            }
-            td.item-content {
-  
+          .confirm-delete {
+            padding: 25px;
+            .action-buttons {
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
             }
           }
         }

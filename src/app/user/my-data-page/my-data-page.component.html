@@ -9,12 +9,12 @@
       <mat-sidenav #sidenav class="sidenav" position="end" (keydown.escape)="close()">
         <div class="sidenav-content-wrapper">
           <!-- Table info -->
-          <div *ngIf="tableInfo">
+          <div *ngIf="tableInfo" class="table-info">
             <vl-table-preview [table]="tableInfo"></vl-table-preview>
           </div>
 
           <!-- Occurrence info -->
-          <div *ngIf="occurrenceInfo">
+          <div *ngIf="occurrenceInfo" class="occurrence-info">
             <div class="sidenav-header occurrence">
               <h3>Relevé n°{{ occurrenceInfo.id }}</h3>
               <p>Informations</p>
@@ -25,18 +25,28 @@
           </div>
 
           <!-- Delete a table -->
-          <div *ngIf="tableToDelete">
+          <div *ngIf="tableToDelete" class="table-delete">
             <div class="sidenav-header table">
               <h3>Tableau n°{{ tableToDelete.id }}</h3>
               <p>Suppression</p>
             </div>
             <div class="sidenav-content">
-
+              <vl-table-basic-infos-preview [table]="tableToDelete"></vl-table-basic-infos-preview>
+              <hr />
+              <div class="confirm-delete">
+                <p>Lorsque vous supprimez un tableau, les relevés qui le compose ne sont par supprimés.</p>
+                <br />
+                <p><b>La suppression de ce tableau est irreversible.</b></p>
+                <div class="action-buttons">
+                  <button mat-flat-button color="warn">Confirmer la suppression</button>
+                  <button mat-flat-button color="primary" (click)="cancelTableDelete()">Annuler</button>
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Delete an occurrence -->
-          <div *ngIf="occurrenceToDelete">
+          <div *ngIf="occurrenceToDelete" class="occurrence-delete">
             <div class="sidenav-header occurrence">
               <h3>Relevé n°{{ occurrenceToDelete.id }}</h3>
               <p>Suppression</p>

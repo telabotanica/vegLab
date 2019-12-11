@@ -170,6 +170,11 @@ export class MyDataPageComponent implements OnInit {
     this.sidenav.open();
   }
 
+  cancelTableDelete(): void {
+    this.sidenav.close();
+    this.close();
+  }
+
   previewOccurrenceAction(occurrence: OccurrenceModel): void {
     this.resetInfoAndDeleteValues();
     this.occurrenceInfo = occurrence;
