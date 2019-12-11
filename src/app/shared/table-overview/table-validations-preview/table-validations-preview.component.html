@@ -1,0 +1,21 @@
+<div class="table-validations-preview-wrapper">
+  <table>
+    <thead>
+      <tr class="row-header">
+        <th class="element">Élement</th>
+        <th class="id">id</th>
+        <th class="validation">Identification</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row_" *ngFor="let validation of validations">
+        <td class="element"
+            [class._table]="validation.element === 'table'"
+            [class._sye]="validation.element === 'sye'"
+            [class._releve]="validation.element === 'releve'">{{ validation.label }}</td>
+        <td class="id">{{ validation.value.id }}</td>
+        <td class="validation" title="{{ getValidationLabel(validation.element, validation.value.validations) }}">{{ getValidationLabel(validation.element, validation.value.validations) }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

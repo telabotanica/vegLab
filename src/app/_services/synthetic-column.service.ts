@@ -22,7 +22,7 @@ export class SyntheticColumnService {
     }
   }
 
-  private getRomanCoef(frequency: number): string {
+  getRomanCoef(frequency: number): string {
     switch (true) {
       case (frequency < 5):
         return '.';

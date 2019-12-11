@@ -13,6 +13,7 @@ export interface EsTableModel {
   rowsCount:              number;
   tableValidation:        string;
   syeValidations:         string;
+  validations:            string;
   occurrencesValidations: string;
   rowsValidations:        string;
   tableName:              string;

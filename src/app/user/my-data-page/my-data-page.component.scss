@@ -1,3 +1,5 @@
+@import '../../_styles/colors.scss';
+
 #my-data-container {
 
   .header, .fullwidth-block, .footer {
@@ -27,6 +29,36 @@
   .sidenav-container {
     width: 100%;
     background-color: white;
+    .sidenav {
+      max-width: 40%;
+      .sidenav-content-wrapper {
+        min-width: 400px;
+        .sidenav-header {
+          padding: 15px;
+          &.table {
+            background-color: $blue;
+            color: white;
+          }
+          &.occurrence {
+            background-color: $green;
+            color: white;
+          }
+        }
+        .sidenav-content {
+          table {
+            margin: 25px;
+            margin-top: 0;
+            width: 100%;
+            td.item-header {
+              font-weight: bold;
+            }
+            td.item-content {
+  
+            }
+          }
+        }
+      }
+    }
     .content {
       margin-top: 30px;
       .section {
@@ -52,11 +84,7 @@
       }
     }
   
-    .sidenav-content-wrapper {
-      padding: 15px;
-      background-color: pink;
-      min-width: 350px;
-    }
+    
 
     .inline-spinner {
       margin-right: 8px;

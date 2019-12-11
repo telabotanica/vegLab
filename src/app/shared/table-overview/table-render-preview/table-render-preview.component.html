@@ -1,0 +1,8 @@
+<div class="table-render-preview-wrapper">
+  <table>
+    <tr *ngFor="let row of tablePreview">
+      <td class="label" [class.group]="row.length === 1" [class.data]="row.length === 2" title="{{ row[0] }}">{{ row[0] }}</td>
+      <td class="value"><span *ngIf="row.length === 2">{{ row[1] }}</span></td>
+    </tr>
+  </table>
+</div>

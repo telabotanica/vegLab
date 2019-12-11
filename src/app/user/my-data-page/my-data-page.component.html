@@ -6,30 +6,44 @@
 
   <div fxLayout="row">
     <mat-sidenav-container class="sidenav-container" (backdropClick)="close()">
-      <mat-sidenav #sidenav position="end" (keydown.escape)="close()">
+      <mat-sidenav #sidenav class="sidenav" position="end" (keydown.escape)="close()">
         <div class="sidenav-content-wrapper">
           <!-- Table info -->
           <div *ngIf="tableInfo">
-            <h3>Tableau n°{{ tableInfo.id }}</h3>
-            <p>Informations</p>
+            <vl-table-preview [table]="tableInfo"></vl-table-preview>
           </div>
 
           <!-- Occurrence info -->
           <div *ngIf="occurrenceInfo">
-            <h3>Relevé n°{{ occurrenceInfo.id }}</h3>
-            <p>Informations</p>
+            <div class="sidenav-header occurrence">
+              <h3>Relevé n°{{ occurrenceInfo.id }}</h3>
+              <p>Informations</p>
+            </div>
+            <div class="sidenav-content">
+              
+            </div>
           </div>
 
           <!-- Delete a table -->
           <div *ngIf="tableToDelete">
-            <h3>Tableau n°{{ tableToDelete.id }}</h3>
-            <p>Suppression</p>
+            <div class="sidenav-header table">
+              <h3>Tableau n°{{ tableToDelete.id }}</h3>
+              <p>Suppression</p>
+            </div>
+            <div class="sidenav-content">
+
+            </div>
           </div>
 
           <!-- Delete an occurrence -->
           <div *ngIf="occurrenceToDelete">
-            <h3>Relevé n°{{ occurrenceToDelete.id }}</h3>
-            <p>Suppression</p>
+            <div class="sidenav-header occurrence">
+              <h3>Relevé n°{{ occurrenceToDelete.id }}</h3>
+              <p>Suppression</p>
+            </div>
+            <div class="sidenav-content">
+
+            </div>
           </div>
 
         </div>
@@ -40,11 +54,6 @@
 
         <div fxFlex>
           <div fxLayout="column" fxLayoutAlign="center start" fxLayoutGap="40px" class="content">
-
-              <p><button mat-button (click)="sidenav.open()">Open</button></p>
-              <p>Closed due to: {{reason}}</p>
-
-
             <!-- main content -->
             <div class="section">
               <!-- TABLES -->

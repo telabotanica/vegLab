@@ -1,0 +1,16 @@
+@import '../../../_styles//colors.scss';
+
+.header {
+  padding: 15px;
+  &.table {
+    background-color: $blue;
+    color: white;
+  }
+  &.occurrence {
+    background-color: $green;
+    color: white;
+  }
+}
+.content {
+  
+}

@@ -1,0 +1,51 @@
+<table>
+  <thead>
+    <tr>
+      <th class="label"> </th>
+      <th class="value"> </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="item-header">Créé le</td>
+      <td class="item-content">{{ table.createdAt | momentLocalDate }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Par</td>
+      <td class="item-content">{{ table.userId }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Titre</td>
+      <td class="item-content">{{ table.title }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Description</td>
+      <td class="item-content">{{ table.description }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Diagnose</td>
+      <td class="item-content">{{ table.isDiagnosis ? 'oui' : 'non' }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">PDF lié</td>
+      <td class="item-content">{{ table.hasPdf ? 'oui' : 'non' }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Source biblio.</td>
+      <td class="item-content">{{ table.vlBiblioSource }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Nb. sye</td>
+      <td class="item-content">{{ table.syeCount }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Nb. relevés.</td>
+      <td class="item-content">{{ table.occurrencesCount }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Nb. taxons</td>
+      <td class="item-content">{{ table.rowsCount }}</td>
+    </tr>
+
+  </tbody>
+</table>

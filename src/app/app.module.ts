@@ -108,6 +108,10 @@ import { BaseflorDiagramComponent } from './shared/table-charts/baseflor-diagram
 import { BaseflorDiagramSelectorComponent } from './shared/table-charts/baseflor-diagram-selector/baseflor-diagram-selector.component';
 import { OccurrencesTableViewComponent } from './shared/occurrences-table-view/occurrences-table-view.component';
 import { TablesTableViewComponent } from './shared/tables-table-view/tables-table-view.component';
+import { TablePreviewComponent } from './shared/table-overview/table-preview/table-preview.component';
+import { TableBasicInfosPreviewComponent } from './shared/table-overview/table-basic-infos-preview/table-basic-infos-preview.component';
+import { TableValidationsPreviewComponent } from './shared/table-overview/table-validations-preview/table-validations-preview.component';
+import { TableRenderPreviewComponent } from './shared/table-overview/table-render-preview/table-render-preview.component';
 
 
 /*
@@ -139,7 +143,7 @@ export class SentryErrorHandler implements ErrorHandler {
     LevelPipe, ShortLevelPipe, MomentPipe, MomentLocalDatePipe, // Pipes
     PhytoHomePageComponent, PhytoAppPageComponent, // WS phyto
     ForestHomePageComponent, ForestAppPageComponent, // WS forest
-    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, MomentStringInputDatePipe, EcologicalDiagramComponent, BaseflorDiagramComponent, BaseflorDiagramSelectorComponent, OccurrencesTableViewComponent, TablesTableViewComponent, // admin
+    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, MomentStringInputDatePipe, EcologicalDiagramComponent, BaseflorDiagramComponent, BaseflorDiagramSelectorComponent, OccurrencesTableViewComponent, TablesTableViewComponent, TablePreviewComponent, TableBasicInfosPreviewComponent, TableValidationsPreviewComponent, TableRenderPreviewComponent, // admin
   ],
   entryComponents: [
     OccurrenceSearchMetadataModal1Component

@@ -1952,6 +1952,7 @@ export class TableService {
       }
       syntheticItem.occurrencesCount = occurrencesCount;
       syntheticItem.frequency =  occurrencesCount === 0 ?  0 : (occurrencesCount * 100) / occurrences.length;
+      syntheticItem.coef = this.syntheticColumnService.getRomanCoef(syntheticItem.frequency);
       syntheticItem.displayName = displayName;
       syntheticItem.minCoef = minCoef;
       syntheticItem.maxCoef = maxCoef;
