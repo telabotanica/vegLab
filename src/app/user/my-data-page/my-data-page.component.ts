@@ -187,6 +187,11 @@ export class MyDataPageComponent implements OnInit {
     this.sidenav.open();
   }
 
+  cancelOccurrenceDelete(): void {
+    this.sidenav.close();
+    this.close();
+  }
+
   resetInfoAndDeleteValues(): void {
     this.tableInfo = null;
     this.occurrenceInfo = null;

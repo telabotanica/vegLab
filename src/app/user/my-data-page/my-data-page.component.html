@@ -46,7 +46,15 @@
               <p>Suppression</p>
             </div>
             <div class="sidenav-content">
-
+              <vl-occurrence-basic-infos-preview [occurrence]="occurrenceToDelete"></vl-occurrence-basic-infos-preview>
+              <hr />
+              <div class="confirm-delete">
+                <p><b>La suppression de ce relevé est irreversible.</b></p>
+                <div class="action-buttons">
+                  <button mat-flat-button color="warn">Confirmer la suppression</button>
+                  <button mat-flat-button color="primary" (click)="cancelOccurrenceDelete()">Annuler</button>
+                </div>
+              </div>
             </div>
           </div>
 
