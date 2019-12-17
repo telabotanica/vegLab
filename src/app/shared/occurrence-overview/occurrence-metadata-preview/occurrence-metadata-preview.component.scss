@@ -1,0 +1,18 @@
+.occurrence-metadata-preview-wrapper {
+  table {
+    width: 100%;
+    tr {
+      th, td {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      td.description {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 0;
+        width: 100%;
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+<div class="occurrence-render-preview-wrapper">
+    <table>
+      <tbody> 
+        <tr>
+          <td class="layer"><b>Strate</b></td>
+          <td class="repo"><b>Référentiel</b></td>
+          <td class="label"><b>Nom</b></td>
+          <td class="value"><b>Coef.</b></td>
+        </tr>
+        <tr *ngFor="let row of occurrencePreview">
+          <td class="layer">{{ row.layer }}</td>
+          <td class="repo" title="{{ row.repo }}">{{ row.repo }}</td>
+          <td class="label" title="{{ row.name }}">{{ row.name }}</td>
+          <td class="value">{{ row.coef }}</td>
+        </tr>
+      </tbody>
+      
+    </table>
+  </div>

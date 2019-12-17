@@ -1,0 +1,22 @@
+<div class="occurrence-metadata-preview-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>id</th>
+        <th>Type</th>
+        <th>Valeur</th>
+        <th>Unité</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let metaValue of esMetadataValues">
+        <td>{{ metaValue.fieldId }}</td>
+        <td>{{ getMetadataForFieldId(metaValue.fieldId) ? getMetadataForFieldId(metaValue.fieldId).dataType : '-' }}</td>
+        <td>{{ metaValue.value }}</td>
+        <td>{{ getMetadataForFieldId(metaValue.fieldId) ? getMetadataForFieldId(metaValue.fieldId).unit || '-' : '-' }}</td>
+        <td class="description" title="{{ getMetadataForFieldId(metaValue.fieldId) ? getMetadataForFieldId(metaValue.fieldId).extendedFieldTranslations[0].description : '-' }}">{{ getMetadataForFieldId(metaValue.fieldId) ? getMetadataForFieldId(metaValue.fieldId).extendedFieldTranslations[0].description : '-' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

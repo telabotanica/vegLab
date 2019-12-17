@@ -9,19 +9,13 @@
       <mat-sidenav #sidenav class="sidenav" position="end" (keydown.escape)="close()">
         <div class="sidenav-content-wrapper">
           <!-- Table info -->
-          <div *ngIf="tableInfo" class="table-info">
+          <div *ngIf="tableInfo" class="table-infos">
             <vl-table-preview [table]="tableInfo"></vl-table-preview>
           </div>
 
           <!-- Occurrence info -->
           <div *ngIf="occurrenceInfo" class="occurrence-info">
-            <div class="sidenav-header occurrence">
-              <h3>Relevé n°{{ occurrenceInfo.id }}</h3>
-              <p>Informations</p>
-            </div>
-            <div class="sidenav-content">
-              
-            </div>
+              <vl-occurrence-preview [occurrence]="occurrenceInfo"></vl-occurrence-preview>
           </div>
 
           <!-- Delete a table -->

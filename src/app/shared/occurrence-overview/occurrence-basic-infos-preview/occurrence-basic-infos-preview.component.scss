@@ -1,0 +1,14 @@
+table {
+  margin: 25px;
+  margin-top: 0;
+  width: auto;
+  tbody {
+    tr {
+      td.item-header { padding-right: 20px; }
+    }
+    
+  }
+  td.item-header {
+    font-weight: bold;
+  }
+}

@@ -1,0 +1,70 @@
+<table>
+  <thead>
+    <tr>
+      <th class="label"> </th>
+      <th class="value"> </th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Creation -->
+    <tr>
+      <td class="item-header">Créé le</td>
+      <td class="item-content">{{ occurrence.dateCreated | momentLocalDate }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Par</td>
+      <td class="item-content">{{ occurrence.userId }}</td>
+    </tr>
+    <!-- Observation -->
+    <tr>
+      <td class="item-header">Observateur(s)</td>
+      <td class="item-content">{{ getObservers(occurrence) }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Date d'observation</td>
+      <td class="item-content" *ngIf="!occurrence.dateObserved">?</td>
+      <td class="item-content" *ngIf="occurrence.dateObserved && !occurrence.dateObservedPrecision">{{ occurrence.dateObserved }}</td>
+      <td class="item-content" *ngIf="occurrence.dateObserved && occurrence.dateObservedPrecision">{{ occurrence.dateObserved | momentLocalDate:occurrence.dateObservedPrecision }}</td>
+    </tr>
+    <!-- Validation + biblio -->
+    <tr>
+      <td class="item-header">Identification principale</td>
+      <td class="item-content">{{ getPreferedValidation(occurrence) }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Source biblio.</td>
+      <td class="item-content">{{ occurrence.vlBiblioSource }}</td>
+    </tr>
+
+    <!-- Location -->
+    <tr>
+      <td class="item-header">Précision de la localisation</td>
+      <td class="item-content">{{ occurrence.vlLocationAccuracy || '?' }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Pays</td>
+      <td class="item-content">{{ occurrence.osmCountry || '?' }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Région</td>
+      <td class="item-content">{{ occurrence.osmState || '?' }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Commune</td>
+      <td class="item-content">{{ occurrence.locality || '?' }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Code postal</td>
+      <td class="item-content">{{ occurrence.osmPostcode || '?' }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Altitude</td>
+      <td class="item-content">{{ occurrence.elevation + ' m' || '?' }}</td>
+    </tr>
+    <tr>
+      <td class="item-header">Altitude estimée</td>
+      <td class="item-content">{{ occurrence.isElevationEstimated ? 'oui' : 'non' }}</td>
+    </tr>
+
+  </tbody>
+</table>

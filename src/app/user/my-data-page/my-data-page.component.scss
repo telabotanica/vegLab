@@ -30,9 +30,9 @@
     width: 100%;
     background-color: white;
     .sidenav {
-      max-width: 40%;
+      min-width: 500px;
+      max-width: 50%;
       .sidenav-content-wrapper {
-        min-width: 400px;
         .sidenav-header {
           padding: 15px;
           &.table {

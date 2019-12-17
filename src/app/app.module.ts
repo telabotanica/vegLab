@@ -112,6 +112,12 @@ import { TablePreviewComponent } from './shared/table-overview/table-preview/tab
 import { TableBasicInfosPreviewComponent } from './shared/table-overview/table-basic-infos-preview/table-basic-infos-preview.component';
 import { TableValidationsPreviewComponent } from './shared/table-overview/table-validations-preview/table-validations-preview.component';
 import { TableRenderPreviewComponent } from './shared/table-overview/table-render-preview/table-render-preview.component';
+import { OccurrenceBasicInfosPreviewComponent } from './shared/occurrence-overview/occurrence-basic-infos-preview/occurrence-basic-infos-preview.component';
+import { OccurrencePreviewComponent } from './shared/occurrence-overview/occurrence-preview/occurrence-preview.component';
+import { OccurrenceRenderPreviewComponent } from './shared/occurrence-overview/occurrence-render-preview/occurrence-render-preview.component';
+import { SimpleGeojsonMapComponent } from './shared/map/simple-geojson-map/simple-geojson-map.component';
+import { OccurrenceValidationsPreviewComponent } from './shared/occurrence-overview/occurrence-validations-preview/occurrence-validations-preview.component';
+import { OccurrenceMetadataPreviewComponent } from './shared/occurrence-overview/occurrence-metadata-preview/occurrence-metadata-preview.component';
 
 
 /*
@@ -143,7 +149,7 @@ export class SentryErrorHandler implements ErrorHandler {
     LevelPipe, ShortLevelPipe, MomentPipe, MomentLocalDatePipe, // Pipes
     PhytoHomePageComponent, PhytoAppPageComponent, // WS phyto
     ForestHomePageComponent, ForestAppPageComponent, // WS forest
-    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, MomentStringInputDatePipe, EcologicalDiagramComponent, BaseflorDiagramComponent, BaseflorDiagramSelectorComponent, OccurrencesTableViewComponent, TablesTableViewComponent, TablePreviewComponent, TableBasicInfosPreviewComponent, TableValidationsPreviewComponent, TableRenderPreviewComponent, // admin
+    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, MomentStringInputDatePipe, EcologicalDiagramComponent, BaseflorDiagramComponent, BaseflorDiagramSelectorComponent, OccurrencesTableViewComponent, TablesTableViewComponent, TablePreviewComponent, TableBasicInfosPreviewComponent, TableValidationsPreviewComponent, TableRenderPreviewComponent, OccurrenceBasicInfosPreviewComponent, OccurrencePreviewComponent, OccurrenceRenderPreviewComponent, SimpleGeojsonMapComponent, OccurrenceValidationsPreviewComponent, OccurrenceMetadataPreviewComponent, // admin
   ],
   entryComponents: [
     OccurrenceSearchMetadataModal1Component
@@ -173,7 +179,8 @@ export class SentryErrorHandler implements ErrorHandler {
               {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
               {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}},
               {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
-              {provide: MatPaginatorIntl, useClass: MatPaginatorIntlService}
+              {provide: MatPaginatorIntl, useClass: MatPaginatorIntlService},
+              MomentLocalDatePipe
               /*{provide: ErrorHandler, useClass: SentryErrorHandler}*/
             ],
   bootstrap: [AppComponent]

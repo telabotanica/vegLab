@@ -1,0 +1,49 @@
+<div class="occurrence-preview-container">
+  <div class="header occurrence">
+    <h3>Relevé n°{{ occurrence.id }}</h3>
+    <p>Informations</p>
+  </div>
+  <div class="content">
+    <vl-occurrence-basic-infos-preview [occurrence]="occurrence"></vl-occurrence-basic-infos-preview>
+    
+    <mat-accordion>
+      <!-- Relevé preview -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Aperçu du relevé</mat-panel-title>
+          <mat-panel-description></mat-panel-description>
+        </mat-expansion-panel-header>
+        <vl-occurrence-render-preview [occurrence]="occurrence"></vl-occurrence-render-preview>
+      </mat-expansion-panel>
+
+      <!-- Carte de localisation -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Carte de localisation</mat-panel-title>
+          <mat-panel-description></mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="map-wrapper" style="height: 300px;">
+          <vl-simple-geojson-map [geoJson]="getGeoJsonArray(occurrence)"></vl-simple-geojson-map>
+        </div>
+      </mat-expansion-panel>
+
+      <!-- Validations -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Identifications</mat-panel-title>
+          <mat-panel-description></mat-panel-description>
+        </mat-expansion-panel-header>
+        <vl-occurrence-validations-preview [occurrence]="occurrence"></vl-occurrence-validations-preview>
+      </mat-expansion-panel>
+
+      <!-- Metadata -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Métadonnées</mat-panel-title>
+          <mat-panel-description></mat-panel-description>
+        </mat-expansion-panel-header>
+        <vl-occurrence-metadata-preview [occurrence]="occurrence"></vl-occurrence-metadata-preview>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>

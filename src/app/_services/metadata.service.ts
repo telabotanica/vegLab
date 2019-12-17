@@ -9,6 +9,7 @@ import { FieldDataType } from '../_enums/field-data-type-enum';
 import { environment } from '../../environments/environment';
 
 import * as moment from 'moment';
+import * as _ from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,22 @@ export class MetadataService {
         this.setMetadataList([]);
       }
     );
+  }
+
+  getMetadataByFieldId(fieldId: string): ExtendedFieldModel {
+    if (fieldId !== null) {
+      // refresh meta list from local storage
+      this.refreshMetadataList();
+      const metaList = this.metadataList.getValue();
+      if (metaList !== null && metaList.length > 0) {
+        const meta = _.find(metaList, ml => ml.fieldId === fieldId);
+        if (meta !== null) { return meta; } else { return null; }
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 
   setMetadataList(list: Array<ExtendedFieldModel>): void {

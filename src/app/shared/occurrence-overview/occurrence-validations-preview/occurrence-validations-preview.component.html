@@ -1,0 +1,21 @@
+<div class="occurrence-validations-preview-wrapper">
+  <table *ngIf="!emptyValidations">
+    <tbody>
+        <tr>
+          <th class="item">Référentiel</th>
+          <th class="item">Par</th>
+          <th class="item">Le</th>
+          <th class="item value">Identification</th>
+        </tr>
+      <tr *ngFor="let validation of validations">
+        <td>{{ validation.repository }}</td>
+        <td>{{ getValidationAuthor(validation) }}</td>
+        <td class="date">{{ getValidationDate(validation) }}</td>
+        <td class="name" title="{{ getValidationName(validation) }}">{{ getValidationName(validation) }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="emptyValidations" class="no-validations">
+    Aucune identification
+  </div>
+</div>

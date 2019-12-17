@@ -1,0 +1,39 @@
+.occurrence-render-preview-wrapper {
+  table {
+    display: inline-block;
+    width: 100%;
+    font-size: .9em;
+    tbody {
+      display: inline-block;
+      width: 100%;
+    }
+    tr {
+      display: inline-block;
+      width: 100%;
+      td {
+        padding-left: 10px;
+        padding-right: 10px;
+        &.layer {
+          max-width: 0;
+        }
+        &.repo {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          min-width: 40px;
+          max-width: 0;
+        }
+        &.label {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          width: 100%;
+          max-width: 0;
+        }
+        &.value {
+
+        }
+      }
+    }
+  }
+}

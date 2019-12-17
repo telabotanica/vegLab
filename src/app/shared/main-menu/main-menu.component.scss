@@ -3,6 +3,9 @@
 .app-toolbar {
   min-height: 40px !important;
   height: 40px;
+  .mat-toolbar-row {
+    height: 40px;
+  }
 
   button.mat-menu-item.app-toolbar-button {
     width: auto !important;

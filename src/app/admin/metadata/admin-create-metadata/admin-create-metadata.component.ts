@@ -82,7 +82,6 @@ export class AdminCreateMetadataComponent implements OnInit {
       languageIsoCode: this.form.controls.languageIsoCode.value
     };
     metadata.extendedFieldTranslations.push(frTranslation);
-
     this.isSendingData = true;
     this.http.post(`${environment.apiBaseUrl}/extended_fields`, metadata).subscribe(
       success => {
@@ -92,7 +91,7 @@ export class AdminCreateMetadataComponent implements OnInit {
       error => {
         this.isSendingData = false;
         const errorMessage: string = error.error['hydra:description'];
-        if (errorMessage.search('Duplicate entry') !== -1) {
+        if (errorMessage && errorMessage.search('Duplicate entry') !== -1) {
           this.notificationService.error(`Une entrée "${metadata.fieldId}" pour le projet "${metadata.projectName}" existe déjà`);
         } else {
           this.notificationService.error('Nous ne parvenons pas à créer la nouvelle métadaonnée');

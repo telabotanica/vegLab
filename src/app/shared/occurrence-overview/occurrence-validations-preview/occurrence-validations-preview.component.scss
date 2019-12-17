@@ -1,0 +1,19 @@
+table {
+  width: 100%;
+  tr {
+    th, td {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    td.date {
+      min-width: 125px;
+    }
+    td.name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+      max-width: 0;
+    }
+  }
+}
