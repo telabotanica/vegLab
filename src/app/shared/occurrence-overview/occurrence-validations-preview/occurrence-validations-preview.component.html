@@ -9,7 +9,7 @@
         </tr>
       <tr *ngFor="let validation of validations">
         <td>{{ validation.repository }}</td>
-        <td>{{ getValidationAuthor(validation) }}</td>
+        <td><vl-tb-user-label [userId]="getValidationAuthor(validation)"></vl-tb-user-label></td>
         <td class="date">{{ getValidationDate(validation) }}</td>
         <td class="name" title="{{ getValidationName(validation) }}">{{ getValidationName(validation) }}</td>
       </tr>

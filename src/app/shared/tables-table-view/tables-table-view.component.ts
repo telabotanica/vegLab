@@ -16,7 +16,7 @@ export class TablesTableViewComponent implements OnInit {
   @Input()  pageIndex: number;
   @Input()  tables: Array<EsTableModel> = [];
   @Input()  isLoading: boolean;
-  @Input()  displayedColumns: Array<string> = ['id', 'custom_col_validation', 'dateCreated', 'level', 'custom_col_actions'];
+  @Input()  displayedColumns: Array<string> = ['id', 'custom_col_validation', 'dateCreated', 'custom_col_actions'];
   @Output() pageChange: EventEmitter<PageEvent> = new EventEmitter<PageEvent>();
   @Output() previewTable: EventEmitter<EsTableModel> = new EventEmitter<EsTableModel>();
   @Output() deleteTable: EventEmitter<EsTableModel> = new EventEmitter<EsTableModel>();
