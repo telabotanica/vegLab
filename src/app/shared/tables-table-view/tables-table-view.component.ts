@@ -26,10 +26,6 @@ export class TablesTableViewComponent implements OnInit {
   ngOnInit() {
   }
 
-  getValidation(table: EsTableModel): string {
-    return '?';
-  }
-
   getLocality(table: EsTableModel): string {
     return '?';
   }
