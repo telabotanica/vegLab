@@ -1976,7 +1976,11 @@ export class TableService {
     const coefIndex = _.find(orderedCoefs, o => o.value === coef);
     const coefToCompareIndex = _.find(orderedCoefs, o => o.value === coefToCompare);
 
-    return coefToCompareIndex.index < coefIndex.index ? true : false;
+    try {
+      return coefToCompareIndex.index < coefIndex.index ? true : false;
+    } catch (error) {
+      return false;
+    }
   }
 
   isUpperCoef(coef: string, coefToCompare: string): boolean {
@@ -1991,8 +1995,11 @@ export class TableService {
     ];
     const coefIndex = _.find(orderedCoefs, o => o.value === coef);
     const coefToCompareIndex = _.find(orderedCoefs, o => o.value === coefToCompare);
-
-    return coefToCompareIndex.index > coefIndex.index ? true : false;
+    try {
+      return coefToCompareIndex.index > coefIndex.index ? true : false;
+    } catch (error) {
+      return false;
+    }
   }
 
   // --------
