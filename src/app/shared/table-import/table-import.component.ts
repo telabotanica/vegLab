@@ -681,7 +681,6 @@ export class TableImportComponent implements OnInit {
           map (r => r[0] as RepositoryItemModel) // Ensure type
         ).subscribe(
           result => {
-            console.log(result);
             currentContent.validation = {
               validatedBy: 1,
               validatedAt: now,
@@ -1150,10 +1149,13 @@ export class TableImportComponent implements OnInit {
         // INSEE data and elevation (if needed) will be filled when user will select a place
         } else {
           location.isLoading = true;
-          address = (location.place ? location.place : '')
+          /*address = (location.place ? location.place : '')
                       + ' ' + (location.city ? location.city : '')
                       + ' ' + (location.departement && !(location.place || location.city) ? location.departement : '')
-                      + ' ' + (location.country ? location.country : '');
+                      + ' ' + (location.country ? location.country : '');*/
+          address = (location.city ? location.city : ''
+                      + ' ' + (location.departement && !(location.place || location.city) ? location.departement : '')
+                      + ' ' + (location.country ? location.country : ''));
           this.geocodingService.geocode(address, 'osm').subscribe(
             results => {
               location.isLoading = false;
