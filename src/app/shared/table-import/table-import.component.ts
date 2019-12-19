@@ -1153,10 +1153,12 @@ export class TableImportComponent implements OnInit {
                       + ' ' + (location.city ? location.city : '')
                       + ' ' + (location.departement && !(location.place || location.city) ? location.departement : '')
                       + ' ' + (location.country ? location.country : '');*/
-          address = (location.city ? location.city : ''
-                      + ' ' + (location.departement && !(location.place || location.city) ? location.departement : '')
-                      + ' ' + (location.country ? location.country : ''));
-          this.geocodingService.geocode(address, 'osm').subscribe(
+          address = location.city + ' ' + location.departement + ' ' + location.country;/*(location.city ? location.city : ''
+                      + ' ' + (location.departement ? location.departement : '')
+                      + ' ' + (location.country ? location.country : ''));*/
+          this.geocodingService.geocode(address, 'osm').pipe(
+            map(results => results.filter(r => r.geojson.type.toLowerCase() !== 'multipolygon'))
+          ).subscribe(
             results => {
               location.isLoading = false;
               for (const result of results) {
@@ -1208,6 +1210,10 @@ export class TableImportComponent implements OnInit {
     }
   }
 
+  /**
+   * When user's mouse if hover an option (location option), preview the location
+   * @param nominatimLocation 
+   */
   previewLocationOnMap(nominatimLocation: NominatimObject): void {
     this.patchMapGeometry = [{
       type: nominatimLocation.geojson.type,
