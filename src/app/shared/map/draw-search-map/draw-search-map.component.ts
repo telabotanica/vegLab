@@ -15,7 +15,6 @@ export class DrawSearchMapComponent implements OnInit {
     _.forEach(values, v => this.geoResultsLayer.addData(v));
   }*/
   @Input() set centroidResults(values: Array<[number, number]>) {
-    console.log('VALUES', values);
     this.geoResultsLayer.clearLayers();
     if (values !== null && values.length > 0) {
       // count results without centroid data === without location
