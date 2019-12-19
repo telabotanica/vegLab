@@ -3,3 +3,9 @@
     [leafletOptions]="mapOptions"
     (leafletMapReady)="onMapReady($event)">
 </div>
+<div class="releves-without-location">
+    <div *ngIf="relevesWithoutLocation !== null && relevesWithoutLocation > 0">
+        <span *ngIf="relevesWithoutLocation === 1">{{ relevesWithoutLocation }} relevé n'a pas de localisation</span>
+        <span *ngIf="relevesWithoutLocation > 1">{{ relevesWithoutLocation }} relevés n'ont pas de localisation</span>
+    </div>
+</div>

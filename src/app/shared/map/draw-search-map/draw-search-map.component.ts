@@ -15,8 +15,14 @@ export class DrawSearchMapComponent implements OnInit {
     _.forEach(values, v => this.geoResultsLayer.addData(v));
   }*/
   @Input() set centroidResults(values: Array<[number, number]>) {
+    console.log('VALUES', values);
     this.geoResultsLayer.clearLayers();
-    _.forEach(values, v => { console.log(v); const p = { type: 'Point', coordinates: [v[0], v[1]] } as Point; this.geoResultsLayer.addData(p);  });
+    if (values !== null && values.length > 0) {
+      // count results without centroid data === without location
+      const valuesWithoutEmptyData = _.compact(values);
+      this.relevesWithoutLocation = values.length - valuesWithoutEmptyData.length;
+      _.forEach(valuesWithoutEmptyData, v => { console.log(v); const p = { type: 'Point', coordinates: [v[0], v[1]] } as Point; this.geoResultsLayer.addData(p);  });
+    }
   }
   @Input() set invalidateSize(value: boolean) {
     if (value) {this.invalidateMapSize(); }
@@ -37,6 +43,7 @@ export class DrawSearchMapComponent implements OnInit {
   private drawControlFull: L.Control.Draw;  // draw panel
   private drawControlEdit: L.Control.Draw;  // edit panel
   private geoResultsLayer = L.geoJSON(null, { pointToLayer: (feature, latLng) => (L.circleMarker(latLng, {radius: 6, fillColor: '#ff7800', color: '#000', weight: 1, opacity: 1, fillOpacity: 0.7})) });
+  relevesWithoutLocation: number;
 
   constructor() { }
 
