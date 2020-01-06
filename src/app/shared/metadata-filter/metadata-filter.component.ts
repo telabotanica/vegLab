@@ -327,11 +327,11 @@ export class MetadataFilterComponent implements OnInit, OnDestroy, AfterContentI
    * Unsubscribe
    */
   ngOnDestroy() {
-    try { this.integerFilterValueSubscriber.unsubscribe(); } catch (e) { }
-    try { this.floatFilterValueSubscriber.unsubscribe(); } catch (e) { }
-    try { this.dateFilterMinValueSubscriber.unsubscribe(); } catch (e) { }
-    try { this.dateFilterMaxValueSubscriber.unsubscribe(); } catch (e) { }
-    try { this.textFilterValueSubscriber.unsubscribe(); } catch (e) { }
+    if (this.integerFilterValueSubscriber) { this.integerFilterValueSubscriber.unsubscribe(); }
+    if (this.floatFilterValueSubscriber) { this.floatFilterValueSubscriber.unsubscribe(); }
+    if (this.dateFilterMinValueSubscriber) { this.dateFilterMinValueSubscriber.unsubscribe(); }
+    if (this.dateFilterMaxValueSubscriber) { this.dateFilterMaxValueSubscriber.unsubscribe(); }
+    if (this.textFilterValueSubscriber) { this.textFilterValueSubscriber.unsubscribe(); }
   }
 
   /**

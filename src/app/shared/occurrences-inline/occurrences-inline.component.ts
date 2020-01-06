@@ -38,7 +38,7 @@ export class OccurrencesInlineComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.occurrencesIdsInCurrentTableSubscription.unsubscribe();
+    if (this.occurrencesIdsInCurrentTableSubscription) { this.occurrencesIdsInCurrentTableSubscription.unsubscribe(); }
   }
 
   private isThereChildOccurrences(): boolean {

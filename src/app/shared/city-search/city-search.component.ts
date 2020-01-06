@@ -59,7 +59,7 @@ export class CitySearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.geoSearchSubscription.unsubscribe();
+    if (this.geoSearchSubscription) { this.geoSearchSubscription.unsubscribe(); }
   }
 
   countryChange(value: string) {

@@ -192,7 +192,7 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.metadataSubscriber.unsubscribe();
+    if (this.metadataSubscriber) { this.metadataSubscriber.unsubscribe(); }
   }
 
   selectedTabIndexChange(index: number) {

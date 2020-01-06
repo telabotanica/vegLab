@@ -32,7 +32,7 @@ export class PdfViewerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.tableSubscriber.unsubscribe();
+    if (this.tableSubscriber) { this.tableSubscriber.unsubscribe(); }
   }
 
   getPdfBiblioSource(): string {

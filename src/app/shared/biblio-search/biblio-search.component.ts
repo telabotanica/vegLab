@@ -94,8 +94,8 @@ export class BiblioSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription1.unsubscribe();
-    this.subscription2.unsubscribe();
+    if (this.subscription1) { this.subscription1.unsubscribe(); }
+    if (this.subscription2) { this.subscription2.unsubscribe(); }
   }
 
   displayFn(observer?: any): string | undefined {

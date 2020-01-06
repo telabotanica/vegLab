@@ -731,7 +731,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    try { this.currentTableSubscription.unsubscribe(); } catch (e) { }
+    if (this.currentTableSubscription) { this.currentTableSubscription.unsubscribe(); }
   }
 
   ngAfterViewInit() {
