@@ -6,8 +6,7 @@
       </div>
     </div>
   </mat-sidenav>
-  <mat-sidenav-content>
-
+  <mat-sidenav-content class="sidenav-content">
     <div class="container">
       <h1>Rechercher un relevé</h1>
       <!-- FILTERS -->
@@ -391,7 +390,7 @@
     
       <div class="results-container">
         <div class="result-top-bar">
-          <div>
+          <div class="results-title">
             <div *ngIf="searchedOccurrences.length == 0">
               <div class="result-title" *ngIf="noFilterApplied()">Aucun filtre appliqué</div>
               <div class="result-title" *ngIf="!noFilterApplied()">Aucun résultat</div>
@@ -399,52 +398,30 @@
             <div class="result-title" *ngIf="resultCount == 1">1 résultat</div>
             <div class="result-title" *ngIf="resultCount > 1">{{ resultCount }} résultats</div>
           </div>
+          <div class="results-button">
+            <button mat-stroked-button (click)="addSelectedOccurrencesToTable()"
+              color="primary"
+              [disabled]="!selectedOccurrencesIds || selectedOccurrencesIds.length === 0">
+                <mat-icon color="primary">add_circle_outline</mat-icon>
+                Ajouter les relevés selectionnés au tableau
+            </button>
+          </div>
+          
+        </div>
+      
+        <div class="table-results">
+          <vl-occurrences-table-view
+            [count]="resultCount"
+            [size]="occurrencesPaginatorSize"
+            [pageIndex]="occurrencesPageIndex"
+            [orderedOccurrences]="orderedSearchedOccurrences"
+            [selectable]="true"
+            [isLoading]="isSearching"
+            (pageChange)="_occurrencePageChanged($event)"
+            (previewOccurrence)="previewOccurrenceAction($event)"
+            (selectedOccurrences)="selectedOccurrencesChange($event)"></vl-occurrences-table-view>
         </div>
       </div>
-      <div class="table-results">
-        <vl-occurrences-table-view
-          [count]="resultCount"
-          [size]="occurrencesPaginatorSize"
-          [pageIndex]="occurrencesPageIndex"
-          [orderedOccurrences]="orderedSearchedOccurrences"
-          [selectable]="true"
-          [isLoading]="isSearching"
-          (pageChange)="_occurrencePageChanged($event)"
-          (previewOccurrence)="previewOccurrenceAction($event)"></vl-occurrences-table-view>
-      </div>
-<!-- 
-      <div class="results-container">
-        <div class="header">
-          <div class="progress-bar-container">
-            <mat-progress-bar *ngIf="isSearching" mode="indeterminate"></mat-progress-bar>
-          </div>
-          <div class="result-top-bar">
-            <div>
-              <div *ngIf="searchedOccurrences.length == 0">
-                <div class="result-title" *ngIf="noFilterApplied()">Aucun filtre appliqué</div>
-                <div class="result-title" *ngIf="!noFilterApplied()">Aucun résultat</div>
-              </div>
-              <div class="result-title" *ngIf="searchedOccurrences.length == 1">1 résultat</div>
-              <div class="result-title" *ngIf="searchedOccurrences.length > 1">{{ searchedOccurrences.length }} résultats</div>
-            </div>
-          </div>
-        </div>
-        <div class="results">
-          <div class="results-items">
-            <vl-occurrences-inline
-              [orderedOccurrences]="orderedSearchedOccurrences"
-              (selectedOccurrences)="selectedOccurrencesChange($event)"
-            ></vl-occurrences-inline>
-          </div>
-        </div>
-        <div class="bottom-action-bar" *ngIf="orderedSearchedOccurrences && orderedSearchedOccurrences.length > 0">
-          <button mat-stroked-button (click)="addSelectedOccurrencesToTable()"
-                  color="primary"
-                  [disabled]="!selectedOccurrencesIds || selectedOccurrencesIds.length === 0">
-                  <mat-icon color="primary">add_circle_outline</mat-icon>Ajouter les relevés selectionnés au tableau</button>
-        </div>
-      </div>
--->
     </div>
 
     
