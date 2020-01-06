@@ -22,8 +22,6 @@ import { HomePageComponent } from './shared/home-page/home-page.component';
 import { LoginPageComponent } from './shared/login-page/login-page.component';
 import { FatalErrorPageComponent } from './shared/fatal-error-page/fatal-error-page.component';
 
-import { NotificationComponent } from './shared/notification/notification.component';
-
 import { MapComponent } from './shared/map/map.component';
 import { DrawSearchMapComponent } from './shared/map/draw-search-map/draw-search-map.component';
 
@@ -119,7 +117,7 @@ import { SimpleGeojsonMapComponent } from './shared/map/simple-geojson-map/simpl
 import { OccurrenceValidationsPreviewComponent } from './shared/occurrence-overview/occurrence-validations-preview/occurrence-validations-preview.component';
 import { OccurrenceMetadataPreviewComponent } from './shared/occurrence-overview/occurrence-metadata-preview/occurrence-metadata-preview.component';
 import { TbUserLabelComponent } from './shared/tb-user-label/tb-user-label.component';
-
+import { SimpleNotificationsModule } from 'angular2-notifications';
 
 /*
 import * as Sentry from '@sentry/browser';
@@ -144,7 +142,7 @@ export class SentryErrorHandler implements ErrorHandler {
     AuthComponent, ProfilePageComponent, MyDataPageComponent, MyMapComponent, // user components
     HomePageComponent, OccurrenceFormComponent, MapComponent, TableComponent, OccurrenceCardComponent, TableCardComponent, // shared components
     MetadataInputComponent, OccurrenceSearchComponent, OccurrenceSearchMetadataModal1Component, DrawSearchMapComponent, // shared components
-    MainMenuComponent, NotificationComponent, FatalErrorPageComponent, // shared components
+    MainMenuComponent, FatalErrorPageComponent, // shared components
     TableFormComponent, TableSearchComponent, TableImportComponent, // shared components
     FocusDirective, // directives
     LevelPipe, ShortLevelPipe, MomentPipe, MomentLocalDatePipe, // Pipes
@@ -172,7 +170,8 @@ export class SentryErrorHandler implements ErrorHandler {
     NgbPopoverModule,
     AngularSplitModule.forRoot(),
     PdfViewerModule,
-    NgxChartsModule
+    NgxChartsModule,
+    SimpleNotificationsModule.forRoot()
   ],
   providers: [UserService, NotificationService, MenuService, OccurrenceService, TableService, MetadataService, PhotoService, LayerService, SsoService,
               {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
