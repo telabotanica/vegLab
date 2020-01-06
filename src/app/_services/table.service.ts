@@ -458,20 +458,35 @@ export class TableService {
   // -----------------------
 
   private addOccurrencesToTable(occurrences: Array<OccurrenceModel>, table: Table): Table {
+    // Avoid duplicates
+    const occurrencesToAdd: Array<OccurrenceModel> = [];
+    occurrences.forEach(occToAdd => {
+      // An occurrence must have an id to be added in a table
+      if (occToAdd.id !== null) {
+        if (_.find(this.currentTableOccurrencesIds.getValue(), currentId => occToAdd.id === currentId)) {
+          // Already in table
+        } else {
+          // Not in table
+          occurrencesToAdd.push(occToAdd);
+        }
+      }
+    });
+
     // SyE
     // Select current sye and add occurrences
     if (table.sye.length === 0) {
       // Create a new sye
     } else if (table.sye.length === 1) {
       // Push occurrences to sye
-      table.sye[0].occurrences.push(...occurrences);
-      table.sye[0].occurrencesCount += occurrences.length;
+      table.sye[0].occurrences.push(...occurrencesToAdd);
+      table.sye[0].occurrencesCount += occurrencesToAdd.length;
     } else if (table.sye.length > 1) {
+      // @Todo
       // Select the 'good' sye and push occurrences to it
       let i = 0;
-      for (const occurrence of occurrences) {
+      for (const occurrence of occurrencesToAdd) {
         table.sye[0].occurrences.push(occurrence);
-        table.sye[0].occurrencesCount += occurrences.length;
+        table.sye[0].occurrencesCount += occurrencesToAdd.length;
         i++;
       }
     }

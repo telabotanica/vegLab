@@ -361,8 +361,6 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
   // -------
   selectedOccurrencesChange(selectedOccurrencesIds: Array<number>): void {
     this.selectedOccurrencesIds = selectedOccurrencesIds;
-    console.log('SELECTED OCCURRENCES');
-    console.log(this.selectedOccurrencesIds);
   }
 
   resetSelectedOccurrencesIds(): void {
@@ -717,8 +715,19 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
   addSelectedOccurrencesToTable(): void {
     const occurrences = [];
 
+    // Avoid duplicates
+    const occurrencesIdsToAdd: Array<number> = [];
+
+    this.selectedOccurrencesIds.forEach(occIdShouldBeAdded => {
+      if (_.find(this.tableService.currentTableOccurrencesIds.getValue(), currentTableOccId => currentTableOccId === occIdShouldBeAdded)) {
+        // already in current table, no need to get this occurrence
+      } else {
+        occurrencesIdsToAdd.push(occIdShouldBeAdded);
+      }
+    });
+
     let i = 0;
-    this.selectedOccurrencesIds.forEach(sOccId => {
+    occurrencesIdsToAdd.forEach(sOccId => {
       this.tableService.isLoadingData.next(true);
       this.occurrenceService.getOccurrenceById(sOccId).subscribe(
         rOcc => {
