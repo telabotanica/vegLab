@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { OccurrenceModel } from '../_models/occurrence.model';
 import { EsOccurrencesResultModel } from '../_models/es-occurrences-result.model';
 import { EsOccurrencesDocsResultModel } from '../_models/es-occurrences-docs.model';
+import { EsOccurrenceModel } from '../_models/es-occurrence-model';
 
 import { InputSource } from '../_enums/input-source-enum';
 
@@ -63,7 +64,7 @@ export class OccurrenceService {
     return dataObs;
   }
 
-  getEsOccurrenceById(id: number): Observable<OccurrenceModel> {
+  getEsOccurrenceById(id: number): Observable<EsOccurrenceModel> {
     return this.http.get(`${environment.esBaseUrl}/cel2_occurrences/_search?q=id:${id}`).pipe(
       map(result => result as EsOccurrencesResultModel),
       map(result => result.hits.hits[0]._source)
@@ -89,7 +90,7 @@ export class OccurrenceService {
   }
 
   getEsOccurrenceWithChildrenById(id: number): Observable<OccurrenceModel> {
-    let occurrence: OccurrenceModel;
+    let occurrence: EsOccurrenceModel;
     return this.getEsOccurrenceById(id).pipe(
       concatMap((occ) => {
         occurrence = occ;
@@ -129,7 +130,6 @@ export class OccurrenceService {
       return of(null);
     }
     const headers = new HttpHeaders({ 'Content-type': 'application/json' });
-    console.log(`from ${from} size ${size} // ${from !== null && size !== null}`);
     const fromSizeQueryPart = from !== null && size !== null ? `"from": ${from}, "size": ${size},` : '';
     const query = `
     {

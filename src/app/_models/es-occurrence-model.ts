@@ -52,7 +52,7 @@ export interface EsOccurrenceModel {
   sampleHerbarium?: boolean;
 
   bibliographySource?: string;
-  vlBiblioSource?: string;
+  vlBiblioSource?: any;           // I should have named it differently because not the same type as OccurrenceModel ! So typed as any !
   inputSource: InputSource;
 
   isPublic: boolean;
@@ -114,4 +114,12 @@ export interface EsOccurrenceModel {
   childrenPreview?: any;    // ES only
 
   vlWorkspace: string;
+
+  children?: Array<any>;
+
+  selected?: boolean;       // Automatically populated at GET
+  score?: number;           // Automatically populated at GET
+  isChildrenOf?: number;    // Automatically populated if needed ; children of Occurrence Id
+  isInCurrentTable?: boolean;
+  hasChildInCurrentTable?: boolean;
 }

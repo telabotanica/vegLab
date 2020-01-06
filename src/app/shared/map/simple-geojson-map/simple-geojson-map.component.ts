@@ -12,12 +12,16 @@ export class SimpleGeojsonMapComponent implements OnInit {
   @Input() set geoJson(value: Array<MyGeoJson>) {
     if (value && value.length > 0) {
       this._geojson = value;
+    } else {
+      // No valid geoJson
+      this.noValidGeoJson = true;
     }
   }
   @Input() set invalidateSize(value: boolean) {
     if (value) { this.invalidateMapSize(); }
   }
 
+  public noValidGeoJson = false;
   private map: L.Map;
   public mapOptions: any;
   private mapLayers: L.Control.LayersObject = {};
@@ -51,8 +55,13 @@ export class SimpleGeojsonMapComponent implements OnInit {
     this.map.addLayer(this.drawnLayer);
   }
 
-  private setGeometry(geom: Array<any>) {
+  private setGeometry(geom: Array<any>): void {
     this.clearDrawnItemsLayer();
+
+    if (geom == null) {
+      // No valid geom provided
+      return;
+    }
 
     for (const item of geom) {
       // point

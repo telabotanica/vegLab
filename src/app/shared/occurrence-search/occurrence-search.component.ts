@@ -4,7 +4,7 @@
  *       Et utiliser ce même serice pour des recherches en France
  *       -> OSM ne fournit pas les codes INSEE des communes et ne trouve pas toujours les codes postaux des villes...
  */
-import { Component, OnInit, OnDestroy, NgZone, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone, Inject, ViewChild } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CdkDragDrop, transferArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
 import { FormControl } from '@angular/forms';
@@ -32,9 +32,10 @@ import { Observer as ObserverModel } from '../../_models/observer.model';
 import { Biblio } from 'src/app/_models/biblio.model';
 import { LayerEnum } from 'src/app/_enums/layer-list';
 import { UserModel } from 'src/app/_models/user.model';
+import { EsOccurrenceModel } from 'src/app/_models/es-occurrence-model';
 
 import * as _ from 'lodash';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSelectChange } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSelectChange, MatSidenav, PageEvent } from '@angular/material';
 
 @Component({
   selector: 'vl-occurrence-search',
@@ -42,6 +43,9 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSelectChange } from '@angu
   styleUrls: ['./occurrence-search.component.scss']
 })
 export class OccurrenceSearchComponent implements OnInit, OnDestroy {
+  @ViewChild('sidenav') sidenav: MatSidenav;  // @Todo check : doc add {static: false}
+
+  occurrenceInfo: EsOccurrenceModel = null;     // occurrence to preview
 
   // VAR user
   currentUser: UserModel;
@@ -66,8 +70,8 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
   returnsChildrenLevelOccurrences = false;
   returnsChildrenLevelOccurrencesEnabled = true;
 
-  searchedOccurrences: Array<{occurrence: OccurrenceModel, score?: number}> = [];
-  orderedSearchedOccurrences: Array<{occurrence: {occurrence: OccurrenceModel, score?: number}, childOccurrences?: Array<{occurrence: OccurrenceModel, score?: number}>}> = [];
+  searchedOccurrences: Array<{occurrence: EsOccurrenceModel, score?: number}> = [];
+  orderedSearchedOccurrences: Array<{occurrence: {occurrence: EsOccurrenceModel, score?: number}, childOccurrences?: Array<{occurrence: EsOccurrenceModel, score?: number}>}> = [];
   geoSearchedOccurrences: Array<[number, number]> = []; // Array of centroids ; centroid is an ES Geo point data type : [lng, lat] simple array
 
   layerList: Array<{name: string, enum: LayerEnum, description: string}> = [];
@@ -141,6 +145,10 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
   dateFilterOn = false;
 
   // VAR results
+  resultCount: number;
+  occurrencesPageIndex = 0;        // updated by _occurrencePageChanged()
+  occurrencesPaginatorFrom = 0;    // updated by _occurrencePageChanged()
+  occurrencesPaginatorSize = 5;
   selectedOccurrencesIds: Array<number> = [];
 
   // VAR other
@@ -368,12 +376,12 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
   /**
    * Main search function
    */
-  search() {
+  search(from?: number) {
     // At less one of the filters (occurrence, geolocation, ...) must be applied
     if (this.noFilterApplied()) { return; }
 
     // Get the query
-    const esQuery = this.esQueryAssembler();
+    const esQuery = this.esQueryAssembler(from);
     console.log(esQuery);
 
     // Query should not be null
@@ -389,12 +397,16 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
     )
     .subscribe((esResults: EsOccurrencesResultModel) => {
       this.isSearching = false;
-      const occurrences: Array<{occurrence: OccurrenceModel, score?: number}> = [];
+      const occurrences: Array<{occurrence: EsOccurrenceModel, score?: number}> = [];
       const maxScore: number = esResults.hits.max_score;
+      this.resultCount = esResults.hits.total;
       esResults.hits.hits.forEach(hit => {
         const score = hit._score;
         const percentScore: number = maxScore && score ? ((score * 100) / maxScore) : null;
-        occurrences.push({occurrence: hit._source, score: percentScore});
+        const _occ: EsOccurrenceModel = hit._source;
+        _occ.selected = false;
+        _occ.score = percentScore;
+        occurrences.push({occurrence: _occ, score: percentScore});
       });
       this.searchedOccurrences = occurrences;
       this.orderedSearchedOccurrences = _.clone(this.getOrderedOccurrences(occurrences));
@@ -413,10 +425,10 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
    * Or, if the parent occurrence is a synusy : { occurrence: ~synusy level~ }
    * Note: from ES, parent is a number (occurrence id)
    */
-  private getOrderedOccurrences(occurrencesWithScores: Array<{occurrence: OccurrenceModel, score?: number}>): Array<{occurrence: {occurrence: OccurrenceModel, score?: number}, childOccurrences?: Array<{occurrence: OccurrenceModel, score?: number}>}> {
+  private getOrderedOccurrences(occurrencesWithScores: Array<{occurrence: EsOccurrenceModel, score?: number}>): Array<{occurrence: {occurrence: EsOccurrenceModel, score?: number}, childOccurrences?: Array<{occurrence: EsOccurrenceModel, score?: number}>}> {
     if (!occurrencesWithScores || occurrencesWithScores.length === 0) { return []; }
     const clonedOcc = _.clone(occurrencesWithScores);
-    const orderedOccurrences: Array<{occurrence: {occurrence: OccurrenceModel, score?: number}, childOccurrences?: Array<{occurrence: OccurrenceModel, score?: number}>}> = [];
+    const orderedOccurrences: Array<{occurrence: {occurrence: EsOccurrenceModel, score?: number}, childOccurrences?: Array<{occurrence: EsOccurrenceModel, score?: number}>}> = [];
 
     // If user set up a level filter or a layer filter, we can't order results by level
     if (this.levelFilter !== null || this.layerFilter !== null) {
@@ -424,10 +436,6 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
       return orderedOccurrences;
     }
 
-    console.log('OCC');
-    console.log(occurrencesWithScores);
-    console.log('CLONED OCC');
-    console.log(clonedOcc);
     // Get parent occurrences
     for (const occ of clonedOcc) {
       if (!occ.occurrence.parentId) { orderedOccurrences.push({occurrence: occ}); }
@@ -437,16 +445,18 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
     for (const occ of clonedOcc) {
       if (occ.occurrence.parentId) {    // parentId is only provided by ES, it's not persisted in SQL DB
         // get parent occurrence
-        let orderedOccurrence: {occurrence: {occurrence: OccurrenceModel, score?: number}, childOccurrences?: Array<{occurrence: OccurrenceModel, score?: number}>};
+        let orderedOccurrence: {occurrence: {occurrence: EsOccurrenceModel, score?: number}, childOccurrences?: Array<{occurrence: EsOccurrenceModel, score?: number}>};
         orderedOccurrence = _.find(orderedOccurrences, r => r.occurrence.occurrence.id === occ.occurrence.parentId);
         if (orderedOccurrence) {
           if (!orderedOccurrence.childOccurrences || orderedOccurrence.childOccurrences.length === 0) { orderedOccurrence.childOccurrences = []; }
           orderedOccurrence.childOccurrences.push(occ);
+        } else {
+          // no parent ?
+          // @Todo : improve Request : the parent occurrence could not be included in the request results !!!
+          orderedOccurrences.push({occurrence: occ});
         }
       }
     }
-    console.log('ORDERED OCC');
-    console.log(orderedOccurrences);
     return orderedOccurrences;
   }
 
@@ -764,7 +774,7 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
   // ES QUERY PARTS &  ASSEMBLERS
   // ----------------------------
 
-  esQueryAssembler(): string {
+  esQueryAssembler(from?: number): string {
     const mustPart = this.esMustClauseAssembler();
     let shouldPart = this.esShouldClauseAssembler();
     let mustNotPart = this.esMustNotClauseAssembler();
@@ -776,9 +786,12 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
     boundingBoxPart = (boundingBoxPart !== '' && (shouldPart !== '' || mustPart !== '' || mustNotPart !== '')) ? ', ' + boundingBoxPart : boundingBoxPart;
     polygonPart     = (polygonPart     !== '' && (shouldPart !== '' || mustPart !== '' || mustNotPart !== '')) ? ', ' + polygonPart : polygonPart;
 
+    const _from = from ? from : 0;
+    const _size = this.occurrencesPaginatorSize;
+
     const query = `
     {
-      "size": 100,
+      "from": ${_from}, "size": ${_size},
       "query": {
         "bool": {
           ${mustPart}
@@ -1299,6 +1312,42 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
     }`;
 
     return [part];
+  }
+
+  // SIDENAV
+  previewOccurrenceAction(occurrence: EsOccurrenceModel): void {
+    this.resetInfoAndDeleteValues();
+    this.occurrenceInfo = occurrence;
+    this.sidenav.open();
+  }
+
+  resetInfoAndDeleteValues(): void {
+    // this.tableInfo = null;
+    this.occurrenceInfo = null;
+    // this.tableToDelete = null;
+    // this.occurrenceToDelete = null;
+  }
+
+  /**
+   * Sidenav panel has been closed
+   */
+  closeSidenav() {
+    this.resetInfoAndDeleteValues();
+  }
+
+  // PAGINATOR
+  _occurrencePageChanged(pageEvent: PageEvent): void {
+    if (pageEvent == null) { return; }
+
+    // page index update
+    this.occurrencesPageIndex = pageEvent.pageIndex;
+
+    // number of items per page update
+    if (pageEvent.pageSize !== this.occurrencesPaginatorSize) {
+      this.occurrencesPaginatorSize = pageEvent.pageSize;
+    }
+
+    this.search(this.occurrencesPageIndex * this.occurrencesPaginatorSize);
   }
 
 }

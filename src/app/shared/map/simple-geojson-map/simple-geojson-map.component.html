@@ -1,8 +1,12 @@
-<div class="simple-geojson-map-wrapper" style="height: 100%; min-height: 100%">
+<div *ngIf="!noValidGeoJson" class="simple-geojson-map-wrapper" style="height: 100%; min-height: 100%">
   <div class="leaflet-map"
     style="height: 100%; min-height: 100%;"
     leaflet 
     [leafletOptions]="mapOptions"
     (leafletMapReady)="onMapReady($event)">
   </div>
+</div>
+
+<div *ngIf="noValidGeoJson" class="simple-geojson-map-wrapper">
+  Aucune donnée de géolocalisation n'existe pour cette occurrence
 </div>

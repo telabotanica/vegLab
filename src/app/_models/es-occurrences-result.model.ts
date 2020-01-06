@@ -1,4 +1,5 @@
 import { OccurrenceModel } from './occurrence.model';
+import { EsOccurrenceModel } from './es-occurrence-model';
 
 export interface EsOccurrencesResultModel {
   _shards: {
@@ -12,7 +13,7 @@ export interface EsOccurrencesResultModel {
       _id:       string,
       _index:    string,                     // 'cel2_occurrence'
       _score:    number,
-      _source:   OccurrenceModel,
+      _source:   EsOccurrenceModel,
       _type:     string                       // 'occurrence'
     }>,
     max_score:   number,
