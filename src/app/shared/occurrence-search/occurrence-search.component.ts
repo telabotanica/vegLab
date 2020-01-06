@@ -720,7 +720,7 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
 
     this.selectedOccurrencesIds.forEach(occIdShouldBeAdded => {
       if (_.find(this.tableService.currentTableOccurrencesIds.getValue(), currentTableOccId => currentTableOccId === occIdShouldBeAdded)) {
-        // already in current table, no need to get this occurrence
+        // already in current table, no need to get & add this occurrence
       } else {
         occurrencesIdsToAdd.push(occIdShouldBeAdded);
       }
@@ -743,23 +743,6 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
       );
     });
   }
-  /*addAllOccurrencesToCurrentTable() {
-    const occurrences = [];
-
-    let i = 0;
-    this.searchedOccurrences.forEach(sOcc => {
-      this.occurrenceService.getEsOccurrenceWithChildrenById(sOcc.occurrence.id).subscribe(
-        rOcc => {
-          occurrences.push(rOcc);
-          if (i === this.searchedOccurrences.length - 1) { this.tableService.addOccurrencesToCurrentTable(occurrences); }
-          i++;
-        },
-        error => {
-          // @Todo manage error
-        }
-      );
-    });
-  }*/
 
   toggleShowResultsDiv(): void {
     if (this.searchedOccurrences.length === 0) { return; }
