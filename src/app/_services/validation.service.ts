@@ -51,5 +51,18 @@ export class ValidationService {
     }
   }
 
+  getSingleName(element: 'table' | 'sye' | 'releve' | 'idiotaxon', validations: Array<OccurrenceValidationModel>): string {
+    const preferedValidation = this.getPreferedValidation(element, validations);
+    if (preferedValidation) {
+      if (preferedValidation.repository === 'otherunknown') {
+        return preferedValidation.inputName && preferedValidation.inputName !== '' ? preferedValidation.inputName : '?';
+      } else {
+        return preferedValidation.validatedName ? preferedValidation.validatedName : preferedValidation.inputName;
+      }
+    } else {
+      return '?';
+    }
+  }
+
 
 }

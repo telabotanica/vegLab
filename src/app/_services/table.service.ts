@@ -10,6 +10,8 @@ import { SyeService } from './sye.service';
 import { NotificationService } from './notification.service';
 import { ErrorService } from './error.service';
 import { SyntheticColumnService } from './synthetic-column.service';
+import { WorkspaceService } from './workspace.service';
+import { ValidationService } from './validation.service';
 
 import { TableViewRowName } from '../_models/table-view-row-name.model';
 import { TableRowDefinition, TableRow } from '../_models/table-row-definition.model';
@@ -28,7 +30,6 @@ import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { TableRelatedSyntaxon } from '../_models/table-related-syntaxon';
-import { WorkspaceService } from './workspace.service';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -54,7 +55,8 @@ export class TableService {
     private errorService: ErrorService,
     private syntheticColumnService: SyntheticColumnService,
     private http: HttpClient,
-    private wsService: WorkspaceService) { }
+    private wsService: WorkspaceService,
+    private validationService: ValidationService) { }
 
   // --------------
   // TABLE I/O (DB)
@@ -468,7 +470,7 @@ export class TableService {
   // ADD / REMOVE OCCURRENCE
   // -----------------------
 
-  private addOccurrencesToTable(occurrences: Array<OccurrenceModel>, table: Table): Table {
+  addOccurrencesToTable(occurrences: Array<OccurrenceModel>, table: Table): Table {
     // Avoid duplicates
     const occurrencesToAdd: Array<OccurrenceModel> = [];
     occurrences.forEach(occToAdd => {
@@ -1970,7 +1972,7 @@ export class TableService {
           }
           if (child.validations[0].repositoryIdTaxo === name.repositoryIdTaxo && child.layer === name.layer) {
             occurrencesCount++;
-            displayName = child.validations[0].validName;
+            displayName = this.validationService.getSingleName('releve', child.validations);
             minCoef = this.isLowerCoef(minCoef, child.coef) ? child.coef : minCoef;
             maxCoef = this.isUpperCoef(maxCoef, child.coef) ? child.coef : maxCoef;
           }
@@ -2076,6 +2078,16 @@ export class TableService {
   private updateSyeCount(table: Table): void {
     for (const sye of table.sye) {
       sye.occurrencesCount = sye.occurrences.length;
+    }
+  }
+
+  updateSyeIds(table: Table): void {
+    let i = 0;
+    if (table !== null && table.sye !== null && table.sye.length > 0) {
+      for (const sye of table.sye) {
+        sye.syeId = i;
+        i++;
+      }
     }
   }
 

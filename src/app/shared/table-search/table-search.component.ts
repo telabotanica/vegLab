@@ -5,12 +5,17 @@ import { PageEvent, MatSidenav } from '@angular/material';
 
 import { TableService } from 'src/app/_services/table.service';
 import { NotificationService } from 'src/app/_services/notification.service';
+import { UserService } from 'src/app/_services/user.service';
 
 import { RepositoryItemModel } from 'tb-tsb-lib';
 import { EsTableModel } from 'src/app/_models/es-table.model';
+import { Sye } from 'src/app/_models/sye.model';
+import { Table } from 'src/app/_models/table.model';
+import { OccurrenceModel } from 'src/app/_models/occurrence.model';
+import { UserModel } from 'src/app/_models/user.model';
 import { environment } from 'src/environments/environment';
 
-import { Subscription } from 'rxjs';
+import { Subscription, Observable, zip } from 'rxjs';
 import * as _ from 'lodash';
 
 @Component({
@@ -60,7 +65,13 @@ export class TableSearchComponent implements OnInit, OnDestroy {
   currentTableId: number;
   currentTableChangeSubscription: Subscription;
 
-  constructor(private tableService: TableService, private notificationService: NotificationService) { }
+  // VAR user
+  currentUser: UserModel = null;
+  currentUserChangeSubscription: Subscription;
+
+  constructor(private tableService: TableService,
+              private notificationService: NotificationService,
+              private userService: UserService) { }
 
   ngOnInit() {
     // get current table id
@@ -78,10 +89,28 @@ export class TableSearchComponent implements OnInit, OnDestroy {
         console.log(error);
       }
     );
+
+    // get current user
+    this.currentUser = this.userService.currentUser.getValue();
+    // subscribe to current user change
+    this.currentUserChangeSubscription = this.userService.currentUser.subscribe(
+      user => {
+        // current user has changed !!
+        // should not happen except at startup if this.currentUser == null
+        if (this.currentUser == null) {
+          this.currentUser = user;
+        } else if (this.currentUser && user.id !== this.currentUser.id) {
+          // Hey !!
+          this.notificationService.warn('L\'utilisateur courant a changé, la session est interrompue');
+          // @Todo save data and exit
+        }
+      }, error => {}
+    );
   }
 
   ngOnDestroy() {
     if (this.currentTableChangeSubscription) { this.currentTableChangeSubscription.unsubscribe(); }
+    if (this.currentUserChangeSubscription) { this.currentUserChangeSubscription.unsubscribe(); }
   }
 
   // -------------
@@ -275,7 +304,12 @@ export class TableSearchComponent implements OnInit, OnDestroy {
   // ---------------------
   // SET SELECTED TABLE(S)
   // ---------------------
-  setSelectedTablesAsCurrentTable(): void {
+
+  /**
+   * Set selected tables as a current table
+   * @param setSye if true, syes will be added independantly. If false, only occurrences (relevés) will be added
+   */
+  setSelectedTablesAsCurrentTable(setSye = false): void {
     if (this.selectedTablesIds == null || this.selectedTablesIds.length === 0) {
       // Selected tables ids empty
       this.notificationService.warn('Aucun tableau n\'est selectionné');
@@ -297,10 +331,59 @@ export class TableSearchComponent implements OnInit, OnDestroy {
     } else if (this.selectedTablesIds.length > 1) {
       // Several tables selected
       // Set current tables syes as current table
+      // 1. get observables
+      const obs: Array<Observable<Table>> = [];
+      for (const tableId of this.selectedTablesIds) {
+        obs.push(this.tableService.getTableById(tableId));
+      }
+      // 2. zip & subscribe
+      this.tableService.isLoadingData.next(true);
+      zip(...obs).subscribe(
+        results => {
+          const syes: Array<Sye> = [];
+          const occurrences: Array<OccurrenceModel> = [];
+          for (const table of results) {
+            // 3. Add syes
+            syes.push(...table.sye);
+            table.sye.forEach(ts => {if (ts.occurrences && ts.occurrences.length > 0) { occurrences.push(...ts.occurrences); }});
+          }
+          // 4. Set currentTable Syes OR Set occurrences
+          const ct = this.tableService.createTable(); // a new Table with an unique empty sye
+          if (setSye === true) {
+            // keep syes
+            ct.sye = syes;
+
+            // At this point, sye `syeId` property must be redefined to avoid duplicates
+            this.tableService.updateSyeIds(ct);
+
+            if (this.currentUser == null) { this.notificationService.warn('Il semble que vous soyez deconnecté, nous ne pouvons pas continuer'); return; }
+            this.tableService.createTableSyntheticColumn(ct, this.currentUser);
+            this.tableService.setCurrentTable(ct, true);
+            this.tableService.isLoadingData.next(false);
+          } else {
+            // only push occurrences (relevés)
+            this.tableService.addOccurrencesToTable(occurrences, ct);
+            if (this.currentUser == null) { this.notificationService.warn('Il semble que vous soyez deconnecté, nous ne pouvons pas continuer'); return; }
+            this.tableService.createSyntheticColumnsForSyeOnTable(ct, this.currentUser);
+            this.tableService.createTableSyntheticColumn(ct, this.currentUser);
+            this.tableService.setCurrentTable(ct, true);
+            this.tableService.isLoadingData.next(false);
+          }
+        }, error => {
+          this.notificationService.error('Nous ne parvenons pas à récupérer les tableaux en base de données');
+          this.tableService.isLoadingData.next(false);
+          // @Todo log error
+          console.log(error);
+        }
+      );
     }
   }
 
-  mergeSelectedTablesWithCurrentTable(): void {
+  /**
+   * Merge selected tables with the current table
+   * @param setSye if true, syes will be added independantly. If false, only occurrences (relevés) will be added
+   */
+  mergeSelectedTablesWithCurrentTable(setSye = false): void {
 
   }
 
