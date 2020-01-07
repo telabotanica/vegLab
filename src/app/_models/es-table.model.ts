@@ -19,4 +19,6 @@ export interface EsTableModel {
   tableName:              string;
   occurrencesNames:       string;
   preview:                Array<string>;
+  selected?:              boolean;  // not in database
+  isCurrentTable?:        boolean;  // not in database
 }

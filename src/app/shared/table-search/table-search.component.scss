@@ -1,100 +1,104 @@
 @import '../../_styles/colors';
 @import '../../_styles/range-slider';
 
-.container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-right: 0;
-  height: 100%;
-  h1 {
-    text-align: center;
-    padding-right: 10px;
-    font-size: 20px;
-  }
-  .filter-container {
+.mat-sidenav-container {
+  background-color: transparent;
+  .container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 0;
-    mat-tab-group {
-      .tab-body-wrapper {
-        padding: 10px;
-        .tab-section {
-          padding-left: 10px;
-          padding-right: 10px;
-          border-left: 3px solid white;
-          text-align: center;
-          &:hover {
-            border-left: 3px solid $blue-material-light;
-          }
-          .section-title {
-            font-size: 1.2em;
-            color: $blue-material;
-            font-variant-caps: all-small-caps;
+    padding-right: 0;
+    height: 100%;
+    h1 {
+      text-align: center;
+      padding-right: 10px;
+      font-size: 20px;
+    }
+    .filter-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 0;
+      mat-tab-group {
+        .tab-body-wrapper {
+          padding: 10px;
+          .tab-section {
+            padding-left: 10px;
+            padding-right: 10px;
+            border-left: 3px solid white;
             text-align: center;
-            padding-top: 5px;
-            padding-bottom: 5px;
-          }
-          .section-body {
-            margin-top: 5px;
-            margin-bottom: 15px;
+            &:hover {
+              border-left: 3px solid $blue-material-light;
+            }
+            .section-title {
+              font-size: 1.2em;
+              color: $blue-material;
+              font-variant-caps: all-small-caps;
+              text-align: center;
+              padding-top: 5px;
+              padding-bottom: 5px;
+            }
+            .section-body {
+              margin-top: 5px;
+              margin-bottom: 15px;
+            }
           }
         }
-      }
-      .occurrence-filter-box {
-        min-height: 50px;
-        width: 100%;
-        border: 1px dashed grey;
-        margin-bottom: 10px;
-        padding: 10px;
-        &.must {
-          border-color: green;
-        }
-        &.must-not {
-          border-color: red;
+        .occurrence-filter-box {
+          min-height: 50px;
+          width: 100%;
+          border: 1px dashed grey;
+          margin-bottom: 10px;
+          padding: 10px;
+          &.must {
+            border-color: green;
+          }
+          &.must-not {
+            border-color: red;
+          }
         }
       }
     }
-  }
 
-  .spacer {
-    flex: 2;
-  }
-  
-  .results-container {
-    overflow-y: scroll;
-    .header {
-      // position: sticky;
-      // top: 0;
-      // z-index: 99;
-      .progress-bar-container {
-        min-height: 4px;
-      }
-      .result-top-bar {
-        margin-bottom: 10px;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: baseline;
-        font-weight: bold;
-        .result-title {
-          font-size: 1.4em;
-          color: grey;
+    .spacer {
+      flex: 2;
+    }
+    
+    .results-container {
+      overflow-y: scroll;
+      .header {
+        // position: sticky;
+        // top: 0;
+        // z-index: 99;
+        .progress-bar-container {
+          min-height: 4px;
+        }
+        .result-top-bar {
+          margin-bottom: 10px;
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: baseline;
+          font-weight: bold;
+          .result-title {
+            font-size: 1.4em;
+            color: grey;
+          }
         }
       }
-    }
-    .results {
-      overflow-y: scroll;
-      .results-cards {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: space-evenly;
+      .results {
+        overflow-y: scroll;
+        .results-cards {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: space-evenly;
+        }
       }
     }
   }
 }
+
 
 
 table.must-not-table {

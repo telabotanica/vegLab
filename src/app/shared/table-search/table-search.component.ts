@@ -1,17 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { CdkDragDrop, transferArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
+import { trigger, transition, style, animate } from '@angular/animations';
+import { PageEvent, MatSidenav } from '@angular/material';
 
 import { TableService } from 'src/app/_services/table.service';
+import { NotificationService } from 'src/app/_services/notification.service';
 
-import { Table } from 'src/app/_models/table.model';
 import { RepositoryItemModel } from 'tb-tsb-lib';
-
-import { map } from 'rxjs/operators';
-import * as _ from 'lodash';
-import { CdkDragDrop, transferArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EsTableModel } from 'src/app/_models/es-table.model';
-import { trigger, transition, style, animate } from '@angular/animations';
 import { environment } from 'src/environments/environment';
 
+import { Subscription } from 'rxjs';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'vl-table-search',
@@ -27,8 +27,11 @@ import { environment } from 'src/environments/environment';
     ])
   ]
 })
-export class TableSearchComponent implements OnInit {
+export class TableSearchComponent implements OnInit, OnDestroy {
+  @ViewChild('sidenav') sidenav: MatSidenav;  // @Todo check : doc add {static: false}
+
   tables: Array<EsTableModel> = [];
+  tableInfo: EsTableModel = null;     // table to preview
 
   // VAR Table filters
   tableValidation: RepositoryItemModel = null;
@@ -43,14 +46,42 @@ export class TableSearchComponent implements OnInit {
   mustContainRowOccurrences: Array<RepositoryItemModel> = [];
   mustNotContainRowOccurrences: Array<RepositoryItemModel> = [];
 
+  // Var results
+  resultCount: number;
+  tablesPageIndex = 0;        // updated by _tablePageChanged()
+  tablesPaginatorFrom = 0;    // updated by _tablePageChanged()
+  tablesPaginatorSize = 5;
+  selectedTablesIds: Array<number> = [];
+
   // VAR other
   tbRepositoriesConfig = environment.tbRepositoriesConfig;
   isSearching = false;
   showResultsDiv = true;
+  currentTableId: number;
+  currentTableChangeSubscription: Subscription;
 
-  constructor(private tableService: TableService) { }
+  constructor(private tableService: TableService, private notificationService: NotificationService) { }
 
   ngOnInit() {
+    // get current table id
+    let ct = this.tableService.getCurrentTable();
+    this.currentTableId = ct && ct.id ? ct.id : null;
+    // subscribe to current table change
+    this.currentTableChangeSubscription = this.tableService.currentTableChanged.subscribe(
+      currentTableHasChanged => {
+        if (currentTableHasChanged === true) {
+          ct = this.tableService.getCurrentTable();
+          this.currentTableId = ct && ct.id ? ct.id : null;
+        }
+      }, error => {
+        // @Todo manage error
+        console.log(error);
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    if (this.currentTableChangeSubscription) { this.currentTableChangeSubscription.unsubscribe(); }
   }
 
   // -------------
@@ -112,11 +143,9 @@ export class TableSearchComponent implements OnInit {
   // "specie" level
   // -----------------------
   addRowOccurrenceToFilter(item: RepositoryItemModel): void {
-    console.log(item);
     if (_.find(this.mustContainRowOccurrences, i => i === item )) { return; }
     if (_.find(this.mustNotContainRowOccurrences, i => i === item )) { return; }
     this.mustContainRowOccurrences.push(item);
-    console.log(item);
     this.search();
   }
 
@@ -153,20 +182,20 @@ export class TableSearchComponent implements OnInit {
   // ------
   // SEARCH
   // ------
-  search() {
+  search(from?: number) {
     // At less one of the filters (occurrence, geolocation, ...) must be applied
     if (this.noFilterApplied()) { this.tables = []; return; }
 
     this.isSearching = true;
 
-    const query = this.esQueryAssembler();
+    const query = this.esQueryAssembler(from);
     console.log(query);
 
     this.tableService.findEsTableByQuery(query).subscribe(
-      esTables => {
-        console.log('ES TABLES', esTables);
+      result => {
+        this.resultCount = result.count;
         this.isSearching = false;
-        this.tables = esTables;
+        this.tables = result.tables;
       },
       errorEsTables => {
         this.isSearching = false;
@@ -201,18 +230,95 @@ export class TableSearchComponent implements OnInit {
     this.search();
   }
 
+  // --------------------
+  // RESULTS & PAGINATION
+  // --------------------
+  _tablePageChanged(pageEvent: PageEvent): void {
+    if (pageEvent == null) { return; }
+
+    // page index update
+    this.tablesPageIndex = pageEvent.pageIndex;
+
+    // number of items per page update
+    if (pageEvent.pageSize !== this.tablesPaginatorSize) {
+      this.tablesPaginatorSize = pageEvent.pageSize;
+    }
+
+    this.search(this.tablesPageIndex * this.tablesPaginatorSize);
+  }
+
+  selectedTablesChange(selectedTablesIds: Array<number>): void {
+    this.selectedTablesIds = selectedTablesIds;
+  }
+
+  resetSelectedTablesIds(): void {
+    this.selectedTablesIds = [];
+  }
+
+  // -------
+  // SIDENAV
+  // -------
+  previewTableAction(table: EsTableModel): void {
+    this.resetInfoAndDeleteValues();
+    this.tableInfo = table;
+    this.sidenav.open();
+  }
+
+  resetInfoAndDeleteValues(): void {
+    this.tableInfo = null;
+  }
+
+  closeSidenav() {
+    this.resetInfoAndDeleteValues();
+  }
+
+  // ---------------------
+  // SET SELECTED TABLE(S)
+  // ---------------------
+  setSelectedTablesAsCurrentTable(): void {
+    if (this.selectedTablesIds == null || this.selectedTablesIds.length === 0) {
+      // Selected tables ids empty
+      this.notificationService.warn('Aucun tableau n\'est selectionné');
+      return;
+    } else if (this.selectedTablesIds.length === 1) {
+      // One table selected
+      // Get the table and set as current table
+      this.tableService.isLoadingData.next(true);
+      this.tableService.getTableById(this.selectedTablesIds[0]).subscribe(
+        table => {
+          this.tableService.setCurrentTable(table, true);
+          this.tableService.isLoadingData.next(false);
+        }, errorTable => {
+          this.notificationService.error('Nous ne parvenons pas à récupérer le tableau en base de données');
+          this.tableService.isLoadingData.next(false);
+          // @Todo log error
+        }
+      );
+    } else if (this.selectedTablesIds.length > 1) {
+      // Several tables selected
+      // Set current tables syes as current table
+    }
+  }
+
+  mergeSelectedTablesWithCurrentTable(): void {
+
+  }
+
   // ---------------------------
   // ES QUERY PARTS & ASSEMBLERS
   // ---------------------------
-  esQueryAssembler(): string {
+  esQueryAssembler(from?: number): string {
     const mustPart = this.esMustClauseAssembler();
     let mustNotPart = this.esMustNotClauseAssembler();
 
     mustNotPart = (mustNotPart !== '' && mustPart !== '' ) ? ', ' + mustNotPart : mustNotPart;
 
+    const _from = from ? from : 0;
+    const _size = this.tablesPaginatorSize;
+
     const query = `
     {
-      "size": 100,
+      "from": ${_from}, "size": ${_size},
       "query": {
         "bool": {
           ${mustPart}

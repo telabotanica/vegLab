@@ -1,240 +1,279 @@
-<div class="container">
-  <h1>Rechercher un tableau</h1>
-  <!-- FILTERS -->
-  <div class="filter-container">
-    <mat-tab-group mat-stretch-tabs>
-      <!-- ************* -->
-      <!-- Table filters -->
-      <!-- ************* -->
-      <mat-tab label="Tableau">
-        <ng-template mat-tab-label>
-          <img class="vl-base-element-icon inline" src="./assets/img/icons/tab-icon.jpg">
-          Tableau
-        </ng-template>
-        <div class="tab-body-wrapper">
-          <!-- search by id -->
-          <!--<div class="tab-section">
-            <div class="section-title">
-              Filtrer par identifiant unique
-            </div>
-            <div class="section-body">
-              <mat-form-field>
-                <input matInput placeholder="Identifiant unique">
-              </mat-form-field>
-            </div>
-          </div>-->
-          
-          <!-- search by vegetation -->
-          <div class="tab-section">
-            <div class="section-title">
-              Filtrer par végétation
-            </div>
-            <div class="section-body">
-                <mat-slide-toggle color="primary" (change)="tableMustBeADiagnosisChange($event)">Diagnose originale</mat-slide-toggle>
-                <mat-slide-toggle color="primary" (change)="tableMustHaveAPdfisChange($event)" [disabled]="!tableMustBeADiagnosis">Avec PDF</mat-slide-toggle>
-                <tb-tsb-search-box
-                  level="synusy"
-                  placeholder="Nom de végétation"
-                  autoResetWhenSelected="true"
-                  defaultRepository="baseveg"
-                  [showRepositoryInput]="false"
-                  (newData)="setTableValidationFilter($event)">
-                </tb-tsb-search-box>
-        
-                <div class="table-filter" *ngIf="tableValidation">
-                  <div class="result-item" *ngIf="tableValidation">
-                    <div class="display-name">{{ tableValidation.name }}</div>
-                    <div class="actions"><mat-icon (click)="removeTableValidationFilter()">delete</mat-icon></div>
-                  </div>
+<mat-sidenav-container class="sidenav-container" (backdropClick)="closeSidenav()">
+  <mat-sidenav #sidenav class="sidenav" position="end" (keydown.escape)="closeSidenav()">
+    <div class="sidenav-content-wrapper">
+      <div *ngIf="tableInfo">
+        <vl-table-preview [table]="tableInfo"></vl-table-preview>
+      </div>
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content class="sidenav-content">
+    <div class="container">
+      <h1>Rechercher un tableau</h1>
+      <!-- FILTERS -->
+      <div class="filter-container">
+        <mat-tab-group mat-stretch-tabs>
+          <!-- ************* -->
+          <!-- Table filters -->
+          <!-- ************* -->
+          <mat-tab label="Tableau">
+            <ng-template mat-tab-label>
+              <img class="vl-base-element-icon inline" src="./assets/img/icons/tab-icon.jpg">
+              Tableau
+            </ng-template>
+            <div class="tab-body-wrapper">
+              <!-- search by id -->
+              <!--<div class="tab-section">
+                <div class="section-title">
+                  Filtrer par identifiant unique
                 </div>
-            </div>
-          </div>
-          
-          <!-- search bu biblio -->
-          <div class="tab-section">
-            <div class="section-title">
-              Filtrer par référence bibliographique
-            </div>
-            <div class="section-body">
-              <vl-biblio-search
-                fuzzySearch="true"
-                placeholder="Référence bibliographique"
-                ></vl-biblio-search>
-            </div>
-          </div>
-        </div>
-      </mat-tab>
-
-      <!-- *********************** -->
-      <!-- Col Occurrences filters -->
-      <!-- ("Relevés" level)       -->
-      <!-- *********************** -->
-      <mat-tab label="Relevés">
-        <ng-template mat-tab-label>
-          <img class="vl-base-element-icon inline" src="./assets/img/icons/rel-icon.jpg">
-          Relevés
-        </ng-template>
-        <div class="tab-body-wrapper">
-          <!-- search by id -->
-          <!--<div class="tab-section">
-            <div class="section-title">
-              Filtrer par identifiant unique
-            </div>
-            <div class="section-body">
-              <mat-form-field>
-                <input matInput placeholder="Identifiant unique">
-              </mat-form-field>
-            </div>
-          </div>-->
-          
-          <!-- search by "species" -->
-          <div class="tab-section">
-            <div class="section-title">
-              Filtrer par végétation
-            </div>
-            <div class="section-body">
-              <mat-chip-list></mat-chip-list> <!-- https://github.com/angular/material2/issues/9964#issuecomment-480287541 -->
-              <table class="must-not-table">
-                <thead>
-                  <tr class="header">
-                    <th class="title"></th>
-                    <th class="taxo-input">
-                      <tb-tsb-search-box
-                        level="synusy"
-                        placeholder="Nom de végétation"
-                        autoResetWhenSelected="true"
-                        defaultRepository="baseveg"
-                        [showRepositoryInput]="false"
-                        (newData)="addColOccurrenceToFilter($event)">
-                      </tb-tsb-search-box>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class="row must">
-                    <td class="title">Les tableaux <b>doivent</b> contenir</td>
-                    <td>
-                      <!-- must/should contain box -->
-                      <div cdkDropList #mustContainColList="cdkDropList" [cdkDropListData]="mustContainColOccurrences" [cdkDropListConnectedTo]="[mustNotContainColList]" (cdkDropListDropped)="dropColOccurrenceBetweenLists($event)" id="mustContainBox" class="occurrence-filter-box must">
-                        <mat-chip cdkDrag *ngFor="let item of mustContainColOccurrences" removable="true" (removed)="removeColOccurrenceFromMustContainList(item)">
-                          {{ item.name }} {{ item.author }}
-                          <mat-icon matChipRemove>cancel</mat-icon>
-                        </mat-chip>
+                <div class="section-body">
+                  <mat-form-field>
+                    <input matInput placeholder="Identifiant unique">
+                  </mat-form-field>
+                </div>
+              </div>-->
+              
+              <!-- search by vegetation -->
+              <div class="tab-section">
+                <div class="section-title">
+                  Filtrer par végétation
+                </div>
+                <div class="section-body">
+                    <mat-slide-toggle color="primary" (change)="tableMustBeADiagnosisChange($event)">Diagnose originale</mat-slide-toggle>
+                    <mat-slide-toggle color="primary" (change)="tableMustHaveAPdfisChange($event)" [disabled]="!tableMustBeADiagnosis">Avec PDF</mat-slide-toggle>
+                    <tb-tsb-search-box
+                      level="synusy"
+                      placeholder="Nom de végétation"
+                      autoResetWhenSelected="true"
+                      defaultRepository="baseveg"
+                      [showRepositoryInput]="false"
+                      (newData)="setTableValidationFilter($event)">
+                    </tb-tsb-search-box>
+            
+                    <div class="table-filter" *ngIf="tableValidation">
+                      <div class="result-item" *ngIf="tableValidation">
+                        <div class="display-name">{{ tableValidation.name }}</div>
+                        <div class="actions"><mat-icon (click)="removeTableValidationFilter()">delete</mat-icon></div>
                       </div>
-                    </td>
-                  </tr>
-                  <tr class="row must-not">
-                    <td class="title">Les tableaux <b>ne doivent pas</b> contenir</td>
-                    <td>
-                      <!-- must not/should not contain box -->
-                      <div cdkDropList #mustNotContainColList="cdkDropList" [cdkDropListData]="mustNotContainColOccurrences" [cdkDropListConnectedTo]="[mustContainColList]" (cdkDropListDropped)="dropColOccurrenceBetweenLists($event)" id="mustNotContainBox" class="occurrence-filter-box must-not">
-                        <mat-chip cdkDrag *ngFor="let item of mustNotContainColOccurrences" removable="true" (removed)="removeColOccurrenceFromMustNotContainList(item)">
-                          {{ item.name }} {{ item.author }}
-                          <mat-icon matChipRemove>cancel</mat-icon>
-                        </mat-chip>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                    </div>
+                </div>
+              </div>
+              
+              <!-- search bu biblio -->
+              <div class="tab-section">
+                <div class="section-title">
+                  Filtrer par référence bibliographique
+                </div>
+                <div class="section-body">
+                  <vl-biblio-search
+                    fuzzySearch="true"
+                    placeholder="Référence bibliographique"
+                    ></vl-biblio-search>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </mat-tab>
+          </mat-tab>
 
-      <!-- *********************** -->
-      <!-- ROW Occurrences filters -->
-      <!-- ("Species" level)       -->
-      <!-- *********************** -->
-      <mat-tab label="Espèces">
-        <ng-template mat-tab-label>
-          <img class="vl-base-element-icon inline" src="./assets/img/icons/occ-icon.jpg">
-          Espèces
-        </ng-template>
-        <div class="tab-body-wrapper">
-          <!-- search by "species" -->
-          <div class="tab-section">
-            <div class="section-title">
-              Filtrer par espèces
+          <!-- *********************** -->
+          <!-- Col Occurrences filters -->
+          <!-- ("Relevés" level)       -->
+          <!-- *********************** -->
+          <mat-tab label="Relevés">
+            <ng-template mat-tab-label>
+              <img class="vl-base-element-icon inline" src="./assets/img/icons/rel-icon.jpg">
+              Relevés
+            </ng-template>
+            <div class="tab-body-wrapper">
+              <!-- search by id -->
+              <!--<div class="tab-section">
+                <div class="section-title">
+                  Filtrer par identifiant unique
+                </div>
+                <div class="section-body">
+                  <mat-form-field>
+                    <input matInput placeholder="Identifiant unique">
+                  </mat-form-field>
+                </div>
+              </div>-->
+              
+              <!-- search by "species" -->
+              <div class="tab-section">
+                <div class="section-title">
+                  Filtrer par végétation
+                </div>
+                <div class="section-body">
+                  <mat-chip-list></mat-chip-list> <!-- https://github.com/angular/material2/issues/9964#issuecomment-480287541 -->
+                  <table class="must-not-table">
+                    <thead>
+                      <tr class="header">
+                        <th class="title"></th>
+                        <th class="taxo-input">
+                          <tb-tsb-search-box
+                            level="synusy"
+                            placeholder="Nom de végétation"
+                            autoResetWhenSelected="true"
+                            defaultRepository="baseveg"
+                            [showRepositoryInput]="false"
+                            (newData)="addColOccurrenceToFilter($event)">
+                          </tb-tsb-search-box>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="row must">
+                        <td class="title">Les tableaux <b>doivent</b> contenir</td>
+                        <td>
+                          <!-- must/should contain box -->
+                          <div cdkDropList #mustContainColList="cdkDropList" [cdkDropListData]="mustContainColOccurrences" [cdkDropListConnectedTo]="[mustNotContainColList]" (cdkDropListDropped)="dropColOccurrenceBetweenLists($event)" id="mustContainBox" class="occurrence-filter-box must">
+                            <mat-chip cdkDrag *ngFor="let item of mustContainColOccurrences" removable="true" (removed)="removeColOccurrenceFromMustContainList(item)">
+                              {{ item.name }} {{ item.author }}
+                              <mat-icon matChipRemove>cancel</mat-icon>
+                            </mat-chip>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr class="row must-not">
+                        <td class="title">Les tableaux <b>ne doivent pas</b> contenir</td>
+                        <td>
+                          <!-- must not/should not contain box -->
+                          <div cdkDropList #mustNotContainColList="cdkDropList" [cdkDropListData]="mustNotContainColOccurrences" [cdkDropListConnectedTo]="[mustContainColList]" (cdkDropListDropped)="dropColOccurrenceBetweenLists($event)" id="mustNotContainBox" class="occurrence-filter-box must-not">
+                            <mat-chip cdkDrag *ngFor="let item of mustNotContainColOccurrences" removable="true" (removed)="removeColOccurrenceFromMustNotContainList(item)">
+                              {{ item.name }} {{ item.author }}
+                              <mat-icon matChipRemove>cancel</mat-icon>
+                            </mat-chip>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
-            <div class="section-body">
-              <mat-chip-list></mat-chip-list> <!-- https://github.com/angular/material2/issues/9964#issuecomment-480287541 -->
-              <table class="must-not-table">
-                <thead>
-                  <tr class="header">
-                    <th class="title"></th>
-                    <th class="taxo-input">
-                      <tb-tsb-search-box
-                        level="idiotaxon"
-                        [tbRepositoriesConfig]="tbRepositoriesConfig"
-                        placeholder="Ajouter une espèce au filtre"
-                        autoResetWhenSelected="true"
-                        defaultRepository="bdtfx"
-                        [showRepositoryInput]="true"
-                        (newData)="addRowOccurrenceToFilter($event)">
-                      </tb-tsb-search-box>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class="row must">
-                    <td class="title">Les tableaux <b>doivent</b> contenir</td>
-                    <td>
-                      <!-- must/should contain box -->
-                      <div cdkDropList #mustContainList="cdkDropList" [cdkDropListData]="mustContainRowOccurrences" [cdkDropListConnectedTo]="[mustNotContainList]" (cdkDropListDropped)="dropRowOccurrenceBetweenLists($event)" id="mustContainBox" class="occurrence-filter-box must">
-                        <mat-chip cdkDrag *ngFor="let item of mustContainRowOccurrences" removable="true" (removed)="removeRowOccurrenceFromMustContainList(item)">
-                          {{ item.name }} {{ item.author }}
-                          <mat-icon matChipRemove>cancel</mat-icon>
-                        </mat-chip>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr class="row must-not">
-                    <td class="title">Les tableaux <b>ne doivent pas</b> contenir</td>
-                    <td>
-                      <!-- must not/should not contain box -->
-                      <div cdkDropList #mustNotContainList="cdkDropList" [cdkDropListData]="mustNotContainRowOccurrences" [cdkDropListConnectedTo]="[mustContainList]" (cdkDropListDropped)="dropRowOccurrenceBetweenLists($event)" id="mustNotContainBox" class="occurrence-filter-box must-not">
-                        <mat-chip cdkDrag *ngFor="let item of mustNotContainRowOccurrences" removable="true" (removed)="removeRowOccurrenceFromMustNotContainList(item)">
-                          {{ item.name }} {{ item.author }}
-                          <mat-icon matChipRemove>cancel</mat-icon>
-                        </mat-chip>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+          </mat-tab>
+
+          <!-- *********************** -->
+          <!-- ROW Occurrences filters -->
+          <!-- ("Species" level)       -->
+          <!-- *********************** -->
+          <mat-tab label="Espèces">
+            <ng-template mat-tab-label>
+              <img class="vl-base-element-icon inline" src="./assets/img/icons/occ-icon.jpg">
+              Espèces
+            </ng-template>
+            <div class="tab-body-wrapper">
+              <!-- search by "species" -->
+              <div class="tab-section">
+                <div class="section-title">
+                  Filtrer par espèces
+                </div>
+                <div class="section-body">
+                  <mat-chip-list></mat-chip-list> <!-- https://github.com/angular/material2/issues/9964#issuecomment-480287541 -->
+                  <table class="must-not-table">
+                    <thead>
+                      <tr class="header">
+                        <th class="title"></th>
+                        <th class="taxo-input">
+                          <tb-tsb-search-box
+                            level="idiotaxon"
+                            [tbRepositoriesConfig]="tbRepositoriesConfig"
+                            placeholder="Ajouter une espèce au filtre"
+                            autoResetWhenSelected="true"
+                            defaultRepository="bdtfx"
+                            [showRepositoryInput]="true"
+                            (newData)="addRowOccurrenceToFilter($event)">
+                          </tb-tsb-search-box>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="row must">
+                        <td class="title">Les tableaux <b>doivent</b> contenir</td>
+                        <td>
+                          <!-- must/should contain box -->
+                          <div cdkDropList #mustContainList="cdkDropList" [cdkDropListData]="mustContainRowOccurrences" [cdkDropListConnectedTo]="[mustNotContainList]" (cdkDropListDropped)="dropRowOccurrenceBetweenLists($event)" id="mustContainBox" class="occurrence-filter-box must">
+                            <mat-chip cdkDrag *ngFor="let item of mustContainRowOccurrences" removable="true" (removed)="removeRowOccurrenceFromMustContainList(item)">
+                              {{ item.name }} {{ item.author }}
+                              <mat-icon matChipRemove>cancel</mat-icon>
+                            </mat-chip>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr class="row must-not">
+                        <td class="title">Les tableaux <b>ne doivent pas</b> contenir</td>
+                        <td>
+                          <!-- must not/should not contain box -->
+                          <div cdkDropList #mustNotContainList="cdkDropList" [cdkDropListData]="mustNotContainRowOccurrences" [cdkDropListConnectedTo]="[mustContainList]" (cdkDropListDropped)="dropRowOccurrenceBetweenLists($event)" id="mustNotContainBox" class="occurrence-filter-box must-not">
+                            <mat-chip cdkDrag *ngFor="let item of mustNotContainRowOccurrences" removable="true" (removed)="removeRowOccurrenceFromMustNotContainList(item)">
+                              {{ item.name }} {{ item.author }}
+                              <mat-icon matChipRemove>cancel</mat-icon>
+                            </mat-chip>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </mat-tab>
-    </mat-tab-group>
-  </div>
-
-
-  <!-- RESULTS -->
-  <div class="spacer"></div>
-  <div class="results-container">
-    <div class="header">
-      <div class="progress-bar-container">
-        <mat-progress-bar *ngIf="isSearching" mode="indeterminate"></mat-progress-bar>
+          </mat-tab>
+        </mat-tab-group>
       </div>
-      <div class="result-top-bar">
-        <div>
-          <div *ngIf="tables.length == 0">
-            <p class="result-title" *ngIf="noFilterApplied()">Aucun filtre appliqué</p>
-            <p class="result-title" *ngIf="!noFilterApplied()">Aucun résultat</p>
+
+
+      <!-- RESULTS -->
+      <div class="spacer"></div>
+      <div class="results-container">
+        <div class="header">
+          <div class="progress-bar-container">
+            <mat-progress-bar *ngIf="isSearching" mode="indeterminate"></mat-progress-bar>
           </div>
-          <p class="result-title" *ngIf="tables.length == 1"><b>1 résultat</b></p>
-          <p class="result-title" *ngIf="tables.length > 1"><b>{{ tables.length }} résultats</b></p>
+          <div class="result-top-bar">
+            <div class="result-title">
+              <div *ngIf="tables.length == 0">
+                <p class="result-title" *ngIf="noFilterApplied()">Aucun filtre appliqué</p>
+                <p class="result-title" *ngIf="!noFilterApplied()">Aucun résultat</p>
+              </div>
+              <p class="result-title" *ngIf="resultCount == 1"><b>1 résultat</b></p>
+              <p class="result-title" *ngIf="resultCount > 1"><b>{{ resultCount }} résultats</b></p>
+            </div>
+            <div class="results-button">
+              <button mat-stroked-button [matMenuTriggerFor]="selectedTablesMenu"
+                color="primary"
+                [disabled]="!selectedTablesIds || selectedTablesIds.length === 0">
+                  <mat-icon color="primary">add_circle_outline</mat-icon>
+                  <span *ngIf="selectedTablesIds.length === 0" >Utiliser le tableau selectionné</span>
+                  <span *ngIf="selectedTablesIds.length === 1">Utiliser le tableau selectionné</span>
+                  <span *ngIf="selectedTablesIds.length >= 2">Utiliser les tableaux selectionnés</span>
+              </button>
+              <mat-menu #selectedTablesMenu="matMenu">
+                <button mat-menu-item (click)="setSelectedTablesAsCurrentTable()">Utiliser comme tableau courant</button>
+                <button mat-menu-item (click)="mergeSelectedTablesWithCurrentTable()" [disabled]="!currentTableId">Fusionner au tableau courant</button>
+              </mat-menu>              
+            </div>
+          </div>
+        </div>
+        <div class="results">
+          <div class="table-results">
+            <vl-tables-table-view
+              [count]="resultCount"
+              [size]="tablesPaginatorSize"
+              [pageIndex]="tablesPageIndex"
+              [tables]="tables"
+              [selectable]="true"
+              [isLoading]="isSearching"
+              (pageChange)="_tablePageChanged($event)"
+              (previewTable)="previewTableAction($event)"
+              (selectedTables)="selectedTablesChange($event)"></vl-tables-table-view>
+          </div>
+          <!--
+          <div class="results-cards">
+            <div @items *ngFor="let table of tables">
+                <vl-table-card [table]="table"></vl-table-card>
+            </div>
+          </div>
+          -->
         </div>
       </div>
     </div>
-    <div class="results">
-      <div class="results-cards">
-        <div @items *ngFor="let table of tables">
-            <vl-table-card [table]="table"></vl-table-card>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

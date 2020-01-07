@@ -81,7 +81,7 @@ export class TableService {
   }
 
   /**
-   * Create an table
+   * Create a table
    */
   postTable(table: Table): Observable<Table> {
     console.log('table', table);
@@ -196,17 +196,19 @@ export class TableService {
     return this.http.post<EsTableResultModel>(`${environment.esBaseUrl}/vl_tables/_search`, query, {headers});
   }
 
-  findEsTableByQuery(esQuery: string): Observable<Array<EsTableModel>> {
+  findEsTableByQuery(esQuery: string): Observable<{tables: Array<EsTableModel>, count: number}> {
     const headers = new HttpHeaders({ 'Content-type': 'application/json' });
     const currentUser = this.userService.currentUser.getValue();
+    let count = 0;
     return this.http.post<EsTableResultModel>(`${environment.esBaseUrl}/vl_tables/_search`, esQuery, {headers}).pipe(
+      tap(result => count = result.hits.total),
       map(result => _.map(result.hits.hits, hit => hit._source)),
       map(result => {
         // Are tables owned by current user ?
         for (const esTable of result) {
           esTable.ownedByCurrentUser = currentUser && Number(currentUser.id) === esTable.userId;
         }
-        return result;
+        return {tables: result, count};
       })
     );
   }
@@ -451,6 +453,15 @@ export class TableService {
     };
 
     return table;
+  }
+
+  isTableEmpty(table: Table): boolean {
+    if (table == null) { return true; }
+    if (table.sye == null || table.sye && table.sye.length === 0) { return true; }
+    if (table.sye && table.sye.length === 1) {
+      if (table.sye[0].occurrences == null || table.sye[0].occurrences.length === 0) { return true; }
+    }
+    return false;
   }
 
   // -----------------------
