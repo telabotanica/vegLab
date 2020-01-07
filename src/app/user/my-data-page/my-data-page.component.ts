@@ -52,6 +52,7 @@ export class MyDataPageComponent implements OnInit {
   myOccurrencesPaginatorSize = 5;
   occurrenceInfo: OccurrenceModel = null;     // occurrence to preview
   occurrenceToDelete: OccurrenceModel = null; // occurrence to be deleted
+  occurrencesDisplayedColumns = ['id', 'level', 'layer', 'custom_col_validation', 'dateObserved', 'locality', 'vlLocationAccuracy', 'custom_col_actions'];
 
   constructor(private userService: UserService,
               private notificationService: NotificationService,

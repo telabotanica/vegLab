@@ -104,6 +104,7 @@
                                           [pageIndex]="myOccurrencesPageIndex"
                                           [occurrences]="myOccurrences"
                                           [isLoading]="myOccurrencesLoading"
+                                          [displayedColumns]="occurrencesDisplayedColumns"
                                           (pageChange)="_occurrencePageChanged($event)"
                                           (previewOccurrence)="previewOccurrenceAction($event)"
                                           (deleteOccurrence)="deleteOccurrenceAction($event)"

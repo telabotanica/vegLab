@@ -52,8 +52,10 @@ export class OccurrencesTableViewComponent implements OnInit, OnDestroy {
     }
   }
   @Input()  isLoading: boolean;
+  // Use thie `diplayedColumns` input to show/hide columns
   @Input()  displayedColumns: Array<string> = ['custom_col_selectable', 'id', 'level', 'layer', 'custom_col_validation', 'dateObserved', 'locality', 'vlLocationAccuracy', 'custom_col_actions'];
   @Input()  selectable = false;
+  @Input()  deleteOption = false;
   @Output() pageChange: EventEmitter<PageEvent> = new EventEmitter<PageEvent>();
   @Output() previewOccurrence: EventEmitter<EsOccurrenceModel> = new EventEmitter<EsOccurrenceModel>();
   @Output() deleteOccurrence: EventEmitter<EsOccurrenceModel> = new EventEmitter<EsOccurrenceModel>();
@@ -119,6 +121,7 @@ export class OccurrencesTableViewComponent implements OnInit, OnDestroy {
    * Action : Delete occurrence
    */
   deleteOccurrenceAction(occurrence: EsOccurrenceModel): void {
+    if (!this.deleteOption) { return; }
     this.deleteOccurrence.next(occurrence);
   }
 
