@@ -248,11 +248,15 @@
               <mat-menu #selectedTablesMenu="matMenu">
                 <button mat-menu-item *ngIf="selectedTablesIds.length === 1" (click)="setSelectedTablesAsCurrentTable(true)">Utiliser comme tableau courant</button>
                 <button mat-menu-item *ngIf="selectedTablesIds.length >= 2" [matMenuTriggerFor]="setTables">Utiliser comme tableau courant</button>
-                <button mat-menu-item (click)="mergeSelectedTablesWithCurrentTable()" [disabled]="!currentTableId">Fusionner au tableau courant</button>
+                <button mat-menu-item [matMenuTriggerFor]="mergeTables" [disabled]="!currentTableSetAndNotEmpty">Fusionner au tableau courant</button>
               </mat-menu>
               <mat-menu #setTables="matMenu">
                 <button mat-menu-item (click)="setSelectedTablesAsCurrentTable(true)">Conserver les groupes de colonnes</button>
                 <button mat-menu-item (click)="setSelectedTablesAsCurrentTable(false)">Ne conserver que les relevés</button>
+              </mat-menu>  
+              <mat-menu #mergeTables="matMenu">
+                <button mat-menu-item (click)="mergeSelectedTablesWithCurrentTable(true)">Conserver les groupes de colonnes</button>
+                <button mat-menu-item (click)="mergeSelectedTablesWithCurrentTable(false)">Ne conserver que les relevés</button>
               </mat-menu>          
             </div>
           </div>

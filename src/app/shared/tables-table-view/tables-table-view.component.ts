@@ -142,6 +142,7 @@ export class TablesTableViewComponent implements OnInit, OnDestroy {
    */
   private setTablesAlreadyInCurrentTable(): void {
     for (const tab of this._tables) {
+      tab.isCurrentTable = false;
       if (_.find(this._tablesIdsInCurrentTable, idInTable => tab.id && tab.id === idInTable)) {
         tab.isCurrentTable = true;
       }

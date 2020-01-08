@@ -62,7 +62,8 @@ export class TableSearchComponent implements OnInit, OnDestroy {
   tbRepositoriesConfig = environment.tbRepositoriesConfig;
   isSearching = false;
   showResultsDiv = true;
-  currentTableId: number;
+  currentTableSetAndNotEmpty: boolean;          // Is there a current non empty table ? (be carefull : ther is ALWAYS a current table but it's empty at startup : it only contains one empty sye)
+  currentTableId: number;                       // Current table id. This property is set only when a single table from database is used
   currentTableChangeSubscription: Subscription;
 
   // VAR user
@@ -77,12 +78,15 @@ export class TableSearchComponent implements OnInit, OnDestroy {
     // get current table id
     let ct = this.tableService.getCurrentTable();
     this.currentTableId = ct && ct.id ? ct.id : null;
+    this.currentTableSetAndNotEmpty = !this.tableService.isTableEmpty(ct);
     // subscribe to current table change
     this.currentTableChangeSubscription = this.tableService.currentTableChanged.subscribe(
       currentTableHasChanged => {
         if (currentTableHasChanged === true) {
           ct = this.tableService.getCurrentTable();
           this.currentTableId = ct && ct.id ? ct.id : null;
+          this.currentTableSetAndNotEmpty = !this.tableService.isTableEmpty(ct);
+          this.selectedTablesChange(this.selectedTablesIds); // update selection
         }
       }, error => {
         // @Todo manage error
@@ -276,8 +280,19 @@ export class TableSearchComponent implements OnInit, OnDestroy {
     this.search(this.tablesPageIndex * this.tablesPaginatorSize);
   }
 
+  /**
+   * When user select tables (ids) from tables-table-view component
+   */
   selectedTablesChange(selectedTablesIds: Array<number>): void {
-    this.selectedTablesIds = selectedTablesIds;
+    console.log(this.currentTableId, selectedTablesIds);
+    // if selected tables contains the current table, remove it
+    if (this.currentTableId !== null && _.find(selectedTablesIds, stids => stids === this.currentTableId)) {
+      console.log('CURRENT TABLE IS SELECTED');
+      this.selectedTablesIds = _.clone(_.filter(selectedTablesIds, n => n !== this.currentTableId));
+      console.log(this.selectedTablesIds);
+    } else {
+      this.selectedTablesIds = selectedTablesIds;
+    }
   }
 
   resetSelectedTablesIds(): void {
@@ -307,66 +322,59 @@ export class TableSearchComponent implements OnInit, OnDestroy {
 
   /**
    * Set selected tables as a current table
+   *
    * @param setSye if true, syes will be added independantly. If false, only occurrences (relevés) will be added
    */
   setSelectedTablesAsCurrentTable(setSye = false): void {
     if (this.selectedTablesIds == null || this.selectedTablesIds.length === 0) {
       // Selected tables ids empty
-      this.notificationService.warn('Aucun tableau n\'est selectionné');
+      this.notificationService.error('Aucun tableau n\'est selectionné');
       return;
-    } else if (this.selectedTablesIds.length === 1) {
-      // One table selected
-      // Get the table and set as current table
-      this.tableService.isLoadingData.next(true);
+    }
+
+    this.tableService.isLoadingData.next(true);
+
+    // If only one table (id) is selected, just set it as a new table (and it will keep its id)
+    if (this.selectedTablesIds.length === 1) {
+      // get table
       this.tableService.getTableById(this.selectedTablesIds[0]).subscribe(
         table => {
           this.tableService.setCurrentTable(table, true);
           this.tableService.isLoadingData.next(false);
-        }, errorTable => {
+        }, error => {
           this.notificationService.error('Nous ne parvenons pas à récupérer le tableau en base de données');
           this.tableService.isLoadingData.next(false);
           // @Todo log error
-        }
-      );
-    } else if (this.selectedTablesIds.length > 1) {
-      // Several tables selected
-      // Set current tables syes as current table
+          console.log(error);
+        });
+    } else {
+      // Several tables (ids) are selected
       // 1. get observables
       const obs: Array<Observable<Table>> = [];
       for (const tableId of this.selectedTablesIds) {
         obs.push(this.tableService.getTableById(tableId));
       }
       // 2. zip & subscribe
-      this.tableService.isLoadingData.next(true);
       zip(...obs).subscribe(
         results => {
           const syes: Array<Sye> = [];
           const occurrences: Array<OccurrenceModel> = [];
           for (const table of results) {
-            // 3. Add syes
+            // 3. Bind syes & occurrences
             syes.push(...table.sye);
             table.sye.forEach(ts => {if (ts.occurrences && ts.occurrences.length > 0) { occurrences.push(...ts.occurrences); }});
           }
-          // 4. Set currentTable Syes OR Set occurrences
+          // 4. Set syes OR occurrences to current table
           const ct = this.tableService.createTable(); // a new Table with an unique empty sye
           if (setSye === true) {
             // keep syes
-            ct.sye = syes;
-
-            // At this point, sye `syeId` property must be redefined to avoid duplicates
-            this.tableService.updateSyeIds(ct);
-
-            if (this.currentUser == null) { this.notificationService.warn('Il semble que vous soyez deconnecté, nous ne pouvons pas continuer'); return; }
-            this.tableService.createTableSyntheticColumn(ct, this.currentUser);
-            this.tableService.setCurrentTable(ct, true);
+            const newTable = this.tableService.setSyesToTable(syes, ct, this.currentUser);
+            this.tableService.setCurrentTable(newTable, true);
             this.tableService.isLoadingData.next(false);
           } else {
-            // only push occurrences (relevés)
-            this.tableService.addOccurrencesToTable(occurrences, ct);
-            if (this.currentUser == null) { this.notificationService.warn('Il semble que vous soyez deconnecté, nous ne pouvons pas continuer'); return; }
-            this.tableService.createSyntheticColumnsForSyeOnTable(ct, this.currentUser);
-            this.tableService.createTableSyntheticColumn(ct, this.currentUser);
-            this.tableService.setCurrentTable(ct, true);
+            // keep relevés
+            const newTable = this.tableService.setRelevesToTable(occurrences, ct, this.currentUser);
+            this.tableService.setCurrentTable(newTable, true);
             this.tableService.isLoadingData.next(false);
           }
         }, error => {
@@ -381,10 +389,62 @@ export class TableSearchComponent implements OnInit, OnDestroy {
 
   /**
    * Merge selected tables with the current table
+   *
    * @param setSye if true, syes will be added independantly. If false, only occurrences (relevés) will be added
    */
   mergeSelectedTablesWithCurrentTable(setSye = false): void {
+    const ct = this.tableService.getCurrentTable();
 
+    if (this.currentTableId == null) {
+      // No current table id
+      if (ct == null) {
+        this.notificationService.error('Aucun tableau de travail');
+        return;
+      }
+    }
+
+    if (this.selectedTablesIds == null || this.selectedTablesIds.length === 0) {
+      // Selected tables ids empty
+      this.notificationService.error('Aucun tableau n\'est selectionné');
+      return;
+    }
+
+    // 1. get observables
+    const obs: Array<Observable<Table>> = [];
+    for (const tableId of this.selectedTablesIds) {
+      obs.push(this.tableService.getTableById(tableId));
+    }
+    // 2. zip & subscribe
+    this.tableService.isLoadingData.next(true);
+    zip(...obs).subscribe(
+      results => {
+        const syes: Array<Sye> = [];
+        const occurrences: Array<OccurrenceModel> = [];
+        for (const table of results) {
+          // 3. Bind syes & occurrences
+          syes.push(...table.sye);
+          table.sye.forEach(ts => {if (ts.occurrences && ts.occurrences.length > 0) { occurrences.push(...ts.occurrences); }});
+        }
+        // 4. Set currentTable Syes OR Set occurrences
+        if (setSye === true) {
+          // keep syes
+          const newTable = this.tableService.mergeSyesToTable(syes, ct, this.currentUser);
+          this.tableService.setCurrentTable(newTable, true);
+          this.tableService.isLoadingData.next(false);
+        } else {
+          // keep relevés
+          const newTable = this.tableService.mergeRelevesToTable(occurrences, ct, this.currentUser);
+          this.tableService.setCurrentTable(newTable, true);
+          this.tableService.isLoadingData.next(false);
+        }
+      }, error => {
+        this.notificationService.error('Nous ne parvenons pas à récupérer les tableaux en base de données');
+        this.tableService.isLoadingData.next(false);
+        // @Todo log error
+        console.log(error);
+      }
+    );
+    // }
   }
 
   // ---------------------------

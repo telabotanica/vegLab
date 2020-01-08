@@ -470,6 +470,13 @@ export class TableService {
   // ADD / REMOVE OCCURRENCE
   // -----------------------
 
+  /**
+   * Add occurrences (relevés) to a table
+   * The provided occurrences must have ids (persisted in db)
+   * Occurrences are added in the first sye (table.sye[0])
+   * @param occurrences the relevés to be added
+   * @param table the table to add occurrences
+   */
   addOccurrencesToTable(occurrences: Array<OccurrenceModel>, table: Table): Table {
     // Avoid duplicates
     const occurrencesToAdd: Array<OccurrenceModel> = [];
@@ -827,6 +834,66 @@ export class TableService {
       }
     });
     return rows;
+  }
+
+  public updateRowsDefinition(oldTable: Table, newTable: Table): Array<TableRowDefinition> {
+    if (oldTable == null || newTable == null) { return; }
+    if (oldTable.rowsDefinition == null || oldTable.rowsDefinition.length === 0) {
+      return this.createRowsDefinition(newTable);
+    }
+
+    const oldRowDef = oldTable.rowsDefinition;
+    const newRowDef = this.createRowsDefinition(newTable);
+
+    if (oldRowDef == null || newRowDef == null || oldRowDef.length === 0 || newRowDef.length === 0) {
+      return this.createRowsDefinition(newTable);
+    }
+
+    // Is there new elements ?
+    const newElements = _.filter(newRowDef, nrd => {
+      if (nrd.type === 'data') {
+        return null == _.find(oldRowDef, ord => ord.repository === nrd.repository
+                                         && ord.repositoryIdNomen === nrd.repositoryIdNomen
+                                         && ord.repositoryIdTaxo === nrd.repositoryIdTaxo);
+      }
+    });
+
+
+    if (newElements !== null && newElements.length > 0) {
+      // Append new elements to a new group
+      const extendedRowDef = _.clone(oldRowDef);
+      let nextRowId = oldRowDef.length;
+      const nextGroupId = _.max(_.map(oldRowDef, o => o.groupId)) + 1;
+
+      // row group
+      const newGroupRow: TableRowDefinition = {
+        rowId:             nextRowId,
+        type:              'group',
+        groupId:           nextGroupId,
+        groupTitle:        'Données ajoutées',
+        layer:             null,
+        displayName:       'Données ajoutées',
+        repository:        null,
+        repositoryIdNomen: null,
+        repositoryIdTaxo:  null,
+      };
+      nextRowId++;
+
+      // rows data
+      for (const row of newElements) {
+        row.rowId         = nextRowId;
+        row.groupId       = nextGroupId;
+        row.groupTitle    = 'Données ajoutées';
+
+        nextRowId++;
+      }
+
+      // Append rows
+      extendedRowDef.push(newGroupRow);
+      extendedRowDef.push(...newElements);
+
+      return extendedRowDef;
+    }
   }
 
   // --------
@@ -2034,7 +2101,7 @@ export class TableService {
   // COUNTERS
   // --------
   /**
-   * Count the tables in db for a given workspace
+   * Count the tables in ES db for a given workspace
    */
   public countTables(workspaces?: Array<string>): Observable<{count: number}> {
     let query: string;
@@ -2072,15 +2139,181 @@ export class TableService {
 
   }
 
+  // -------------------------------------
+  // ADD / MERGE SYE OR RELEVES TO A TABLE
+  // -------------------------------------
+  /**
+   * Add occurrences (relevés) to a table
+   * This also recreate synthetic columns for syes and table
+   *
+   * @param occurrencesToAdd the occurrences (relevés) to be added
+   * @param table the table to add occurrences
+   * @param currentUser must be provided for synthetic columns creation
+   */
+  setRelevesToTable(occurrencesToAdd: Array<OccurrenceModel>, table: Table, currentUser: UserModel): Table {
+    const _table = _.clone(table);
+
+    // const _occurrencesToAdd = this.filterDuplicatesRelevesWithTable(occurrencesToAdd, table);
+
+    this.addOccurrencesToTable(occurrencesToAdd, _table);
+    this.createSyntheticColumnsForSyeOnTable(_table, currentUser);
+    this.createTableSyntheticColumn(_table, currentUser);
+
+    _table.rowsDefinition = this.updateRowsDefinition(table, _table);
+
+    return _table;
+  }
+
+  /**
+   * Merge occurrences (relevés) to a table
+   * If the table contains several syes, relevés are merged in a new sye to avoid confusion
+   * This also recreate synthetic columns for syes and table
+   *
+   * @param occurrencesToMerge the occurrences (relevés) to be merged
+   * @param table the table to merge occurrences
+   * @param currentUser must be provided for synthetic columns creation
+   */
+  mergeRelevesToTable(occurrencesToMerge: Array<OccurrenceModel>, table: Table, currentUser: UserModel): Table {
+    const _table = _.clone(table);
+
+    // const _occurrencesToMerge = this.filterDuplicatesRelevesWithTable(occurrencesToMerge, table);
+
+    // is table empty ?
+    if (this.isTableEmpty(_table)) {
+      // yes => just set relevés
+      return this.setRelevesToTable(occurrencesToMerge, _table, currentUser);
+    } else {
+      // no => where to place relevés in table (wich sye ?)
+      // If only One sye, could add relevés to it
+      // If several syes, it may be better to merge relevés in a new sye to avoid confusion
+      // @Todo let user choose
+      if (_table && _table.sye && _table.sye.length === 1) {
+        // merge relevés in sye[0]
+        _table.sye[0].occurrences.push(...occurrencesToMerge);
+        this.updateSyeCount(_table);
+        this.createSyntheticColumnsForSyeOnTable(_table, currentUser);
+        this.createTableSyntheticColumn(_table, currentUser);
+      } else if (_table && _table.sye && _table.sye.length > 1) {
+        // Merge relevés in a new sye
+        const newSye = this.syeService.createSye(); // Be carefull, the new sye has no `syeId` property
+        newSye.occurrences = occurrencesToMerge;
+        newSye.occurrencesOrder = this.syeService.getOccurrencesOrder(newSye);  // set sye occurrences order
+
+        _table.sye.push(newSye);
+        this.updateSyeIds(_table);
+        _table.syeOrder = this.getSyeOrder(_table);                             // update table sye order
+        console.log('_TABLE', _table);
+
+        this.updateSyeCount(_table);
+        this.createSyntheticColumnsForSyeOnTable(_table, currentUser);
+        this.createTableSyntheticColumn(_table, currentUser);
+      }
+    }
+
+    _table.rowsDefinition = this.updateRowsDefinition(table, _table);
+
+    return _table;
+  }
+
+  /**
+   * Set (replace) syes to a Table
+   * This also recreate synthetic columns for syes and table
+   *
+   * @param syesToAdd the syes to be set
+   * @param table the table to add sye
+   * @param currentUser must be provided for synthetic columns creation
+   */
+  setSyesToTable(syesToAdd: Array<Sye>, table: Table, currentUser: UserModel): Table {
+    const _table = _.clone(table);
+    _table.sye = syesToAdd;
+    this.updateSyeIds(_table);
+    // Check that syes have a synthetic column
+    syesToAdd.forEach(sye => {
+      if (sye.syntheticColumn == null) { sye.syntheticColumn = this.createSyntheticColumn(sye.occurrences, currentUser, sye); }
+    });
+
+    _table.rowsDefinition = this.updateRowsDefinition(table, _table);
+
+    // Recreate table synthetic column
+    this.createTableSyntheticColumn(_table, currentUser);
+    return _table;
+  }
+
+  /**
+   * Merge syes to a table
+   * This also recreate synthetic columns for syes and table
+   * @param syesToMerge the syes to be merged
+   * @param table the table to merge syes
+   * @param currentUser must be provided for synthetic columns creation
+   */
+  mergeSyesToTable(syesToMerge: Array<Sye>, table: Table, currentUser: UserModel): Table {
+    const _table = _.clone(table);
+    // is table empty ?
+    if (this.isTableEmpty(_table)) {
+      // yes => just set sye
+      return this.setSyesToTable(syesToMerge, _table, currentUser);
+    } else {
+      // no => merge
+      _table.sye.push(...syesToMerge);
+      this.updateSyeIds(_table);
+      // Check that syes have a synthetic column
+      syesToMerge.forEach(sye => {
+        if (sye.syntheticColumn == null) { sye.syntheticColumn = this.createSyntheticColumn(sye.occurrences, currentUser, sye); }
+      });
+
+      _table.rowsDefinition = this.updateRowsDefinition(table, _table);
+
+      this.createTableSyntheticColumn(_table, currentUser);
+      return _table;
+    }
+
+  }
+
   // -----
   // OTHER
   // -----
+  /**
+   * Returns occurrences (relevés) that are not in table
+   */
+  filterDuplicatesRelevesWithTable(occurrences: Array<OccurrenceModel>, table: Table): Array<OccurrenceModel> {
+    let _response: Array<OccurrenceModel> = [];
+    if (occurrences && table && occurrences.length > 0 && table.sye) {
+      if (table.sye.length > 0) {
+        // should have occurrences (relevés)
+        const tableOccurrences: Array<OccurrenceModel> = [];
+        table.sye.forEach(ts => {if (ts.occurrences && ts.occurrences.length > 0) { tableOccurrences.push(...ts.occurrences); }});
+        if (tableOccurrences && tableOccurrences.length > 0) {
+          // ok, there is relevés
+          // filter
+          const filteredReleves = _.filter(occurrences, occ => {
+            return _.find(tableOccurrences, tOcc => tOcc.id === occ.id) !== null;
+          });
+          _response = filteredReleves;
+        } else {
+          // got sye but no relevés
+          _response = occurrences;
+        }
+      } else {
+        // no sye, no need to filter
+        _response = occurrences;
+      }
+    }
+    return _response;
+  }
+
+  /**
+   * Update all `sye.occurrencesCount` values for a given table
+   */
   private updateSyeCount(table: Table): void {
     for (const sye of table.sye) {
       sye.occurrencesCount = sye.occurrences.length;
     }
   }
 
+  /**
+   * Update all sye `syeId` values for a given table
+   * Note: syeId is used for table manipulations (handsontable) and differs from sye.id (database id)
+   */
   updateSyeIds(table: Table): void {
     let i = 0;
     if (table !== null && table.sye !== null && table.sye.length > 0) {
@@ -2089,6 +2322,18 @@ export class TableService {
         i++;
       }
     }
+  }
+
+  /**
+   * Returns the maximum index of `syeId` for a given table
+   */
+  getMaxSyeIdValue(table: Table): number {
+    const syesIds: Array<number> = [];
+    if (table && table.sye && table.sye.length > 0) {
+      for (const sye of table.sye) { syesIds.push(sye.id); }
+    } else { return null; }
+    _.compact(syesIds);
+    return _.max(syesIds);
   }
 
   /**
