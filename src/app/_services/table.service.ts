@@ -800,7 +800,7 @@ export class TableService {
       occurrences.push(...sye.occurrences);
     });
     const names = this.getNames(occurrences);
-    const uniquNames = _.uniqBy(names, n => n.layer && n.name && n.repositoryIdTaxo);
+    const uniquNames = _.uniqBy(names, n => n.layer + n.repository + n.repositoryIdTaxo);
     const uniquNamesGroupedByGroup = _.groupBy(uniquNames, un => un.group.id);
 
     let i = 0;
@@ -836,6 +836,11 @@ export class TableService {
     return rows;
   }
 
+  /**
+   * Compare oldTable rowsDefinition to newTable rowDef and returns
+   * the oldTable rowsDefinition with newest elements founded in newTable
+   * The new elements are added in a new group
+   */
   public updateRowsDefinition(oldTable: Table, newTable: Table): Array<TableRowDefinition> {
     if (oldTable == null || newTable == null) { return; }
     if (oldTable.rowsDefinition == null || oldTable.rowsDefinition.length === 0) {
@@ -853,7 +858,8 @@ export class TableService {
     const newElements = _.filter(newRowDef, nrd => {
       if (nrd.type === 'data') {
         return null == _.find(oldRowDef, ord => ord.repository === nrd.repository
-                                         && ord.repositoryIdNomen === nrd.repositoryIdNomen
+                                         && ord.layer === nrd.layer
+                                         // && ord.repositoryIdNomen === nrd.repositoryIdNomen
                                          && ord.repositoryIdTaxo === nrd.repositoryIdTaxo);
       }
     });
@@ -1997,7 +2003,7 @@ export class TableService {
     };
 
     const names = this.getNames(occurrences);
-    const uniquNames = _.uniqBy(names, n => n.layer && n.name && n.repositoryIdTaxo);
+    const uniquNames = _.uniqBy(names, n => n.layer + n.name + n.repositoryIdTaxo);
 
     for (const name of uniquNames) {
       const syntheticItem: SyntheticItem = {
