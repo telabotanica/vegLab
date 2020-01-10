@@ -1032,7 +1032,9 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   private ownedTable(): boolean {
     const currentTable = this.tableService.getCurrentTable();
     if (this.currentUser && this.currentUser.id && currentTable) {
-      if (Number(this.currentUser.id) === currentTable.userId) {
+      if (currentTable.userId == null) {
+        return true;
+      } else if (Number(this.currentUser.id) === currentTable.userId) {
         // owned
         return true;
       } else {
