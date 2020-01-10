@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 
 import { UserModel } from 'src/app/_models/user.model';
 import { EsTableResultModel } from 'src/app/_models/es-table-result.model';
@@ -22,7 +22,7 @@ import { MatSidenav } from '@angular/material/sidenav';
   templateUrl: './my-data-page.component.html',
   styleUrls: ['./my-data-page.component.scss']
 })
-export class MyDataPageComponent implements OnInit {
+export class MyDataPageComponent implements OnInit, OnDestroy {
   @ViewChild('sidenav') sidenav: MatSidenav;  // @Todo check : doc add {static: false}
 
   currentUser: UserModel;
@@ -80,6 +80,10 @@ export class MyDataPageComponent implements OnInit {
     // Get user tables & relevés
     this.getMyTables();
     this.getMyOccurrences();
+  }
+
+  ngOnDestroy() {
+    if (this.currentUserSubscription) { this.currentUserSubscription.unsubscribe(); }
   }
 
   getMyTables(from: number = 0, size: number = this.myTablesPaginatorSize): void {

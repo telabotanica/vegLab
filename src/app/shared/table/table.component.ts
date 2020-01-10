@@ -711,8 +711,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.currentUser == null) {
       // No user
       // Should refresh the token ?
-      this.notificationService.warn('Il semble que vous ne soyez plus connecté. Veuillez vous connecter à nouveau.');
-      return;
+      // this.notificationService.warn('Il semble que vous ne soyez plus connecté. Veuillez vous connecter à nouveau.');
+      // return;
     }
 
     // Subscribe to current user

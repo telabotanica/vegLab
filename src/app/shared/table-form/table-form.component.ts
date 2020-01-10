@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { UserService } from 'src/app/_services/user.service';
@@ -17,13 +17,14 @@ import { FileData } from 'tb-dropfile-lib/lib/_models/fileData';
 
 import * as _ from 'lodash';
 import { map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'vl-table-form',
   templateUrl: './table-form.component.html',
   styleUrls: ['./table-form.component.scss']
 })
-export class TableFormComponent implements OnInit {
+export class TableFormComponent implements OnInit, OnDestroy {
   // ---
   // VAR
   // ---
@@ -31,6 +32,7 @@ export class TableFormComponent implements OnInit {
   maxTitleLength = 100;
   maxDescriptionLength = 300;
   currentUser: UserModel;
+  userSubscription: Subscription;
   relatedSyntaxon: Array<RepositoryItemModel> = [];
   relatedPdfFile: Array<FileData> = [];
   allowedUploadedFileTypes = ['pdf'];
@@ -52,9 +54,19 @@ export class TableFormComponent implements OnInit {
     if (this.currentUser == null) {
       // No user
       // Should refresh the token ?
-      this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre l\'enregistrement du tableau.');
-      return;
+      // this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre l\'enregistrement du tableau.');
+      // return;
     }
+
+    // Subscribe to current user
+    this.userSubscription = this.userService.currentUser.subscribe(
+      user => {
+        this.currentUser = user;
+      },
+      error => {
+        // @Todo manage error
+      }
+    );
 
     this.tableForm = new FormGroup({
       createdAt: new FormControl({value: new Date(), disabled: true}, [Validators.required]),
@@ -75,6 +87,10 @@ export class TableFormComponent implements OnInit {
     if (ct.pdf) {
       this.currentTablePdfFiles.push(ct.pdf);
     }
+  }
+
+  ngOnDestroy() {
+    if (this.userSubscription) { this.userSubscription.unsubscribe(); }
   }
 
   syntaxonChange(validation: RepositoryItemModel): void {

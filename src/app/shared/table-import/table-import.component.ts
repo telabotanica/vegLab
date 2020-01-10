@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 
@@ -44,7 +44,7 @@ import * as moment from 'moment-timezone';
 import { RepositoryItemModel } from 'tb-tsb-lib';
 import { NominatimObject } from 'tb-geoloc-lib';
 import { flatMap, map } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 
 @Component({
   selector: 'vl-table-import',
@@ -59,7 +59,7 @@ import { of } from 'rxjs';
   ],
   encapsulation: ViewEncapsulation.None
 })
-export class TableImportComponent implements OnInit {
+export class TableImportComponent implements OnInit, OnDestroy {
   @ViewChild('hiddenInput') hiddenInput: ElementRef;
 
   // Global vars
@@ -75,6 +75,7 @@ export class TableImportComponent implements OnInit {
 
   // User vars
   currentUser: UserModel;
+  userSubscription: Subscription;
 
   // Stepper vars
   STEPS = {
@@ -217,9 +218,19 @@ export class TableImportComponent implements OnInit {
     if (this.currentUser == null) {
       // No user
       // Should refresh the token ?
-      this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre l\'import du tableau.');
-      return;
+      // this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre l\'import du tableau.');
+      // return;
     }
+
+    // Subscribe to current user
+    this.userSubscription = this.userService.currentUser.subscribe(
+      user => {
+        this.currentUser = user;
+      },
+      error => {
+        // @Todo manage error
+      }
+    );
 
     this.availableRepository = environment.tbRepositoriesConfig;
     // Get metadata list
@@ -229,6 +240,10 @@ export class TableImportComponent implements OnInit {
 
     // Set initial import status
     this.importFile.status = 'pending';
+  }
+
+  ngOnDestroy() {
+    if (this.userSubscription) { this.userSubscription.unsubscribe(); }
   }
 
   // **********

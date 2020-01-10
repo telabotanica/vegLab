@@ -49,6 +49,7 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
 
   // VAR user
   currentUser: UserModel;
+  userSubscription: Subscription;
 
   // VAR Occurrence Filters
   tbRepositoriesConfig = environment.tbRepositoriesConfig;
@@ -173,9 +174,19 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
     if (this.currentUser == null) {
       // No user
       // Should refresh the token ?
-      this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre la recherche de relevés.');
-      return;
+      // this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre la recherche de relevés.');
+      // return;
     }
+
+    // Subscribe to current user
+    this.userSubscription = this.userService.currentUser.subscribe(
+      user => {
+        this.currentUser = user;
+      },
+      error => {
+        // @Todo manage error
+      }
+    );
 
     // Get layers list
     this.layerList = this.layerService.getLayers();
@@ -193,6 +204,7 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.metadataSubscriber) { this.metadataSubscriber.unsubscribe(); }
+    if (this.userSubscription) { this.userSubscription.unsubscribe(); }
   }
 
   selectedTabIndexChange(index: number) {

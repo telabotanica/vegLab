@@ -87,6 +87,7 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
   // SUBSCRIBERS
   // -----------
   metadataSubscriber: Subscription;
+  userSubscription: Subscription;
 
   // ----
   // CODE
@@ -107,9 +108,20 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
     if (this.currentUser == null) {
       // No user
       // Should refresh the token ?
-      this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre la création d\'un relevé.');
-      return;
+      // this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre la création d\'un relevé.');
+      // return;
     }
+
+    // Subscribe to current user
+    this.userSubscription = this.userService.currentUser.subscribe(
+      user => {
+        this.currentUser = user;
+      },
+      error => {
+        // @Todo manage error
+      }
+    );
+
     // Create forms
     this.initOccurrenceForm();
 
@@ -129,6 +141,7 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.metadataSubscriber) { this.metadataSubscriber.unsubscribe(); }
+    if (this.userSubscription) { this.userSubscription.unsubscribe(); }
   }
 
   private initOccurrenceForm() {
