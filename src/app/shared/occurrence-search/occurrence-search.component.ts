@@ -713,6 +713,7 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
   // -----
 
   addSelectedOccurrencesToTable(): void {
+    const _table = _.clone(this.tableService.getCurrentTable());
     const occurrences = [];
 
     // Avoid duplicates
@@ -732,7 +733,10 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
       this.occurrenceService.getOccurrenceById(sOccId).subscribe(
         rOcc => {
           occurrences.push(rOcc);
-          if (i === this.selectedOccurrencesIds.length - 1) { this.tableService.addOccurrencesToCurrentTable(occurrences, this.currentUser); }
+          if (i === this.selectedOccurrencesIds.length - 1) {
+            const mergedTable = this.tableService.mergeRelevesToTable(occurrences, _table, this.currentUser);
+            this.tableService.setCurrentTable(mergedTable, true);
+          }
           i++;
           this.tableService.isLoadingData.next(false);
         },
