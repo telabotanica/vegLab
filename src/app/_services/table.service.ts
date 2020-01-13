@@ -110,9 +110,6 @@ export class TableService {
 
     if (table.isDiagnosis == null) { table.isDiagnosis = false; }
 
-    // Clear null values (avoid error 'Excepted argument of type A, NULL given' from API)
-    // _.compact(table);
-
     // Stringify geometry before POST
     this.stringifyGeometryAndIntegerifyElevation(table);
 
