@@ -45,7 +45,8 @@ export class ValidationService {
         }
       }
       // No prefered validation ?
-      return validations[0];
+      return validations.find(x => x !== undefined); // get the first available item (the first item could not be validations[0] !)
+      // return validations[0];
     } else {
       return null;
     }
