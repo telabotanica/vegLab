@@ -58,7 +58,7 @@ export class OccurrenceService {
   }
 
   getOccurrenceById(id: number): Observable<OccurrenceModel> {
-    const dataObs = this.http.get<OccurrenceModel>(`${environment.apiBaseUrl}/occurrences/${id}.json`).pipe(
+    const dataObs = this.http.get<OccurrenceModel>(`${environment.apiBaseUrl}/occurrences/${id}`).pipe(
       map(occ => this.parseGeometryAndIntegerifyElevation(occ))
     );
     return dataObs;
