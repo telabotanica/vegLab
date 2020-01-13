@@ -94,6 +94,25 @@ export class TableService {
       return of(null);
     }
 
+    // Check mandatory fields
+    // Need user info
+    const cu = this.userService.currentUser.getValue();
+    if (cu == null) {
+      console.log('Current user is not set. Abort POST table.');
+      return of (null);
+    } else {
+      if (table.createdBy == null)   { table.createdBy = Number(cu.id); table.createdAt = new Date(Date.now()); }
+      if (table.createdAt == null)   { table.createdAt = new Date(Date.now()); }
+      if (table.userId == null)      { table.userId = Number(cu.id); }
+      if (table.userEmail == null)   { table.userEmail = cu.sub; }
+      if (table.userPseudo == null)  { table.userPseudo = cu.pseudo; }
+    }
+
+    if (table.isDiagnosis == null) { table.isDiagnosis = false; }
+
+    // Clear null values (avoid error 'Excepted argument of type A, NULL given' from API)
+    // _.compact(table);
+
     // Stringify geometry before POST
     this.stringifyGeometryAndIntegerifyElevation(table);
 
@@ -106,7 +125,8 @@ export class TableService {
     }
 
     // Post table
-    return this.http.post<Table>(`${environment.apiBaseUrl}/tables`, table).pipe(
+    const headers = {'Content-Type': 'application/json'};
+    return this.http.post<Table>(`${environment.apiBaseUrl}/tables`, JSON.stringify(table), {headers}).pipe(
       map(t => this.parseGeometryAndIntegerifyElevation(t)),
       map(t => this.orderSyeOccurrences(t))
     );
@@ -2159,7 +2179,8 @@ export class TableService {
   setRelevesToTable(occurrencesToAdd: Array<OccurrenceModel>, table: Table, currentUser: UserModel): Table {
     const _table = _.clone(table);
 
-    // const _occurrencesToAdd = this.filterDuplicatesRelevesWithTable(occurrencesToAdd, table);
+    // Filter occurrences to avoid duplicates
+    const _occurrencesToAdd = this.filterDuplicatesRelevesWithTable(occurrencesToAdd, _table);
 
     this.addOccurrencesToTable(occurrencesToAdd, _table);
     this.createSyntheticColumnsForSyeOnTable(_table, currentUser);
@@ -2182,7 +2203,8 @@ export class TableService {
   mergeRelevesToTable(occurrencesToMerge: Array<OccurrenceModel>, table: Table, currentUser: UserModel): Table {
     const _table = _.clone(table);
 
-    // const _occurrencesToMerge = this.filterDuplicatesRelevesWithTable(occurrencesToMerge, table);
+    // Filter occurrences to avoid duplicates
+    const _occurrencesToMerge = this.filterDuplicatesRelevesWithTable(occurrencesToMerge, _table);
 
     // is table empty ?
     if (this.isTableEmpty(_table)) {
