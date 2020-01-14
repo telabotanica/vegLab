@@ -2,6 +2,8 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
 import { AbstractControl } from '@angular/forms';
 
+import { Level } from '../_enums/level-enum';
+
 import { Table } from '../_models/table.model';
 import { OccurrenceModel } from '../_models/occurrence.model';
 
@@ -2176,9 +2178,6 @@ export class TableService {
   setRelevesToTable(occurrencesToAdd: Array<OccurrenceModel>, table: Table, currentUser: UserModel): Table {
     const _table = _.clone(table);
 
-    // Filter occurrences to avoid duplicates
-    const _occurrencesToAdd = this.filterDuplicatesRelevesWithTable(occurrencesToAdd, _table);
-
     this.addOccurrencesToTable(occurrencesToAdd, _table);
     this.createSyntheticColumnsForSyeOnTable(_table, currentUser);
     this.createTableSyntheticColumn(_table, currentUser);
@@ -2200,13 +2199,15 @@ export class TableService {
   mergeRelevesToTable(occurrencesToMerge: Array<OccurrenceModel>, table: Table, currentUser: UserModel): Table {
     const _table = _.clone(table);
 
-    // Filter occurrences to avoid duplicates
-    const _occurrencesToMerge = this.filterDuplicatesRelevesWithTable(occurrencesToMerge, _table);
+    // Filter occurrences to avoid duplicates (+notify user about duplicates)
+    const _occurrencesToMerge = this.filterDuplicateOccurrences(occurrencesToMerge, table);
+
+    if (_occurrencesToMerge && _occurrencesToMerge.length === 0) { return _table; }
 
     // is table empty ?
     if (this.isTableEmpty(_table)) {
       // yes => just set relevés
-      return this.setRelevesToTable(occurrencesToMerge, _table, currentUser);
+      return this.setRelevesToTable(_occurrencesToMerge, _table, currentUser);
     } else {
       // no => where to place relevés in table (wich sye ?)
       // If only One sye, could add relevés to it
@@ -2214,20 +2215,19 @@ export class TableService {
       // @Todo let user choose
       if (_table && _table.sye && _table.sye.length === 1) {
         // merge relevés in sye[0]
-        _table.sye[0].occurrences.push(...occurrencesToMerge);
+        _table.sye[0].occurrences.push(..._occurrencesToMerge);
         this.updateSyeCount(_table);
         this.createSyntheticColumnsForSyeOnTable(_table, currentUser);
         this.createTableSyntheticColumn(_table, currentUser);
       } else if (_table && _table.sye && _table.sye.length > 1) {
         // Merge relevés in a new sye
         const newSye = this.syeService.createSye(); // Be carefull, the new sye has no `syeId` property
-        newSye.occurrences = occurrencesToMerge;
+        newSye.occurrences = _occurrencesToMerge;
         newSye.occurrencesOrder = this.syeService.getOccurrencesOrder(newSye);  // set sye occurrences order
 
         _table.sye.push(newSye);
         this.updateSyeIds(_table);
         _table.syeOrder = this.getSyeOrder(_table);                             // update table sye order
-        console.log('_TABLE', _table);
 
         this.updateSyeCount(_table);
         this.createSyntheticColumnsForSyeOnTable(_table, currentUser);
@@ -2273,6 +2273,45 @@ export class TableService {
    */
   mergeSyesToTable(syesToMerge: Array<Sye>, table: Table, currentUser: UserModel): Table {
     const _table = _.clone(table);
+    const _syesToMerge = _.clone(syesToMerge);
+
+    // Filter occurrences to avoid duplicates (+notify user about duplicates)
+    const filter = this.filterDuplicateSyesOccurrences(_syesToMerge, table);
+
+    if (filter) {
+      // remove entire sye ?
+      if (filter.removedSyes && filter.removedSyes.length > 0) {
+        // remove syes
+        let removedSyesCount = 0;
+        for (const syeToRemove of filter.removedSyes) {
+          _.remove(_syesToMerge, stm => stm === syeToRemove); // @Todo create an iid to compare syes has they can have no id !?
+          removedSyesCount++;
+        }
+        if (removedSyesCount === 1) {
+          this.notificationService.notify(`Un groupe de colonnes ne contient que des relevés déjà présents dans votre tableau. Ce groupe n'est donc pas ajouté.`);
+        } else if (removedSyesCount > 1) {
+          this.notificationService.notify(`${removedSyesCount} groupes de colonnes ne contiennent que des relevés déjà présents dans votre tableau. Ces groupes ne sont donc pas ajoutés.`);
+        }
+      }
+
+      // remove occurrences (relevés) on a specific sye ?
+      if (filter.removedOccurrencesInSye && filter.removedOccurrencesInSye.length > 0) {
+        let removedOccInSyes = 0;
+        for (const removedOccInSye of filter.removedOccurrencesInSye) {
+          const targetSye = _.find(syesToMerge, stm => stm === removedOccInSye.sye);
+          for (const occToRemove of removedOccInSye.removedOccurrences) {
+            _.remove(targetSye.occurrences, tsOcc => tsOcc === occToRemove);
+            removedOccInSyes++;
+          }
+        }
+        if (removedOccInSyes === 1) {
+          this.notificationService.notify(`Un relevé est déjà dans votre tableau. Ce relevé n'est donc pas ajouté à nouveau.`);
+        } else if (removedOccInSyes > 1) {
+          this.notificationService.notify(`${removedOccInSyes} relevés sont déjà dans votre tableau. Ces relevés ne sont donc pas ajoutés à nouveau.`);
+        }
+      }
+    }
+
     // is table empty ?
     if (this.isTableEmpty(_table)) {
       // yes => just set sye
@@ -2294,36 +2333,219 @@ export class TableService {
 
   }
 
+  // ---------------------------
+  // AVOID DUPLICATE OCCURRENCES
+  // ---------------------------
+  /**
+   * Filter occurrences (relevés) by table to avoid duplicate
+   * @param occurrences the relevés to be added / merged to the table
+   * @param table to compare
+   * @return the filtered occurrences
+   * + notify user about occurrences that have been removed
+   */
+  filterDuplicateOccurrences(occurrences: Array<OccurrenceModel>, table: Table): Array<OccurrenceModel> {
+    // Filter occurrences to avoid duplicates
+    const filter = this.filterDuplicatesRelevesWithTable(occurrences, table);
+    let _occurrencesToMerge = filter.filteredOccurrences;
+    const _removedOccurrencesAfterFiltering = filter.removedOccurrences;
+
+    if (_removedOccurrencesAfterFiltering && _removedOccurrencesAfterFiltering.length > 0) {
+      const removedIds = _.map(_removedOccurrencesAfterFiltering, rm => rm.id).toString();
+      if (_removedOccurrencesAfterFiltering.length === 1) {
+        this.notificationService.notify(`Le relevé n°${removedIds} est déjà dans votre tableau. Ce relevé n'est donc pas ajouté à nouveau.`);
+      } else if (_removedOccurrencesAfterFiltering.length > 1) {
+        this.notificationService.notify(`Les relevés n°${removedIds} sont déjà dans votre tableau. Ces relevés ne sont donc pas ajoutés à nouveau.`);
+      }
+    }
+
+    // Checks if occurrencesToMerge has microcenosis relevés and, if so, checks if some microcenosis
+    // contains synusies that are already in table
+    if (this.occurrencesContainsMicrocenosis(_occurrencesToMerge)) {
+      // Deep filter : is there synusies duplicates at different levels ?
+      const deepFilter = this.filterDuplicatesTroughMicrocenosis(_occurrencesToMerge, table);
+      _occurrencesToMerge = deepFilter.filteredOccurrences;
+      const _deepRemovedOccurrencesAfterFiltering = deepFilter.removedOccurrences;
+      if (_deepRemovedOccurrencesAfterFiltering && _deepRemovedOccurrencesAfterFiltering.length > 0) {
+        const removedIds = _.map(_deepRemovedOccurrencesAfterFiltering, rm => rm.id).toString();
+        if (_deepRemovedOccurrencesAfterFiltering.length === 1) {
+          this.notificationService.notify(`Le relevé n°${removedIds} est une microcénoses qui contient des synusies dont certaines sont déjà dans votre tableau. Ce relevé ne peut pas être ajouté à votre tableau.`);
+        } else if (_deepRemovedOccurrencesAfterFiltering.length > 1) {
+          this.notificationService.notify(`Les relevés n°${removedIds} sont des microcénoses qui contiennent des synusies dont certaines sont déjà dans votre tableau. Ces relevés ne peuvent pas être ajoutés à votre tableau.`);
+        }
+      }
+    }
+
+    return _occurrencesToMerge;
+  }
+
+  /**
+   * Parse syes and filter occurrences (relevés) by table to avoid duplicates
+   * @param syes the syes to be parsed
+   * @param table to compare
+   */
+  filterDuplicateSyesOccurrences(syes: Array<Sye>, table: Table): { removedSyes: Array<Sye>, removedOccurrencesInSye: Array<{sye: Sye, removedOccurrences: Array<OccurrenceModel>}> } {
+    const _table = _.clone(table);
+    const _syes = _.clone(syes);
+    let response: { removedSyes: Array<Sye>, removedOccurrencesInSye: Array<{sye: Sye, removedOccurrences: Array<OccurrenceModel>}> } = null;
+
+    const removedSyes: Array<Sye> = [];
+    const removedOccurrencesInSye: Array<{ sye: Sye, removedOccurrences: Array<OccurrenceModel> }> = [];
+
+    for (const sye of _syes) {
+      const occurrencesToCheck = sye.occurrences;
+      if (occurrencesToCheck && occurrencesToCheck.length > 0) {
+        const filter = this.filterDuplicatesRelevesWithTable(occurrencesToCheck, _table);
+        if (filter.removedOccurrences && filter.removedOccurrences.length > 0) {
+          // All occurrences should be removed ?
+          if (filter.removedOccurrences.length === occurrencesToCheck.length) {
+            removedSyes.push(sye);
+          } else {
+            // Only a part of occurrences should be removed
+            removedOccurrencesInSye.push({sye, removedOccurrences: filter.removedOccurrences});
+          }
+        }
+
+        if (this.occurrencesContainsMicrocenosis(occurrencesToCheck)) {
+          const deepFilter = this.filterDuplicatesTroughMicrocenosis(occurrencesToCheck, _table);
+          if (deepFilter.removedOccurrences && deepFilter.removedOccurrences.length > 0) {
+            // All occurrences should be removed ?
+            if (deepFilter.removedOccurrences.length === occurrencesToCheck.length) {
+              removedSyes.push(sye);
+            } else {
+              // Only a part of occurrences should be removed
+              removedOccurrencesInSye.push({sye, removedOccurrences: deepFilter.removedOccurrences});
+            }
+          }
+        }
+      }
+    }
+    // response
+    response = { removedSyes: _.uniq(removedSyes), removedOccurrencesInSye };
+    return response;
+  }
+
+  // ------------------
+  // TABLE & SYE CHANGE
+  // When a table or a sye have been changed (add / remove / move data)
+  // we have to unset the table/sye id (+some other things) so the table/sye will
+  // be considered as a new table/sye on backend & persisted as a new object in database
+  // ------------------
+  syeHasBeenModified(sye: Sye): void {
+    // if (sye.id) { sye.id = null; }
+    // NO !!! KEEP SYE ID, mark sye as 'hasBeenModified'
+  }
+
+  tableHasBeenModified(table: Table): void {
+    // if (table.id !== null) { table.id = null; }
+    // if current table => set owned by current user = true
+  }
+
   // -----
   // OTHER
   // -----
   /**
-   * Returns occurrences (relevés) that are not in table
+   * Returns occurrences (relevés) contained in a table
+   * @param parseMicrocenosis if true, the 'microcenosis' occurrences will be parsed and the 'synusy' level's occurrences added to the response
    */
-  filterDuplicatesRelevesWithTable(occurrences: Array<OccurrenceModel>, table: Table): Array<OccurrenceModel> {
-    let _response: Array<OccurrenceModel> = [];
+  getTableReleves(table: Table, parseMicrocenosis = true): Array<OccurrenceModel> {
+    const _response: Array<OccurrenceModel> = [];
+
+    table.sye.forEach(ts => {
+      if (ts.occurrences && ts.occurrences.length > 0) {
+        _response.push(...ts.occurrences);
+        // get children for microcenosis relevés
+        if (parseMicrocenosis) {
+          for (const occ of ts.occurrences) {
+            if (occ.level === Level.MICROCENOSIS && occ.children && occ.children.length > 0) { _response.push(...occ.children); }
+          }
+        }
+      }
+    });
+
+    return _.compact(_response);
+  }
+
+  getMicrocenosisReleves(occurrences: Array<OccurrenceModel>): Array<OccurrenceModel> {
+    const response: Array<OccurrenceModel> = [];
+
+    for (const occ of occurrences) {
+      if (occ.level === Level.MICROCENOSIS && occ.children && occ.children.length > 0) { response.push(...occ.children); }
+    }
+
+    return response;
+  }
+
+  /**
+   * Returns occurrences (relevés) that are not in table
+   * Performs a simple '1-depth' check
+   * -> Does not check for nested relevés
+   */
+  filterDuplicatesRelevesWithTable(occurrences: Array<OccurrenceModel>, table: Table): { filteredOccurrences: Array<OccurrenceModel>, removedOccurrences: Array<OccurrenceModel> } {
+    let filteredOccurrences: Array<OccurrenceModel> = [];
+    let removedOccurrences: Array<OccurrenceModel> = [];
     if (occurrences && table && occurrences.length > 0 && table.sye) {
       if (table.sye.length > 0) {
         // should have occurrences (relevés)
-        const tableOccurrences: Array<OccurrenceModel> = [];
-        table.sye.forEach(ts => {if (ts.occurrences && ts.occurrences.length > 0) { tableOccurrences.push(...ts.occurrences); }});
-        if (tableOccurrences && tableOccurrences.length > 0) {
+        const tableReleves: Array<OccurrenceModel> = this.getTableReleves(table, false);
+        if (tableReleves && tableReleves.length > 0) {
           // ok, there is relevés
           // filter
           const filteredReleves = _.filter(occurrences, occ => {
-            return _.find(tableOccurrences, tOcc => tOcc.id === occ.id) !== null;
+            return _.find(tableReleves, tOcc => tOcc.id === occ.id) === undefined;
           });
-          _response = filteredReleves;
+          const removedReleves = _.filter(occurrences, occ => {
+            return _.find(tableReleves, tOcc => tOcc.id === occ.id) !== undefined;
+          });
+          filteredOccurrences = filteredReleves;
+          removedOccurrences = removedReleves;
         } else {
           // got sye but no relevés
-          _response = occurrences;
+          filteredOccurrences = occurrences;
         }
       } else {
         // no sye, no need to filter
-        _response = occurrences;
+        filteredOccurrences = occurrences;
       }
     }
-    return _response;
+    return { filteredOccurrences, removedOccurrences };
+  }
+
+  /**
+   * Returns occurrences (relevés) that are not in table
+   * Performs a deep comparison : checks duplicates through microcenosis
+   */
+  filterDuplicatesTroughMicrocenosis(occurrences: Array<OccurrenceModel>, table: Table): { filteredOccurrences: Array<OccurrenceModel>, removedOccurrences: Array<OccurrenceModel> } {
+    const filteredOccurrences: Array<OccurrenceModel> = [];
+    const removedOccurrences: Array<OccurrenceModel> = [];
+    const occurrencesInTable = this.getTableReleves(table);
+
+    for (const occ of occurrences) {
+      if (occ.level === Level.MICROCENOSIS && occ.children && occ.children.length > 0) {
+        let shouldBeRemoved = false;
+        for (const child of occ.children) {
+          if (_.find(occurrencesInTable, occInTable => occInTable.id === child.id) === undefined) {
+            // no duplicate
+            // shouldBeRemoved does not change
+          } else {
+            // duplicate
+            shouldBeRemoved = true;
+          }
+          if (shouldBeRemoved) { removedOccurrences.push(occ); } else { filteredOccurrences.push(occ); }
+        }
+      }
+    }
+
+    return { filteredOccurrences: _.uniq(filteredOccurrences), removedOccurrences: _.uniq(removedOccurrences) };
+  }
+
+  /**
+   * Does occurrences contains, at less, one microcenosis ?
+   */
+  occurrencesContainsMicrocenosis(occurrences: Array<OccurrenceModel>): boolean {
+    for (const occ of occurrences) {
+      if (occ.level === Level.MICROCENOSIS) { return true; }
+    }
+    return false;
   }
 
   /**
