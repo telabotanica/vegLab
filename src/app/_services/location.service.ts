@@ -68,12 +68,15 @@ export class LocationService {
       case 'place':
         accuracy = VlAccuracyEnum.PLACE;
         break;
-      case (_class.match(/way/)).input:
-        accuracy = VlAccuracyEnum.PLACE;
-        break;
       default:
         accuracy = VlAccuracyEnum.OTHER;
         break;
+    }
+
+    // Special case for 'way', 'highway', '...way';
+    if (!accuracy || accuracy === null) {
+      const somethingWay = _class.match(/way/);
+      accuracy = somethingWay && somethingWay !== null ? VlAccuracyEnum.PLACE : accuracy;
     }
 
     return accuracy;
