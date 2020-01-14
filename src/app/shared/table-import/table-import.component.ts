@@ -1168,7 +1168,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
                       + ' ' + (location.city ? location.city : '')
                       + ' ' + (location.departement && !(location.place || location.city) ? location.departement : '')
                       + ' ' + (location.country ? location.country : '');*/
-          address = location.city + ' ' + location.departement + ' ' + location.country;/*(location.city ? location.city : ''
+          address = location.city + ' ' + location.departement + ' ' + location.country; /*(location.city ? location.city : ''
                       + ' ' + (location.departement ? location.departement : '')
                       + ' ' + (location.country ? location.country : ''));*/
           this.geocodingService.geocode(address, 'osm').pipe(
@@ -1176,12 +1176,19 @@ export class TableImportComponent implements OnInit, OnDestroy {
           ).subscribe(
             results => {
               location.isLoading = false;
-              for (const result of results) {
-                const readableAddress = this.geocodingService.getReadbleAddress(result, 'osm');
-                location.suggeredLocations.push({nominatimLocation: result, readableAddress});
+              if (results && results.length === 1) {
+                // Only one result : set location
+                this.setNominatimLocationAsOccurrenceLocation(location, results[0], this.geocodingService.getReadbleAddress(results[0], 'osm'));
+              } else if (results && results.length > 1) {
+                for (const result of results) {
+                  const readableAddress = this.geocodingService.getReadbleAddress(result, 'osm');
+                  location.suggeredLocations.push({nominatimLocation: result, readableAddress});
+                  if (location.city === 'Germigny-l\'Exempt') { console.log(location); }
+                }
               }
             }, error => {
               // @Todo manage error
+              console.log(error);
               location.isLoading = false;
             });
         }
@@ -1227,7 +1234,6 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
   /**
    * When user's mouse if hover an option (location option), preview the location
-   * @param nominatimLocation 
    */
   previewLocationOnMap(nominatimLocation: NominatimObject): void {
     this.patchMapGeometry = [{
@@ -1242,17 +1248,21 @@ export class TableImportComponent implements OnInit, OnDestroy {
    * @param data as a NominatimObject with several informations added
    */
   localitySelectionChange(location: Location, data: {source: any, value: {nominatimLocation: NominatimObject, readableAddress: string}}): void {
-    location.selectedLocation = data.value;
+    this.setNominatimLocationAsOccurrenceLocation(location, data.value.nominatimLocation, data.value.readableAddress);
+  }
+
+  private setNominatimLocationAsOccurrenceLocation(locationToBind: Location, nominatimLocation: NominatimObject, readableAddress: string) {
+    locationToBind.selectedLocation = {nominatimLocation, readableAddress};
 
     // Get centroid
-    const centroid = this.locationService.getCentroid(location.selectedLocation.nominatimLocation.geojson);
+    const centroid = this.locationService.getCentroid(nominatimLocation.geojson);
 
     // Get INSEE data and elevation
     this.geocodingService.getInseeData(centroid.geometry.coordinates[1], centroid.geometry.coordinates[0]).pipe(
       flatMap(inseeData => {
-        location.inseeData = inseeData;
+        locationToBind.inseeData = inseeData;
         // get elevation if needed (no elevation or already set by user)
-        if (!location.elevation || (location.elevation && location.isElevationEstimated !== false)) {
+        if (!locationToBind.elevation || (locationToBind.elevation && locationToBind.isElevationEstimated !== false)) {
           return this.elevationService.getElevation(centroid.geometry.coordinates[1], centroid.geometry.coordinates[0], 'mapQuest');
         } else {
           return of(null);
@@ -1261,8 +1271,8 @@ export class TableImportComponent implements OnInit, OnDestroy {
     ).subscribe(
       elevation => {
         if (elevation) {
-          location.elevation = elevation;
-          location.isElevationEstimated = true;
+          locationToBind.elevation = elevation;
+          locationToBind.isElevationEstimated = true;
         }
       }, error => {
         /* @Todo manage error */
@@ -1270,13 +1280,13 @@ export class TableImportComponent implements OnInit, OnDestroy {
     );
 
     // Get vl_accuracy
-    const vlAccuracy = this.locationService.getAccuracyByNominatimObject(data.value.nominatimLocation);
-    location.vlAccuracy = vlAccuracy;
+    const vlAccuracy = this.locationService.getAccuracyByNominatimObject(nominatimLocation);
+    locationToBind.vlAccuracy = vlAccuracy;
 
     // simplify polygon
-    location.selectedLocation.nominatimLocation.geojson = this.locationService.simplifyPolygon(location.selectedLocation.nominatimLocation.geojson);
+    locationToBind.selectedLocation.nominatimLocation.geojson = this.locationService.simplifyPolygon(locationToBind.selectedLocation.nominatimLocation.geojson);
 
-    location.suggeredLocations = [];
+    locationToBind.suggeredLocations = [];
 
     this.checkLocationStatus();
   }
