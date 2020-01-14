@@ -727,7 +727,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     // Current table owned by current user ?
-    this.isCurrentTableOwned = this.ownedTable();
+    this.isCurrentTableOwned = this.ownedTable(); // + ADD table->owned = true/false !!!
   }
 
   ngOnDestroy() {
@@ -753,7 +753,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Subscribe to current table changes
     this.currentTableSubscription = this.tableService.tableDataView.subscribe(dataView => {
-      this.isCurrentTableOwned = this.ownedTable();
+      this.isCurrentTableOwned = this.ownedTable(); // + ADD table->owned = true/false !!!
 
       this.currentSyes = this.tableService.getCurrentTable().sye;
       this.updateTableValuesAndMetadata(dataView);
