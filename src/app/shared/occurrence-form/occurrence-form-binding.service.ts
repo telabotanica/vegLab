@@ -185,6 +185,7 @@ export class OccurrenceFormBindingService {
   }
 
   private bindLocationData(occ: OccurrenceModel, location: LocationModel): void {
+    occ.vlLocationInputSource = location.inputLocation !== null ? location.inputLocation : null;
     occ.elevation = location.elevation;
     // occ.geodatum = location.geodatum;
     occ.geometry = JSON.stringify(location.geometry);

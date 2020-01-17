@@ -2176,6 +2176,8 @@ export class TableImportComponent implements OnInit, OnDestroy {
     }
 
     // Bind locations
+    console.log('BINDING LOCATION');
+    console.log(this.locationList);
     for (const location of this.locationList) {
       const relevesToBind = this.getRelevesInTableById(location.id, newTable);
       for (const releveToBind of relevesToBind) {
@@ -2296,6 +2298,15 @@ export class TableImportComponent implements OnInit, OnDestroy {
   }
 
   bindLocationToReleve(releveToBind: OccurrenceModel, location: Location): void {
+    // Set VL Location Input Source (location data from user input)
+    if (location.latitude && location.longitude) {
+      releveToBind.vlLocationInputSource = `N${location.latitude} E${location.longitude}`;
+    } else if (location.place || location.city || location.departement || location.country) {
+      if (!releveToBind.vlLocationInputSource || releveToBind.vlLocationInputSource == null) { releveToBind.vlLocationInputSource = ''; }
+      const vlLocationInputSource = [location.place, location.city, location.departement, location.country];
+      releveToBind.vlLocationInputSource = releveToBind.vlLocationInputSource + _.compact(vlLocationInputSource).toString();
+    }
+
     if (location.tbLocation) {
       // Avoid malformed Point geoJson
       // ie { type: 'Point', coordinates: [ [lng, lat] ] } instead of { type: 'Point', coordinates: [lng, lat] }
@@ -2353,7 +2364,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
       releveToBind.localityInseeCode = location.inseeData ? location.inseeData.code : null;
 
-      releveToBind.locality = location.selectedLocation.nominatimLocation.address.city;
+      releveToBind.locality = this.locationService.getCityFromNominatimObject(location.selectedLocation.nominatimLocation);
       releveToBind.sublocality = null;
       releveToBind.localityConsistency = null;
       releveToBind.vlLocationAccuracy = location.vlAccuracy;

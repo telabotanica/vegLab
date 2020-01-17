@@ -87,6 +87,7 @@ export interface OccurrenceModel {
   osmCountryCode?: string;
   osmId?: string;
   osmPlaceId?: number;
+  vlLocationInputSource?: string;
 
   identiplanteScore?: number;
   isIdentiplanteValidated: boolean;
