@@ -117,15 +117,16 @@ export class TableImportComponent implements OnInit, OnDestroy {
   REPOSITORY_ID_ROW_POS = { initialPos: 13, groupPosition: 1, keywords: ['Numéro nomenclatural'] };
   BIBLIO_ROW_POS        = { ititialPos: 14, groupPosition: 0, keywords: ['Ref. biblio.'] };
 
-  NOMEN_COL_POS           = { position: 0, keywords: ['Nomen'] };
-  LAYER_COL_POS           = { position: 1, keywords: ['Strate'] };
-  HEADERS_LABELS_COL_POS  = { position: 2 };
+  REPO_COL_POS            = { position: 0, keywords: ['Référentiel'] };
+  NOMEN_COL_POS           = { position: 1, keywords: ['Nomen'] };
+  LAYER_COL_POS           = { position: 2, keywords: ['Strate'] };
+  HEADERS_LABELS_COL_POS  = { position: 3 };
 
-  COEF_MATRIX_START_COL = 3;
+  COEF_MATRIX_START_COL = 4;
 
   EMPTY_CELL_VALUES     = ['', ' ', '-', '/', 'nc', 'na', '-0'];
 
-  ignoreFirstXCols = 3;
+  ignoreFirstXCols = 4;
 
   // Taxonomic vars
   tbRepositoriesConfig = environment.tbRepositoriesConfig;
@@ -335,7 +336,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
       let i = 0;
       let rowNomenStartPosition: number;
       for (const row of this.parsedCsvFile) {
-        if (row[0].toLowerCase() === 'nomen') { rowNomenStartPosition = i; break; }
+        if (row[this.NOMEN_COL_POS.position].toLowerCase() === 'nomen') { rowNomenStartPosition = i; break; }
         i++;
       }
 
@@ -349,7 +350,9 @@ export class TableImportComponent implements OnInit, OnDestroy {
       }
 
       // Splice content
-      if (this.parsedCsvFile[0][0].toLocaleLowerCase() === 'nomen' && this.parsedCsvFile[0][1].toLowerCase() === 'strate') {
+      if (this.parsedCsvFile[0][this.REPO_COL_POS.position].toLocaleLowerCase() === 'référentiel'
+          && this.parsedCsvFile[0][this.NOMEN_COL_POS.position].toLocaleLowerCase() === 'nomen'
+          && this.parsedCsvFile[0][this.LAYER_COL_POS.position].toLowerCase() === 'strate') {
         for (const row of this.parsedCsvFile) {
           if (row[0] === '' || row[1] === '') {
             // empty cell at col1 or col2
@@ -357,7 +360,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
           }
         }
 
-        // remove first row ('nomen' and 'strate' row)
+        // remove first row ('repository', 'nomen' and 'strate' row)
         this.parsedCsvFile.splice(0, 1);
 
         // set rawContent
@@ -647,12 +650,12 @@ export class TableImportComponent implements OnInit, OnDestroy {
     let group = '?';
     let groupPosition = 0;
     for (const t of this.rawContent) {
-      if (t[0] === '-' && t[1] === '-') {
-        group = t[2];
+      if (t[this.REPO_COL_POS.position] === '-' && t[this.NOMEN_COL_POS.position] === '-' && t[this.LAYER_COL_POS.position] === '-') {
+        group = t[this.HEADERS_LABELS_COL_POS.position];
         groupPosition++;
       }
-      if (!(t[0] === '-' && t[1] === '-') && !(t[0] === '-' && t[1] === '-')) {
-        this.taxonomicList.push({id: t[0].toString() + '~' + t[1].toString() + '~' + t[2].toString(), group, groupPosition, layer: t[1].toString(), validation: null, rim: null});
+      if (!(t[this.REPO_COL_POS.position] === '-' && t[this.NOMEN_COL_POS.position] === '-' && t[this.LAYER_COL_POS.position] === '-')) {
+        this.taxonomicList.push({id: t[this.NOMEN_COL_POS.position].toString() + '~' + t[this.LAYER_COL_POS.position].toString() + '~' + t[this.HEADERS_LABELS_COL_POS.position].toString(), group, groupPosition, layer: t[this.LAYER_COL_POS.position].toString(), validation: null, rim: null});
       }
     }
   }
@@ -679,36 +682,52 @@ export class TableImportComponent implements OnInit, OnDestroy {
     let countRow = 0;
     // this.isLoadingTaxonomicList = true;
     for (const t of this.rawContent) {
-      const id = t[0].toString() + '~' + t[1].toString() + '~' + t[2].toString();
+      const id = t[this.NOMEN_COL_POS.position].toString() + '~' + t[this.LAYER_COL_POS.position].toString() + '~' + t[this.HEADERS_LABELS_COL_POS.position].toString();
       const currentContent = _.find(this.taxonomicList, tl => tl.id === id);
-      if (this.isEmptyValue(t[0]) && this.isEmptyValue(t[1]) || this.isEmptyValue(t[0]) && this.isEmptyValue(t[1])) {
+
+      const inputRepo = t[this.REPO_COL_POS.position];
+      const availableRepositories: Array<RepositoryModel> = this.tsbRepositoryService.listAllRepositories();
+      let useRepo = 'otherunknown';
+      if (_.find(availableRepositories, ar => ar.id === inputRepo) !== undefined) {
+        useRepo = inputRepo;
+      } else {
+        useRepo = 'otherunknown';
+      }
+
+      if (this.isEmptyValue(t[this.NOMEN_COL_POS.position]) && this.isEmptyValue(t[this.LAYER_COL_POS.position])) {
         // Group row
         // do nothing
         countRow++;
         this.isLoadingTaxonomicList = (countRow === rowNb) ? false : true;
-      } else if (Number(t[0])) {
+      } else if (Number(t[this.NOMEN_COL_POS.position]) && useRepo !== null && useRepo !== 'otherunknown') {
         // row with nomenclatural data
         this.stepNames.currentStatus = 'pending';
         this.stepNames.started = true;
         this.stepNames.message = 'Recherche des informations en cours...';
         this.stepNames.tip = 'Merci de patienter';
-        this.tsbRepositoryService.findDataByIdNomen('bdtfx', Number(t[0])).pipe(
+
+        if (_.find(availableRepositories, ar => ar.id === inputRepo) !== undefined) {
+          useRepo = inputRepo;
+        } else {
+          useRepo = 'otherunknown';
+        }
+        this.tsbRepositoryService.findDataByIdNomen(useRepo, Number(t[this.NOMEN_COL_POS.position])).pipe(
           map (r => r[0] as RepositoryItemModel) // Ensure type
         ).subscribe(
           result => {
             currentContent.validation = {
               validatedBy: 1,
               validatedAt: now,
-              repository: 'bdtfx',
-              repositoryIdNomen: Number(t[0]),
+              repository: useRepo,
+              repositoryIdNomen: Number(t[this.NOMEN_COL_POS.position]),
               repositoryIdTaxo: result.idTaxo.toString(),
-              inputName: t[2],
+              inputName: t[this.HEADERS_LABELS_COL_POS.position],
               validatedName: result.name + (result.author !== '' ? ' ' + result.author : ''),
               validName: result.name + (result.author !== '' ? ' ' + result.author : '')
             };
             currentContent.rim = {
-              repository: 'bdtfx',
-              idNomen: Number(t[0]),
+              repository: useRepo,
+              idNomen: Number(t[this.NOMEN_COL_POS.position]),
               idTaxo: result.idTaxo,
               name: result.name,
               author: result.author
@@ -729,7 +748,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
               repository: 'otherunknown',
               repositoryIdNomen: randomInteger,
               repositoryIdTaxo: randomInteger.toString(),
-              inputName: t[2],
+              inputName: t[this.HEADERS_LABELS_COL_POS.position],
               validatedName: null,
               validName: null
             };
@@ -737,7 +756,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
               repository: 'otherunknown',
               idNomen: randomInteger,
               idTaxo: randomInteger.toString(),
-              name: t[2],
+              name: t[this.HEADERS_LABELS_COL_POS.position],
               author: ''
             };
             countRow++;
@@ -760,7 +779,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
           repository: 'otherunknown',
           repositoryIdNomen: randomInteger,
           repositoryIdTaxo: randomInteger.toString(),
-          inputName: t[2],
+          inputName: t[this.HEADERS_LABELS_COL_POS.position],
           validatedName: null,
           validName: null
         };
@@ -768,7 +787,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
           repository: 'otherunknown',
           idNomen: randomInteger,
           idTaxo: randomInteger.toString(),
-          name: t[2],
+          name: t[this.HEADERS_LABELS_COL_POS.position],
           author: ''
         };
         countRow++;
