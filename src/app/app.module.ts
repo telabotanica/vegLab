@@ -118,6 +118,7 @@ import { OccurrenceValidationsPreviewComponent } from './shared/occurrence-overv
 import { OccurrenceMetadataPreviewComponent } from './shared/occurrence-overview/occurrence-metadata-preview/occurrence-metadata-preview.component';
 import { TbUserLabelComponent } from './shared/tb-user-label/tb-user-label.component';
 import { SimpleNotificationsModule } from 'angular2-notifications';
+import { SophyImportAndSplitCsvComponent } from './admin/sophy/sophy-import-and-split-csv/sophy-import-and-split-csv.component';
 
 /*
 import * as Sentry from '@sentry/browser';
@@ -148,7 +149,7 @@ export class SentryErrorHandler implements ErrorHandler {
     LevelPipe, ShortLevelPipe, MomentPipe, MomentLocalDatePipe, // Pipes
     PhytoHomePageComponent, PhytoAppPageComponent, // WS phyto
     ForestHomePageComponent, ForestAppPageComponent, // WS forest
-    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, MomentStringInputDatePipe, EcologicalDiagramComponent, BaseflorDiagramComponent, BaseflorDiagramSelectorComponent, OccurrencesTableViewComponent, TablesTableViewComponent, TablePreviewComponent, TableBasicInfosPreviewComponent, TableValidationsPreviewComponent, TableRenderPreviewComponent, OccurrenceBasicInfosPreviewComponent, OccurrencePreviewComponent, OccurrenceRenderPreviewComponent, SimpleGeojsonMapComponent, OccurrenceValidationsPreviewComponent, OccurrenceMetadataPreviewComponent, TbUserLabelComponent, // admin
+    AdminHomePageComponent, AdminMetadataPageComponent, AdminCreateMetadataComponent, AdminEditMetadataComponent, AdminRemoveMetadataComponent, AdminTestMetadataComponent, MetadataFilterComponent, CitySearchComponent, ObserverSearchComponent, BiblioSearchComponent, OccurrencesInlineComponent, PdfViewerComponent, TableOverviewMapComponent, ValidationComponent, TableSelectedElementComponent, IdiotaxonImagesComponent, MomentStringInputDatePipe, EcologicalDiagramComponent, BaseflorDiagramComponent, BaseflorDiagramSelectorComponent, OccurrencesTableViewComponent, TablesTableViewComponent, TablePreviewComponent, TableBasicInfosPreviewComponent, TableValidationsPreviewComponent, TableRenderPreviewComponent, OccurrenceBasicInfosPreviewComponent, OccurrencePreviewComponent, OccurrenceRenderPreviewComponent, SimpleGeojsonMapComponent, OccurrenceValidationsPreviewComponent, OccurrenceMetadataPreviewComponent, TbUserLabelComponent, SophyImportAndSplitCsvComponent, // admin
   ],
   entryComponents: [
     OccurrenceSearchMetadataModal1Component

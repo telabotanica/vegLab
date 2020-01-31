@@ -2084,8 +2084,9 @@ export class TableService {
 
   isLowerCoef(coef: string, coefToCompare: string): boolean {
     // @Todo manage no coef error
-    if (!coef) { console.log('isLowerCoef(): NO COEF PROVIDED !'); return false; }
+    if (coef == null) { console.log('isLowerCoef(): NO COEF PROVIDED !'); return false; }
     const orderedCoefs = [
+      { index: 0, value: '0' },
       { index: 0, value: '+' },
       { index: 1, value: '1' },
       { index: 2, value: '2' },
@@ -2104,8 +2105,9 @@ export class TableService {
   }
 
   isUpperCoef(coef: string, coefToCompare: string): boolean {
-    if (!coef) { console.log('isUpperCoef(): NO COEF PROVIDED !'); return false; }
+    if (coef == null) { console.log('isUpperCoef(): NO COEF PROVIDED !'); return false; }
     const orderedCoefs = [
+      { index: 0, value: '0' },
       { index: 0, value: '+' },
       { index: 1, value: '1' },
       { index: 2, value: '2' },

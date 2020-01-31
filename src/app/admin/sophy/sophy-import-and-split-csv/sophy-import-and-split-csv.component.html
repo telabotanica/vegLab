@@ -1,0 +1,29 @@
+<h2>Importer un jeu de données SOPHY</h2>
+<div class="sophy-import-wrapper" fxLayout="column" fxLayoutAlign="start center">
+  <!-- File -->
+  <div fxLayout="row" fxLayoutAlign="center center">
+    <tb-dropfile-box
+      label="Ajouter un fichier CSV"
+      [maxFileSize]="maxFileSize"
+      [allowedFileTypes]="allowedFileTypes"
+      (acceptedFiles)="acceptedFiles($event)"
+      (rejectedFiles)="rejectedFiles($event)">
+    </tb-dropfile-box>
+  </div>
+
+  <!-- Parse spinner -->
+  <div fxLayout="row" fxLayoutAlign="center center">
+    <div *ngIf="parsingCsvFile" fxLayout="row" fxLayoutAlign="space-evenly center">
+      <mat-spinner diameter="16"></mat-spinner>
+      <p>Lecture et traitement du fichier en cours...</p>
+    </div>
+  </div>
+  <div fxLayout="row" fxLayoutAlign="center center">
+    <div *ngIf="tableViews.length > 0">
+      <button mat-button (click)="zipAndDownload()" [disabled]="zippingFile">
+        <span *ngIf="!zippingFile">Télécharger les tableaux consolidés</span>
+        <span *ngIf="zippingFile">Veuillez patienter</span>
+      </button>
+    </div>
+  </div>
+</div>

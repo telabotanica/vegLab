@@ -11,6 +11,7 @@ import { AdminGuard } from './_guards/admin.guard';
 import { AdminHomePageComponent } from './admin/admin-home-page/admin-home-page.component';
 import { AdminMetadataPageComponent } from './admin/metadata/admin-metadata-page/admin-metadata-page.component';
 import { AdminTestMetadataComponent } from './admin/metadata/admin-test-metadata/admin-test-metadata.component';
+import { SophyImportAndSplitCsvComponent } from './admin/sophy/sophy-import-and-split-csv/sophy-import-and-split-csv.component';
 
 import { OccurrenceFormComponent } from './shared/occurrence-form/occurrence-form.component';
 import { OccurrenceSearchComponent } from './shared/occurrence-search/occurrence-search.component';
@@ -38,7 +39,8 @@ const routes: Routes = [
   // { path: 'admin', component: AdminHomePageComponent, canActivate: [AdminGuard], canActivateChild: [AdminGuard], children: [
   { path: 'admin', component: AdminHomePageComponent, children: [
     { path: 'metadata-manager', component: AdminMetadataPageComponent },
-    { path: 'metadata-test', component: AdminTestMetadataComponent}
+    { path: 'metadata-test', component: AdminTestMetadataComponent},
+    { path: 'sophy-import', component: SophyImportAndSplitCsvComponent }
   ]},
   { path: '**', component: FatalErrorPageComponent, data: { error: 404 } },
 ];

@@ -14,6 +14,14 @@ export class LayerService {
   }
 
   getLayerEnumByStr(str: string): LayerEnum {
-    return _.filter(layerList, l => l.name === str)[0].enum;
+
+    try {
+      const e = _.filter(layerList, l => l.name === str)[0];
+      console.log(str, e);
+      return e !== undefined ? e.enum : null;
+    } catch (error) {
+      console.log('ERROR', str, error);
+    }
+    return ;
   }
 }

@@ -293,7 +293,10 @@ export class TableImportComponent implements OnInit, OnDestroy {
         complete: results => {
           if (results.errors.length > 0) {
             // Csv file has some errors, log to user and abort
+            console.log(results.errors);
             this.notificationService.error(results.errors.toString());
+            this.importFile.status = 'error';
+            this.importFile.messages = ['Le fichier importé n\'est pas conforme'];
           } else {
             this.parsedCsvFile = results.data;
             console.log(this.parsedCsvFile);
@@ -647,7 +650,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
   // *********
 
   prepareTaxonomicList(): void {
-    let group = '?';
+    let group = 'Groupe';
     let groupPosition = 0;
     for (const t of this.rawContent) {
       if (t[this.REPO_COL_POS.position] === '-' && t[this.NOMEN_COL_POS.position] === '-' && t[this.LAYER_COL_POS.position] === '-') {
@@ -655,7 +658,27 @@ export class TableImportComponent implements OnInit, OnDestroy {
         groupPosition++;
       }
       if (!(t[this.REPO_COL_POS.position] === '-' && t[this.NOMEN_COL_POS.position] === '-' && t[this.LAYER_COL_POS.position] === '-')) {
-        this.taxonomicList.push({id: t[this.NOMEN_COL_POS.position].toString() + '~' + t[this.LAYER_COL_POS.position].toString() + '~' + t[this.HEADERS_LABELS_COL_POS.position].toString(), group, groupPosition, layer: t[this.LAYER_COL_POS.position].toString(), validation: null, rim: null});
+        this.taxonomicList.push({
+          id: t[this.REPO_COL_POS.position].toString() + '~' + t[this.NOMEN_COL_POS.position].toString() + '~' + t[this.LAYER_COL_POS.position].toString() + '~' + t[this.HEADERS_LABELS_COL_POS.position].toString(),
+          repo: t[this.REPO_COL_POS.position].toString(),
+          nomen: t[this.NOMEN_COL_POS.position].toString(),
+          layer: t[this.LAYER_COL_POS.position].toString(),
+          group,
+          groupPosition,
+          validation: null,
+          rim: null});
+      }
+    }
+  }
+
+  removeDuplicatesInTaxonomicList() {
+    const taxoList = _.clone(this.taxonomicList);
+    if (taxoList && taxoList !== null && taxoList.length > 0) {
+      // get duplicates by repository+nomen+layer
+      const uniqTaxoList = _.uniqBy(taxoList, tl => tl.repo + '~' + tl.nomen + '~' + tl.layer);
+      const diff = _.difference(taxoList, uniqTaxoList);
+      if (diff) {
+        this.taxonomicList = uniqTaxoList;
       }
     }
   }
@@ -677,12 +700,13 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
   setTaxonomicList(): void {
     this.prepareTaxonomicList();
+    this.removeDuplicatesInTaxonomicList();
     const now = new Date();
     const rowNb = this.rawContent.length;
     let countRow = 0;
-    // this.isLoadingTaxonomicList = true;
+    this.isLoadingTaxonomicList = true;
     for (const t of this.rawContent) {
-      const id = t[this.NOMEN_COL_POS.position].toString() + '~' + t[this.LAYER_COL_POS.position].toString() + '~' + t[this.HEADERS_LABELS_COL_POS.position].toString();
+      const id = t[this.REPO_COL_POS.position].toString() + '~' + t[this.NOMEN_COL_POS.position].toString() + '~' + t[this.LAYER_COL_POS.position].toString() + '~' + t[this.HEADERS_LABELS_COL_POS.position].toString();
       const currentContent = _.find(this.taxonomicList, tl => tl.id === id);
 
       const inputRepo = t[this.REPO_COL_POS.position];
@@ -699,7 +723,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
         // do nothing
         countRow++;
         this.isLoadingTaxonomicList = (countRow === rowNb) ? false : true;
-      } else if (Number(t[this.NOMEN_COL_POS.position]) && useRepo !== null && useRepo !== 'otherunknown') {
+      } else if (currentContent !== undefined && Number(t[this.NOMEN_COL_POS.position]) && useRepo !== null && useRepo !== 'otherunknown') {
         // row with nomenclatural data
         this.stepNames.currentStatus = 'pending';
         this.stepNames.started = true;
@@ -733,7 +757,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
               author: result.author
             };
             countRow++;
-            this.isLoadingTaxonomicList = (countRow === rowNb) ? false : true;
+            // this.isLoadingTaxonomicList = (countRow === rowNb) ? false : true;
             if (countRow === rowNb) {
               this.isLoadingTaxonomicList = false;
               this.stepNames.currentStatus = 'complete';
@@ -760,7 +784,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
               author: ''
             };
             countRow++;
-            this.isLoadingTaxonomicList = (countRow === rowNb) ? false : true;
+            // this.isLoadingTaxonomicList = (countRow === rowNb) ? false : true;
             if (countRow === rowNb) {
               this.isLoadingTaxonomicList = false;
               this.stepNames.currentStatus = 'error';
@@ -770,7 +794,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
             } else { this.isLoadingTaxonomicList = true; }
           }
         );
-      } else {
+      } else if (currentContent !== undefined) {
         // row with other/unknown data
         const randomInteger = _.random(-1, -1000000, false);
         currentContent.validation = {
@@ -791,12 +815,19 @@ export class TableImportComponent implements OnInit, OnDestroy {
           author: ''
         };
         countRow++;
-        this.isLoadingTaxonomicList = (countRow === rowNb) ? false : true;
+        // this.isLoadingTaxonomicList = (countRow === rowNb) ? false : true;
         if (countRow === rowNb) {
           this.isLoadingTaxonomicList = false;
           this.stepNames.currentStatus = 'complete';
           this.checkNamesStatus();
         } else { this.isLoadingTaxonomicList = true; }
+      } else {
+        countRow++;
+        if (countRow === rowNb) {
+          this.isLoadingTaxonomicList = false;
+          this.stepNames.currentStatus = 'complete';
+          this.checkNamesStatus();
+        }
       }
     }
   }
@@ -2077,7 +2108,6 @@ export class TableImportComponent implements OnInit, OnDestroy {
           // get taxonomic + coef list by layer
           const taxoList = _.filter(taxoCoefsArray, tca => tca.taxo.layer === newOccurrence0.layer);
           const noNullCoefsTaxoList = _.filter(taxoList, tl => tl.coefs[releveCount] !== '');
-
           for (const taxoItem of noNullCoefsTaxoList) {
             const idio: OccurrenceModel = {
               userId,
@@ -2454,7 +2484,10 @@ export class TableImportComponent implements OnInit, OnDestroy {
   private getTaxoCoefsArray(): Array<{taxo: Taxo, coefs: Array<string>}> {
     const mergedArray: Array<{taxo: Taxo, coefs: Array<string>}> = [];
     for (const taxoItem of this.taxonomicList) {
-      const coefs = _.drop(_.find(this.rawContent, rw => (rw[0] + '~' + rw[1] + '~' + rw[2]) === taxoItem.id), this.ignoreFirstXCols);
+      const coefs = _.drop(_.find(this.rawContent, rw => (rw[this.REPO_COL_POS.position].toString() +
+                                                          '~' + rw[this.NOMEN_COL_POS.position].toString() +
+                                                          '~' + rw[this.LAYER_COL_POS.position].toString() +
+                                                          '~' + rw[this.HEADERS_LABELS_COL_POS.position].toString()) === taxoItem.id), this.ignoreFirstXCols);
       if (coefs) {
         mergedArray.push({ taxo: taxoItem, coefs});
       }
@@ -2522,7 +2555,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
       for (const row of tablePreview) {
         if (rowCount > 0) {
           if (row[releveIndexInTablePreview] !== '') {
-            layers.push(row[1]);
+            layers.push(row[this.LAYER_COL_POS.position]);
           }
         }
         rowCount++;
@@ -2623,6 +2656,8 @@ export interface Taxo {
   id: string;
   group: string;
   groupPosition: number;
+  repo: string;
+  nomen: string;
   layer: string;
   validation: OccurrenceValidationModel;
   rim?: RepositoryItemModel;

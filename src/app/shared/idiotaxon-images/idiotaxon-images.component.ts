@@ -67,7 +67,7 @@ export class IdiotaxonImagesComponent implements OnInit, OnDestroy {
               // @Todo manage error
               this.isLoadingImages = false;
               this.errorLoadingImages = true;
-              this.images = null;
+              this.images = [];
               console.log('Nous ne parvenons pas à récupérer les images associées à cette occurrence');
             }
           );
