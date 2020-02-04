@@ -4,6 +4,7 @@ import { FileData } from 'tb-dropfile-lib/lib/_models/fileData';
 import { RejectedFileData } from 'tb-dropfile-lib/lib/_models/rejectedFileData';
 
 import { NotificationService } from 'src/app/_services/notification.service';
+import { MetadataService } from 'src/app/_services/metadata.service';
 
 import * as _ from 'lodash';
 import * as Papa from 'papaparse';
@@ -67,6 +68,29 @@ export class SophyImportAndSplitCsvComponent implements OnInit {
     PAYS:               { position: 37, label: 'Pays' }
   };
 
+  // SOPHY (internal) metadata headers
+  sophyMetaHeader: Array<Array<string>> = [
+    ['', '', '', 'sophy_data'],
+    ['', '', '', 'sophy_data_complete'],
+    ['', '', '', 'sophy_import_code_identifiant_releve'],
+    ['', '', '', 'sophy_import_numero_publication'],
+    ['', '', '', 'sophy_import_publication'],
+    ['', '', '', 'sophy_import_auteur'],
+    ['', '', '', 'sophy_import_annee'],
+    ['', '', '', 'sophy_import_numero_tableau'],
+    ['', '', '', 'sophy_import_numero_releve'],
+    ['', '', '', 'sophy_import_nom_station'],
+    ['', '', '', 'sophy_import_code_insee'],
+    ['', '', '', 'sophy_import_code_insee_calcule'],
+    ['', '', '', 'sophy_import_altitude'],
+    ['', '', '', 'sophy_import_ss_latitude_wgs'],
+    ['', '', '', 'sophy_import_ss_longitude_wgs'],
+    ['', '', '', 'sophy_import_ss_utm_easting'],
+    ['', '', '', 'sophy_import_ss_utm_northing'],
+    ['', '', '', 'sophy_import_ss_utm_zone'],
+    ['', '', '', 'sophy_import_ss_ce_precision_geographique']
+  ];
+
   // CSV sections vars
   header: Array<string> = [];
   rawDataGroupedByPubli: _.Dictionary<Array<Array<string>>> = null;
@@ -91,7 +115,8 @@ export class SophyImportAndSplitCsvComponent implements OnInit {
     blob: Blob
   }> = [];
 
-  constructor(private notificationService: NotificationService) { }
+  constructor(private notificationService: NotificationService,
+              private metadataService: MetadataService) { }
 
   ngOnInit() {
   }
@@ -142,8 +167,13 @@ export class SophyImportAndSplitCsvComponent implements OnInit {
             this.parsedCsvFile = results.data;
             if (this.checkCsvFile()) {
               this.splitCsvFile();
-              this.prepareViews();
-              this.createView();
+              if (this.checkSophyMetaHeadersExists()) {
+                this.prepareViews();
+                this.createView();
+              } else {
+                // Should create SOPHY Meta
+                this.notificationService.notify('Les métadonnées SOPHY ne sont pas initialisées. Contactez l\'administrateur');
+              }
             } else {
               this.notificationService.error('Le fichier n\'est pas conforme');
             }
@@ -214,7 +244,6 @@ export class SophyImportAndSplitCsvComponent implements OnInit {
               const releves: Array<SophyRawReleve> = [];
 
               const groupedReleves = _.groupBy(currentTable, ct => ct[this.SOPHY.RELEVE_ID.position]);
-              console.log('GROUPED REL: ', Object.keys(groupedReleves).length);
 
               // 4. Group by releves id
               for (const keyReleveId in groupedReleves) {
@@ -380,6 +409,18 @@ export class SophyImportAndSplitCsvComponent implements OnInit {
     }
   }
 
+  checkSophyMetaHeadersExists(): boolean {
+    // Check that metadata exists
+    if (this.sophyMetaHeader == null || this.sophyMetaHeader !== null && this.sophyMetaHeader.length === 0) { return false; }
+    for (const sophyMeta of this.sophyMetaHeader) {
+      if (this.metadataService.getMetadataByFieldId(sophyMeta[3]) == null) {
+        // Metadata does not exists
+        return false;
+      }
+    }
+    return true;
+  }
+
   createView(): void {
     if ( (!this.data || this.data == null) || this.data.length === 0 ) {
       return;
@@ -450,52 +491,30 @@ export class SophyImportAndSplitCsvComponent implements OnInit {
           biblioHeader[0].push(rawReleve.refBiblio);
         }
 
-        // Create metadata headers
-        const sophyMetaHeader: Array<Array<string>> = [
-          ['', '', '', 'sophy_data'],
-          ['', '', '', 'sophy_data_complete'],
-          ['', '', '', 'sophy_import_code_identifiant_releve'],
-          ['', '', '', 'sophy_import_numero_publication'],
-          ['', '', '', 'sophy_import_publication'],
-          ['', '', '', 'sophy_import_auteur'],
-          ['', '', '', 'sophy_import_annee'],
-          ['', '', '', 'sophy_import_numero_tableau'],
-          ['', '', '', 'sophy_import_numero_releve'],
-          ['', '', '', 'sophy_import_nom_station'],
-          ['', '', '', 'sophy_import_code_insee'],
-          ['', '', '', 'sophy_import_code_insee_calcule'],
-          ['', '', '', 'sophy_import_altitude'],
-          ['', '', '', 'sophy_import_ss_latitude_wgs'],
-          ['', '', '', 'sophy_import_ss_longitude_wgs'],
-          ['', '', '', 'sophy_import_ss_utm_easting'],
-          ['', '', '', 'sophy_import_ss_utm_northing'],
-          ['', '', '', 'sophy_import_ss_utm_zone'],
-          ['', '', '', 'sophy_import_ss_ce_precision_geographique']
-        ];
         for (const rawReleve of rawTable.rawReleves) {
-          sophyMetaHeader[0].push('true');
-          sophyMetaHeader[1].push(rawReleve.sophyMeta.sophy_complete.toString());
-          sophyMetaHeader[2].push(rawReleve.sophyMeta.sophy_import_code_identifiant_releve);
-          sophyMetaHeader[3].push(rawReleve.sophyMeta.sophy_import_numero_publication);
-          sophyMetaHeader[4].push(rawReleve.sophyMeta.sophy_import_publication);
-          sophyMetaHeader[5].push(rawReleve.sophyMeta.sophy_import_auteur);
-          sophyMetaHeader[6].push(rawReleve.sophyMeta.sophy_import_annee);
-          sophyMetaHeader[7].push(rawReleve.sophyMeta.sophy_import_numero_tableau);
-          sophyMetaHeader[8].push(rawReleve.sophyMeta.sophy_import_numero_releve);
-          sophyMetaHeader[9].push(rawReleve.sophyMeta.sophy_import_nom_station);
-          sophyMetaHeader[10].push(rawReleve.sophyMeta.sophy_import_code_insee);
-          sophyMetaHeader[11].push(rawReleve.sophyMeta.sophy_import_code_insee_calcule);
-          sophyMetaHeader[12].push(rawReleve.sophyMeta.sophy_import_altitude);
-          sophyMetaHeader[13].push(rawReleve.sophyMeta.sophy_import_ss_latitude_wgs);
-          sophyMetaHeader[14].push(rawReleve.sophyMeta.sophy_import_ss_longitude_wgs);
-          sophyMetaHeader[15].push(rawReleve.sophyMeta.sophy_import_ss_utm_easting);
-          sophyMetaHeader[16].push(rawReleve.sophyMeta.sophy_import_ss_utm_northing);
-          sophyMetaHeader[17].push(rawReleve.sophyMeta.sophy_import_ss_utm_zone);
-          sophyMetaHeader[18].push(rawReleve.sophyMeta.sophy_import_ss_ce_precision_geographique);
+          this.sophyMetaHeader[0].push('true');
+          this.sophyMetaHeader[1].push(rawReleve.sophyMeta.sophy_complete.toString());
+          this.sophyMetaHeader[2].push(rawReleve.sophyMeta.sophy_import_code_identifiant_releve);
+          this.sophyMetaHeader[3].push(rawReleve.sophyMeta.sophy_import_numero_publication);
+          this.sophyMetaHeader[4].push(rawReleve.sophyMeta.sophy_import_publication);
+          this.sophyMetaHeader[5].push(rawReleve.sophyMeta.sophy_import_auteur);
+          this.sophyMetaHeader[6].push(rawReleve.sophyMeta.sophy_import_annee);
+          this.sophyMetaHeader[7].push(rawReleve.sophyMeta.sophy_import_numero_tableau);
+          this.sophyMetaHeader[8].push(rawReleve.sophyMeta.sophy_import_numero_releve);
+          this.sophyMetaHeader[9].push(rawReleve.sophyMeta.sophy_import_nom_station);
+          this.sophyMetaHeader[10].push(rawReleve.sophyMeta.sophy_import_code_insee);
+          this.sophyMetaHeader[11].push(rawReleve.sophyMeta.sophy_import_code_insee_calcule);
+          this.sophyMetaHeader[12].push(rawReleve.sophyMeta.sophy_import_altitude);
+          this.sophyMetaHeader[13].push(rawReleve.sophyMeta.sophy_import_ss_latitude_wgs);
+          this.sophyMetaHeader[14].push(rawReleve.sophyMeta.sophy_import_ss_longitude_wgs);
+          this.sophyMetaHeader[15].push(rawReleve.sophyMeta.sophy_import_ss_utm_easting);
+          this.sophyMetaHeader[16].push(rawReleve.sophyMeta.sophy_import_ss_utm_northing);
+          this.sophyMetaHeader[17].push(rawReleve.sophyMeta.sophy_import_ss_utm_zone);
+          this.sophyMetaHeader[18].push(rawReleve.sophyMeta.sophy_import_ss_ce_precision_geographique);
         }
 
         // Concatenate headers & table
-        const headers = _.concat(mainHeader, locationHeader, validationHeader, biblioHeader, sophyMetaHeader);
+        const headers = _.concat(mainHeader, locationHeader, validationHeader, biblioHeader, this.sophyMetaHeader);
         const table = _.find(publication.tables, t => t.tableId === rawTable.tableId);
         const mergedData: Array<Array<string>> = _.clone(headers);
 
@@ -696,7 +715,7 @@ export interface SophyRawReleve {
   author: string;
   date: string;
   refBiblio: string;
-  sophyMeta: SophyMeta,
+  sophyMeta: SophyMeta;
   content: Array<Array<string>>;
 }
 
