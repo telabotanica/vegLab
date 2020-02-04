@@ -49,6 +49,10 @@ export class MetadataService {
     }
   }
 
+  postMetadata(metadata: ExtendedFieldModel): Observable<ExtendedFieldModel> {
+    return this.http.post<ExtendedFieldModel>(`${environment.apiBaseUrl}/extended_fields`, metadata);
+  }
+
   setMetadataList(list: Array<ExtendedFieldModel>): void {
     this.metadataList.next(list);
     this.localSaveMetadataList();

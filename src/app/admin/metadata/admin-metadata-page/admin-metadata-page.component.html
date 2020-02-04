@@ -1,6 +1,8 @@
 <div class="title-actionbar">
   <h1>Métadonnées</h1>
-  <button mat-mini-fab color="primary" (click)="createMetadata()" matTooltip="Créer une nouvelle métadonnée"><mat-icon>add</mat-icon></button>
+  <button mat-button color="primary" (click)="getMetadata()" >Rafraîchir</button>
+  <button mat-button color="primary" (click)="createMetadata()" >Ajouter une métadonnée</button>
+  <button mat-button color="primary" (click)="checkAndUpdateInitialMetadata()" [class.spinner]="settingInitialMetadata" [disabled]="settingInitialMetadata">Vérifier les métadonnées initiales</button>
 </div>
 
 <mat-divider></mat-divider>

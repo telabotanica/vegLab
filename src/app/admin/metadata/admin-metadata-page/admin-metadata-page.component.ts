@@ -6,6 +6,8 @@ import { map } from 'rxjs/operators';
 import { NotificationService } from '../../../_services/notification.service';
 import { MetadataService } from '../../../_services/metadata.service';
 import { environment } from '../../../../environments/environment';
+import { MetadataInitialSet } from '../_initial-data/metadata-initial-data';
+import { Observable, zip } from 'rxjs';
 
 @Component({
   selector: 'vl-admin-metadata-page',
@@ -21,6 +23,7 @@ export class AdminMetadataPageComponent implements OnInit {
   isEditingMetadata = false;
   metadataToRemove: ExtendedFieldModel = null;
   metadataToEdit: ExtendedFieldModel = null;
+  settingInitialMetadata = false;
 
   // VAR Table
   columns = ['fieldId', 'projectName', 'dataType', 'isVisible', 'isEditable', 'isMandatory', 'minValue', 'maxValue', 'regexp', 'unit'];
@@ -104,6 +107,39 @@ export class AdminMetadataPageComponent implements OnInit {
 
   metadataDeleteAborted(aborted: boolean): void {
     if (aborted) { this.metadataToRemove = null; }
+  }
+
+  // ----------------
+  // INITIAL METADATA
+  // ----------------
+  checkAndUpdateInitialMetadata(): void {
+    if (MetadataInitialSet == null || MetadataInitialSet.length === 0) {
+      // No initial metadata to check/set
+      this.notificationService.notify('Aucune métadonnée à vérifier');
+    } else {
+      const obs: Array<Observable<ExtendedFieldModel>> = [];
+      for (const meta of MetadataInitialSet) {
+        if (this.metadataService.getMetadataByFieldId(meta.fieldId) == null) {
+          // meta does not exists
+          obs.push(this.metadataService.postMetadata(meta));
+        }
+      }
+      if (obs && obs.length > 0) {
+        this.settingInitialMetadata = true;
+        zip(...obs).subscribe(
+          result => {
+            this.settingInitialMetadata = false;
+            this.getMetadata();
+            this.notificationService.notify('Les métadonnées initiales ont été créées');
+          }, error => {
+            this.settingInitialMetadata = false;
+            this.notificationService.error('Nous ne parvenons pas à créer les métadonnées initales');
+          }
+        );
+      } else if (obs && obs.length === 0) {
+        this.notificationService.notify('Toutes les métadonnées initiales existent.');
+      }
+    }
   }
 
   // -----
