@@ -45,6 +45,7 @@ import { RepositoryItemModel } from 'tb-tsb-lib';
 import { NominatimObject } from 'tb-geoloc-lib';
 import { flatMap, map } from 'rxjs/operators';
 import { of, Subscription } from 'rxjs';
+import { MatStepper } from '@angular/material';
 
 @Component({
   selector: 'vl-table-import',
@@ -60,7 +61,8 @@ import { of, Subscription } from 'rxjs';
   encapsulation: ViewEncapsulation.None
 })
 export class TableImportComponent implements OnInit, OnDestroy {
-  @ViewChild('hiddenInput') hiddenInput: ElementRef;
+  @ViewChild('hiddenInput') hiddenInput: ElementRef;  // @Todo ng8 and above : add opts {read: ElementRef, static: false}
+  @ViewChild('stepper') stepper: MatStepper;          // @Todo ng8 and above : add opts {read: ElementRef, static: false}
 
   // Global vars
   allowedFileTypes = ['csv'];
@@ -214,6 +216,9 @@ export class TableImportComponent implements OnInit, OnDestroy {
     private userService: UserService) { }
 
   ngOnInit() {
+    // Reset component vars
+    this.resetComponent();
+
     // Get current user
     this.currentUser = this.userService.currentUser.getValue();
     if (this.currentUser == null) {
@@ -245,6 +250,46 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.userSubscription) { this.userSubscription.unsubscribe(); }
+  }
+
+  resetComponent(): void {
+    this.uploadedFile = undefined;
+    this.parsedCsvFile = [];
+    this.rawHeaders = [];
+    this.rawLocation = [];
+    this.rawValidation = [];
+    this.rawBiblio = [];
+    this.rawMetadata = [];
+    this.rawContent = [];
+
+    this.importFile.status = 'pending';
+    this.importFile.messages = [];
+    this.stepNames =        { started: false, currentStatus: 'pending', message: 'Lancez la vérification des noms pour commencer', tip: ''};
+    this.stepPlaces =       { started: false, currentStatus: 'pending', message: 'Lancez la vérification des localisations pour commencer', tip: ''};
+    this.stepAuthorsDates = { started: false, currentStatus: 'pending', message: 'Lancez la vérification des auteurs et des dates pour commencer', tip: ''};
+    this.stepMetadata =     { started: false, currentStatus: 'pending', message: 'Lancez la vérification des métadonnées pour commencer', tip: ''};
+    this.stepBiblio =       { started: false, currentStatus: 'pending', message: 'Lancez la vérification des références bibliographiques pour commencer', tip: '' };
+    this.stepValidation =   { started: false, currentStatus: 'pending', message: 'Lancez la vérification des identifications pour commencer', tip: '' };
+
+    this.taxonomicList = [];
+    this.locationList = [];
+    this.authorList = [];
+    this.dateList = [];
+    this.metadataList = [];
+    this.flatMetadataList = [];
+    this.validationList = { table: { validation: null, sye: []}};
+    this.isEditingTableValidation = false;
+    this.isEditingSyeValidation = false;
+    this.isEditingRelevesValidation = false;
+    this.editingReleves = [];
+    this.biblioList = [];
+
+    try {
+      this.stepper.reset();
+    } catch (error) {
+      //
+    }
+
   }
 
   // **********
@@ -281,7 +326,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
    * @param data array of deleted (local) files
    */
   deletedFiles(data: Array<FileData>): void {
-
+    this.resetComponent();
   }
 
   // ********
