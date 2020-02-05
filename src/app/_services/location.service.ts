@@ -44,6 +44,7 @@ export class LocationService {
 
   getAccuracyByNominatimObject(nominatimObj: NominatimObject): VlAccuracyEnum {
     const _class = nominatimObj.class;
+    const _type = nominatimObj.type;
     let accuracy: VlAccuracyEnum;
 
     switch (_class) {
@@ -66,7 +67,11 @@ export class LocationService {
         accuracy = VlAccuracyEnum.PLACE;
         break;
       case 'place':
-        accuracy = VlAccuracyEnum.PLACE;
+        if (_type && _type === 'city' || _type === 'town' || _type === 'village' || _type === 'hamlet') {
+          accuracy = VlAccuracyEnum.CITY;
+        } else {
+          accuracy = VlAccuracyEnum.PLACE;
+        }
         break;
       default:
         accuracy = VlAccuracyEnum.OTHER;
