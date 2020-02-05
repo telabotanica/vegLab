@@ -30,6 +30,9 @@ h2 {
         }
       }
     }
+    .step-status {
+      margin-top: 15px;
+    }
     &.full-width {
       .step-status {
         display: flex;
@@ -137,6 +140,8 @@ h2 {
     min-width: 400px;
     width: 400px;
     max-width: auto;
+    position: sticky;
+    top: 0;
     &.hidden {
       min-width: 0;
       max-width: 0;

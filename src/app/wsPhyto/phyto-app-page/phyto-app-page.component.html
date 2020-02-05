@@ -3,12 +3,12 @@
     <!--   SPLIT Action -- Table + Info   -->
     <as-split #actionTablePanels unit="percent" direction="horizontal" (dragEnd)="actionPanelDragEnd($event)">
       <!-- ACTION PANEL -->
-      <as-split-area size="40" [order]="0" *ngIf="wsPhytoService.isActionPanelOpened()">
-        <div id="action_panel">
+      <as-split-area size="40" [order]="0" *ngIf="wsPhytoService.isActionPanelOpened()" fxLayout>
+        <div id="action_panel" fxLayout="column" fxFlexFill>
           <div id="close-button-wrapper">
               <button id="close-action-panel" mat-icon-button (click)="panelsSizeOrPositionHaveBeenUpdated(); router.navigate(['/phyto/app'])" matTooltip="Fermer"><mat-icon>close</mat-icon></button>
           </div>
-          <div id="action-panel-router">
+          <div id="action-panel-router" fxFlex>
             <router-outlet></router-outlet>
           </div>
         </div>

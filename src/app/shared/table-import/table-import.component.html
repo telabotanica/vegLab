@@ -1,5 +1,5 @@
 <h2>Importer un tableau</h2>
-<div id="vl-import-table-container" fxLayout style="height: calc(100% - 45px);">
+<div id="vl-import-table-container" fxLayout="column" fxFlexFill> <!-- style="height: calc(100% - 45px);" -->
   <mat-horizontal-stepper #stepper (selectionChange)="stepSelectionChange($event)" labelPosition="bottom" fxLayout="column" fxFlex="100" fxLayoutAlign="start center" [class.full-width]="contentFullWidth">
 
     <!-- Override step icons -->
