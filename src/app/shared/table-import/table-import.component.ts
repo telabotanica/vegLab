@@ -1161,6 +1161,8 @@ export class TableImportComponent implements OnInit, OnDestroy {
     this.stepPlaces.message = 'Recherche des informations géographiques';
     this.stepPlaces.tip = 'Merci de patienter...';
 
+    console.log('LOCATION LIST');
+    console.log(_.clone(this.locationList));
 
     let address: string;
     if (this.locationList.length > 0) {
@@ -1214,16 +1216,12 @@ export class TableImportComponent implements OnInit, OnDestroy {
         // INSEE data and elevation (if needed) will be filled when user will select a place
         } else {
           location.isLoading = true;
-          /*address = (location.place ? location.place : '')
-                      + ' ' + (location.city ? location.city : '')
-                      + ' ' + (location.departement && !(location.place || location.city) ? location.departement : '')
-                      + ' ' + (location.country ? location.country : '');*/
-          address = location.city + ' ' + location.departement + ' ' + location.country; /*(location.city ? location.city : ''
-                      + ' ' + (location.departement ? location.departement : '')
-                      + ' ' + (location.country ? location.country : ''));*/
-          this.geocodingService.geocode(address, 'osm').pipe(
-            map(results => results.filter(r => r.geojson.type.toLowerCase() !== 'multipolygon'))
-          ).subscribe(
+          const country = location.country ? location.country : undefined;
+          const county = location.departement ? location.departement : undefined;
+          const city = location.city ? location.city : undefined;
+          const place = location.place ? location.place : undefined;
+          const limit = 1;
+          this.geocodingService.geocodeSpecific(country, county, city, place, limit).subscribe(
             results => {
               location.isLoading = false;
               if (results && results.length === 1) {
@@ -1233,14 +1231,14 @@ export class TableImportComponent implements OnInit, OnDestroy {
                 for (const result of results) {
                   const readableAddress = this.geocodingService.getReadbleAddress(result, 'osm');
                   location.suggeredLocations.push({nominatimLocation: result, readableAddress});
-                  if (location.city === 'Germigny-l\'Exempt') { console.log(location); }
                 }
               }
             }, error => {
               // @Todo manage error
               console.log(error);
               location.isLoading = false;
-            });
+            }
+          );
         }
       }
     }
