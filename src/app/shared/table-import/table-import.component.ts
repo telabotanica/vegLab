@@ -149,7 +149,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
   setMapAddress: string;
   setMapInputFocus: boolean;
   locationDetailVisibility = false;
-  displayedLocationColumns = ['customColumn2', 'id', 'latitude', 'longitude', 'country', 'departement', 'city', 'place', 'locationAccuracy', 'elevation', 'customColumn'];
+  displayedLocationColumns = ['customColumn2', 'id', 'source', 'locationAccuracy', 'elevation', 'customColumn'];
 
   // Author & date vars
   authorList: Array<{authorUserInput: string, authorSelected: Observer}> = [];
@@ -1091,7 +1091,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
   prepareLocationList(): void {
     if (this.rawHeaders.length > 0 && this.rawLocation.length > 0) {
       for (let k = 0; k < this.rawHeaders[1].length - this.ignoreFirstXCols; k++) {
-        this.locationList.push({id: this.rawHeaders[1][3 + k].toString(), latitude: null, longitude: null, isLatLngInitialSetByUser: false, country: null, departement: null, city: null, place: null, isLoading: false, vlAccuracy: null, suggeredLocations: [], selectedLocation: null, location: null});
+        this.locationList.push({id: this.rawHeaders[1][this.ignoreFirstXCols + k].toString(), latitude: null, longitude: null, isLatLngInitialSetByUser: false, country: null, departement: null, city: null, place: null, isLoading: false, vlAccuracy: null, suggeredLocations: [], selectedLocation: null, location: null});
       }
     }
   }
@@ -1388,7 +1388,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
   }
 
   isLocationComplete(location: Location): boolean {
-    if (location.tbLocation || location.selectedLocation && location.elevation) {
+    if (location.tbLocation || location.selectedLocation && location.elevation !== null) {
       return true;
     } else {
       return false;
@@ -1412,6 +1412,24 @@ export class TableImportComponent implements OnInit, OnDestroy {
     }
   }
 
+  getLocationSource(element: Location): string {
+    if (element == null) { return ''; }
+    const lat = element.latitude;
+    const lon = element.longitude;
+    const country = element.country;
+    const county = element.departement;
+    const city = element.city;
+    const place = element.place;
+
+    if (lat !== null && lon !== null) {
+      return 'Lat/lon';
+    } else if (country !== null || county !== null || city !== null || place !== null) {
+      return 'Adresse';
+    } else {
+      return '?';
+    }
+  }
+
   // ********
   // METADATA
   // ********
@@ -1419,7 +1437,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
   prepareMetadataList(): void {
     if (this.rawHeaders.length > 0 && this.rawMetadata.length > 0) {
       for (let l = 0; l < this.rawHeaders[1].length - this.ignoreFirstXCols; l++) {
-        this.metadataList.push({id: this.rawHeaders[1][3 + l].toString(), metadata: []});
+        this.metadataList.push({id: this.rawHeaders[1][this.ignoreFirstXCols + l].toString(), metadata: []});
       }
     }
   }
@@ -1565,7 +1583,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
         const groupId = this.rawHeaders[0][l + this.ignoreFirstXCols].toString();
         const sye = _.find(this.validationList.table.sye, s => s.id === groupId);
         sye.releves.push({
-          id: this.rawHeaders[1][3 + l].toString(),
+          id: this.rawHeaders[1][this.ignoreFirstXCols + l].toString(),
           validation: {nomen: this.rawValidation[1][l + this.ignoreFirstXCols], repository: this.rawValidation[0][l + this.ignoreFirstXCols], repositoryIsAvailable: false, consolidedValidation: null}
         });
       }

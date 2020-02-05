@@ -331,6 +331,7 @@
             <table mat-table
             [dataSource]="locationList"
             class="location-table">
+              <!-- custom column 2 -->
               <ng-container matColumnDef="customColumn2">
                 <th mat-header-cell *matHeaderCellDef> Statut </th>
                 <td mat-cell *matCellDef="let element">
@@ -344,11 +345,37 @@
                   </div>
                 </td>
               </ng-container>
+
+              <!-- id -->
               <ng-container matColumnDef="id">
                 <th mat-header-cell *matHeaderCellDef> Rel. </th>
                 <td mat-cell *matCellDef="let element"> {{ element.id }} </td>
               </ng-container>
+
+              <!-- id -->
+              <ng-container matColumnDef="source">
+                <th mat-header-cell *matHeaderCellDef> Source </th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="location-source" [ngbPopover]="popLocationSourceContent" [popoverTitle]="popLocationSourceTitle" container="body" triggers="mouseenter:mouseleave">
+                    {{ getLocationSource(element) }}
+                  </div>
+                  <!-- popover template -->
+                  <ng-template #popLocationSourceTitle><b>Source de la localisation</b></ng-template>
+                  <ng-template #popLocationSourceContent>
+                    <div class="metadata-model-popover-content">
+                      <span><b>Latitude : </b>{{ element.latitude ? element.latitude : '-'  }}</span><br />
+                      <span><b>Longitude : </b>{{ element.longitude ? element.longitude : '-' }}</span><br />
+                      <br />
+                      <span><b>Pays : </b>{{ element.country ? element.country : '-' }}</span><br />
+                      <span><b>Département : </b>{{ element.departement ? element.departement : '-' }}</span><br />
+                      <span><b>Commune : </b>{{ element.city ? element.city : '-' }}</span><br />
+                      <span><b>Lieu-dit : </b>{{ element.place ? element.place : '-' }}</span>
+                    </div>
+                  </ng-template>
+                </td>
+              </ng-container>
               
+              <!--
               <ng-container matColumnDef="latitude">
                 <th mat-header-cell *matHeaderCellDef> Lat. </th>
                 <td mat-cell *matCellDef="let element">{{ element.latitude | number:'.0-4' }}</td>
@@ -378,17 +405,20 @@
                 <th mat-header-cell *matHeaderCellDef> Lieu-dit </th>
                 <td mat-cell *matCellDef="let element">{{ element.place }}</td>
               </ng-container>
+              -->
 
+              <!-- location accuracy -->
               <ng-container matColumnDef="locationAccuracy">
                 <th mat-header-cell *matHeaderCellDef> Précision </th>
                 <td mat-cell *matCellDef="let element">{{ element.vlAccuracy || '?' }}</td>
               </ng-container>
 
+              <!-- elevation -->
               <ng-container matColumnDef="elevation">
                 <th mat-header-cell *matHeaderCellDef> Altitude </th>
                 <td mat-cell *matCellDef="let element">
-                  <div *ngIf="element.elevation">{{ element.elevation }}<sup *ngIf="element.isElevationEstimated" matTooltip="Valeur estimée">*</sup></div>
-                  <div *ngIf="!element.elevation">
+                  <div *ngIf="element.elevation !== null">{{ element.elevation }}<sup *ngIf="element.isElevationEstimated" matTooltip="Valeur estimée">*</sup></div>
+                  <div *ngIf="element.elevation == null">
                     <button mat-icon-button (click)="renewElevation(element)">
                       <mat-icon>autorenew</mat-icon>
                     </button>
@@ -397,6 +427,7 @@
                 </td>
               </ng-container>
 
+              <!-- custom column -->
               <ng-container matColumnDef="customColumn">
                 <th mat-header-cell *matHeaderCellDef> Vérif. </th>
                 <td mat-cell *matCellDef="let element">
