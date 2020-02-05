@@ -2247,7 +2247,8 @@ export class TableImportComponent implements OnInit, OnDestroy {
         // get occurrences
         const occurrences = this.tableService.getChildOccurrences(releveToBind);
         for (const occ of occurrences) {
-          this.bindLocationToReleve(occ, location);
+          // Don't bind location to idiotaxa
+          // this.bindLocationToReleve(occ, location);
         }
       }
     }
