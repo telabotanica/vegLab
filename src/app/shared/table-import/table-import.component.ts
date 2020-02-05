@@ -1161,10 +1161,6 @@ export class TableImportComponent implements OnInit, OnDestroy {
     this.stepPlaces.message = 'Recherche des informations géographiques';
     this.stepPlaces.tip = 'Merci de patienter...';
 
-    console.log('LOCATION LIST');
-    console.log(_.clone(this.locationList));
-
-    let address: string;
     if (this.locationList.length > 0) {
       for (const location of this.locationList) {
         // GET location by lat/long coord (reverse geocoding)
