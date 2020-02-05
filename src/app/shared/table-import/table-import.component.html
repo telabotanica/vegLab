@@ -82,12 +82,7 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <mat-form-field>
-            <mat-select (selectionChange)="mainRepositoryChange($event)" placeholder="Référentiel principal" value="bdtfx">
-              <mat-option *ngFor="let repo of availableRepository" [value]="repo.id">{{ repo.label }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <button mat-button (click)="setTaxonomicList()">Lancer la vérification des noms</button>
+          <button mat-button (click)="setTaxonomicList()" [disabled]="stepNames.started">Lancer la vérification des noms</button>
         </div>
       </div>
 
@@ -150,7 +145,7 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <button mat-button (click)="setAuthorDateList()">Lancer la vérification des auteurs et des dates</button>
+          <button mat-button (click)="setAuthorDateList()" [disabled]="stepAuthorsDates.started">Lancer la vérification des auteurs et des dates</button>
         </div>
       </div>
 
@@ -301,7 +296,7 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <button mat-button (click)="setLocationList()">Lancer la vérification des localisations</button>
+          <button mat-button (click)="setLocationList()" [disabled]="stepPlaces.started">Lancer la vérification des localisations</button>
         </div>
       </div>
       
@@ -374,38 +369,6 @@
                   </ng-template>
                 </td>
               </ng-container>
-              
-              <!--
-              <ng-container matColumnDef="latitude">
-                <th mat-header-cell *matHeaderCellDef> Lat. </th>
-                <td mat-cell *matCellDef="let element">{{ element.latitude | number:'.0-4' }}</td>
-              </ng-container>
-              
-              <ng-container matColumnDef="longitude">
-                <th mat-header-cell *matHeaderCellDef> Lon. </th>
-                <td mat-cell *matCellDef="let element">{{ element.longitude | number:'.0-4' }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="country">
-                <th mat-header-cell *matHeaderCellDef> Pays </th>
-                <td mat-cell *matCellDef="let element">{{ element.country }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="departement">
-                <th mat-header-cell *matHeaderCellDef> Dép. </th>
-                <td mat-cell *matCellDef="let element">{{ element.departement }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="city">
-                <th mat-header-cell *matHeaderCellDef> Ville </th>
-                <td mat-cell *matCellDef="let element">{{ element.city }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="place">
-                <th mat-header-cell *matHeaderCellDef> Lieu-dit </th>
-                <td mat-cell *matCellDef="let element">{{ element.place }}</td>
-              </ng-container>
-              -->
 
               <!-- location accuracy -->
               <ng-container matColumnDef="locationAccuracy">
@@ -498,7 +461,7 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <button mat-button (click)="setMetadataList()">Lancer la vérification des métadonnées</button>
+          <button mat-button (click)="setMetadataList()" [disabled]="stepMetadata.started">Lancer la vérification des métadonnées</button>
         </div>
       </div>
 
@@ -639,7 +602,7 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <button mat-button (click)="setBiblioList()">Lancer la vérification des références bibliographique</button>
+          <button mat-button (click)="setBiblioList()" [disabled]="stepBiblio.started">Lancer la vérification des références bibliographique</button>
         </div>
       </div>
 
@@ -753,7 +716,7 @@
 
         <div class="step-ahead">
           <div class="inline-form">
-            <button mat-button (click)="setValidationList()">Lancer la vérification des identifications</button>
+            <button mat-button (click)="setValidationList()" [disabled]="stepValidation.started">Lancer la vérification des identifications</button>
           </div>
         </div>
 
@@ -813,13 +776,11 @@
                 <div class="infos"></div>
                 <div class="content">
                   <span><b>{{ sye.releves?.length }} relevé<span *ngIf="sye.releves?.length > 1">s</span></b></span>
-                  <div *ngIf="checkRelevesHaveConsolidedValidation(sye.releves) && checkRelevesValidationConsistency(sye.releves)">avec la même identification : </div>
-                  <div *ngIf="!checkRelevesHaveConsolidedValidation(sye.releves) || !checkRelevesValidationConsistency(sye.releves)">avec des identifications différentes : </div>
                   <ul class="releves-names">
                     <li *ngFor="let cVal of getUniqConsolidedValidation(sye.releves)" title="{{ cVal.name }} {{ cVal.author ? cVal.author : '' }}">
                       {{ cVal.name }}
                     </li>
-                    <li *ngIf="countUnconsolidedValidation(sye.releves) > 0">et {{ countUnconsolidedValidation(sye.releves) }} non identifié(s)</li>
+                    <li *ngIf="countUnconsolidedValidation(sye.releves) > 0">{{ countUnconsolidedValidation(sye.releves) }} non identifié(s)</li>
                   </ul>
                 </div>
                 <div class="actions releve">

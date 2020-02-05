@@ -920,9 +920,14 @@ export class TableImportComponent implements OnInit, OnDestroy {
   }
 
   setAuthorDateList() {
+    this.stepAuthorsDates.currentStatus = 'complete';
+    this.stepAuthorsDates.started = true;
+
     this.prepareAuthorList();
     this.setDateList();
     this.authorList = _.clone(this.authorList);
+
+    this.checkAuthorDateStatus();
   }
 
   isAuthorComplete(value: {authorUserInput: string, noResult?: boolean, noResultFor?: string, isAddingObserver?: boolean, authorSelected?: Observer}): boolean {
@@ -933,13 +938,14 @@ export class TableImportComponent implements OnInit, OnDestroy {
     if (author && observer) {
       author.authorSelected = observer;
       this.expandedElement = null;
+      this.checkAuthorDateStatus();
     }
   }
 
   noResultForAuthorStr(author: {authorUserInput: string, noResult?: boolean, noResultFor?: string, isAddingObserver?: boolean, authorSelected?: Observer}, str: string): void {
     author.noResult = true;
     author.noResultFor = str;
-    console.log(`should add ${str}`);
+    this.checkAuthorDateStatus();
   }
 
   createAndLinkObserver(author: {authorUserInput: string, noResult?: boolean, noResultFor?: string, isAddingObserver?: boolean, authorSelected?: Observer}, newObserver: string): void {
@@ -956,6 +962,29 @@ export class TableImportComponent implements OnInit, OnDestroy {
         this.notificationService.error(`Nous ne parvenons pas à ajouter le nouvel observateur ${newObserver}.`);
       }
     );
+  }
+
+  checkAuthorDateStatus() {
+    let globalStatus = '';
+    for (const author of this.authorList) {
+      if (author.authorSelected == null) {
+        globalStatus = 'warning';
+      }
+    }
+    for (const date of this.dateList) {
+      if (date.dateConsolided == null) {
+        globalStatus = 'warning';
+      }
+    }
+    if (globalStatus === 'warning') {
+      this.stepAuthorsDates.currentStatus = 'warning';
+      this.stepAuthorsDates.message = 'Certain(e)s auteurs ou dates ne sont pas valides';
+      this.stepAuthorsDates.tip = 'Essayez de valider tous les auteurs et toutes les dates. Vous pouvez continuer avec des données manquantes';
+    } else {
+      this.stepAuthorsDates.currentStatus = 'complete';
+      this.stepAuthorsDates.message = 'Parfait !';
+      this.stepAuthorsDates.tip = 'Vous pouvez passer à l\'étape suivante';
+    }
   }
 
   // ****
@@ -1096,13 +1125,14 @@ export class TableImportComponent implements OnInit, OnDestroy {
     if (value && biblio) {
       value.biblioSelected = biblio;
       this.expandedBiblioElement = null;
+      this.checkBiblioStatus();
     }
   }
 
   noResultForBiblioStr(biblio: {biblioUserInput: string, noResult?: boolean, noResultFor?: string, isAddingBiblio?: boolean, biblioSelected?: Biblio}, str: string): void {
     biblio.noResult = true;
     biblio.noResultFor = str;
-    console.log(`should add biblio ${str}`);
+    this.checkBiblioStatus();
   }
 
   createAndLinkBiblio(biblio: {biblioUserInput: string, noResult?: boolean, noResultFor?: string, isAddingBiblio?: boolean, biblioSelected?: Biblio}, newBiblio: string): void {
@@ -1119,6 +1149,24 @@ export class TableImportComponent implements OnInit, OnDestroy {
         this.notificationService.error(`Nous ne parvenons pas à ajouter la nouvelle référence bibliographique ${newBiblio}.`);
       }
     );
+  }
+
+  checkBiblioStatus() {
+    let globalStatus = '';
+    for (const biblio of this.biblioList) {
+      if (biblio.biblioSelected == null) {
+        globalStatus = 'warning';
+      }
+    }
+    if (globalStatus === 'warning') {
+      this.stepBiblio.currentStatus = 'warning';
+      this.stepBiblio.message = 'Certaines données biblio. ne sont pas valides';
+      this.stepBiblio.tip = 'Essayez de valider toutes les références. Vous pouvez continuer avec des références manquantes';
+    } else {
+      this.stepBiblio.currentStatus = 'complete';
+      this.stepBiblio.message = 'Parfait !';
+      this.stepBiblio.tip = 'Vous pouvez passer à l\'étape suivante';
+    }
   }
 
   // ********
@@ -1696,20 +1744,24 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
     // API call
     let i = 0;
-    for (const ucv of uniqConsolidedValues) {
-      this.tsbRepositoryService.findDataByIdNomen(ucv.repository, ucv.nomen).subscribe(
-        result => {
-          i++;
-          result[0].repository = ucv.repository; // @Todo fix TSB 'findDataByIdNomen' service : it's not returning 'repository' value all the time !!
-          ucv.consolidedValue = result[0];
-          if (i === uniqConsolidedValues.length) {
-            this.applyConsolidation(uniqConsolidedValues);
-            this.consolidSyeAndTableValidation();
-            this.updateStepValidationStatus();
-          }
-        },
-        error => console.log(error)
-      );
+    if (uniqConsolidedValues !== null && uniqConsolidedValues.length > 0) {
+      for (const ucv of uniqConsolidedValues) {
+        this.tsbRepositoryService.findDataByIdNomen(ucv.repository, ucv.nomen).subscribe(
+          result => {
+            i++;
+            result[0].repository = ucv.repository; // @Todo fix TSB 'findDataByIdNomen' service : it's not returning 'repository' value all the time !!
+            ucv.consolidedValue = result[0];
+            if (i === uniqConsolidedValues.length) {
+              this.applyConsolidation(uniqConsolidedValues);
+              this.consolidSyeAndTableValidation();
+              this.updateStepValidationStatus();
+            }
+          },
+          error => console.log(error)
+        );
+      }
+    } else {
+      this.updateStepValidationStatus();
     }
   }
 
