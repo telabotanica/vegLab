@@ -67,7 +67,6 @@
             </div>
             <div class="actions">
               <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
-              -
             </div>
           </div>
         </div>
@@ -898,8 +897,6 @@
             </div>
           </div>
         </div>
-
-        <div (click)="setTable()">OKKKKKKK</div>
         
         <div class="step-status">
           <!-- Status-->
@@ -923,4 +920,8 @@
     </mat-step>
   </mat-horizontal-stepper>
 
+  <div class="action-table-finish" fxLayout="row" fxLayoutAlign="center center">
+    <button mat-flat-button color="primary" [disabled]="!allStepsCompleted()" (click)="setTable()">Afficher le tableau</button>
+    <button mat-flat-button color="primary" [disabled]="!allStepsCompleted()">Sauvegarder le tableau</button>
+  </div>
 </div>

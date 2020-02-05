@@ -1152,6 +1152,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
   }
 
   checkBiblioStatus() {
+    this.stepBiblio.started = true;
     let globalStatus = '';
     for (const biblio of this.biblioList) {
       if (biblio.biblioSelected == null) {
@@ -1250,6 +1251,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
   searchPlaces(): void {
 
+    this.stepPlaces.started = true;
     this.stepPlaces.currentStatus = 'pending';
     this.stepPlaces.message = 'Recherche des informations géographiques';
     this.stepPlaces.tip = 'Merci de patienter...';
@@ -2692,10 +2694,19 @@ export class TableImportComponent implements OnInit, OnDestroy {
   // STEPPER
   // *******
   stepSelectionChange(stepperSelection: StepperSelectionEvent): void {
-    console.log(stepperSelection);
     if (stepperSelection.selectedIndex === this.STEPS.places.index) {
       this.contentFullWidth = true;
     } else { this.contentFullWidth = false; }
+  }
+
+  allStepsCompleted(): boolean {
+    return this.importFile.status === 'complete'
+           && this.stepNames.started
+           && this.stepPlaces.started
+           && this.stepAuthorsDates.started
+           && this.stepMetadata.started
+           && this.stepBiblio.started
+           && this.stepValidation.started;
   }
 
 
