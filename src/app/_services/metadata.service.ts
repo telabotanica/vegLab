@@ -33,10 +33,10 @@ export class MetadataService {
     );
   }
 
-  getMetadataByFieldId(fieldId: string): ExtendedFieldModel {
+  getMetadataByFieldId(fieldId: string, refreshList = true): ExtendedFieldModel {
     if (fieldId !== null) {
       // refresh meta list from local storage
-      this.refreshMetadataList();
+      if (refreshList) { this.refreshMetadataList(); }
       const metaList = this.metadataList.getValue();
       if (metaList !== null && metaList.length > 0) {
         const meta = _.find(metaList, ml => ml.fieldId === fieldId);

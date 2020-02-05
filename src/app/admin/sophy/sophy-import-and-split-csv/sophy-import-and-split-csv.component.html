@@ -21,7 +21,7 @@
   </div>
   <div fxLayout="row" fxLayoutAlign="center center">
     <div *ngIf="tableViews.length > 0">
-      <button mat-button (click)="zipAndDownload()" [disabled]="zippingFile">
+      <button mat-button (click)="zipAndDownload()" [class.spinner]="zippingFile" [disabled]="zippingFile">
         <span *ngIf="!zippingFile">Télécharger les tableaux consolidés</span>
         <span *ngIf="zippingFile">Veuillez patienter</span>
       </button>
