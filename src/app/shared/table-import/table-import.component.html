@@ -1,6 +1,11 @@
 <h2>Importer un tableau</h2>
-<div id="vl-import-table-container" fxLayout="column" fxFlexFill> <!-- style="height: calc(100% - 45px);" -->
-  <mat-horizontal-stepper #stepper (selectionChange)="stepSelectionChange($event)" labelPosition="bottom" fxLayout="column" fxFlex="100" fxLayoutAlign="start center" [class.full-width]="contentFullWidth">
+<div id="vl-import-table-container" fxLayout="column" fxFlexFill>
+  <mat-horizontal-stepper #stepper (selectionChange)="stepSelectionChange($event)"
+                                   labelPosition="bottom"
+                                   fxLayout="column"
+                                   fxFlex="calc(100% - 55px)"
+                                   fxLayoutAlign="start center"
+                                   [class.full-width]="contentFullWidth"> <!-- -55 px : height of .action-table-finish div -->
 
     <!-- Override step icons -->
     <ng-template matStepperIcon="edit">
