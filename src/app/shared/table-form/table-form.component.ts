@@ -345,7 +345,7 @@ export class TableFormComponent implements OnInit, OnDestroy {
 
   bindForm(table: Table) {
     this.tableForm.controls.createdAt.setValue(table.createdAt, {emitEvent: false});
-    this.tableForm.controls.createdBy.setValue(table.createdBy, {emitEvent: false});
+    // this.tableForm.controls.createdBy.setValue(table.createdBy, {emitEvent: false});
     this.tableForm.controls.isDiagnosis.setValue(table.isDiagnosis, {emitEvent: false});
     this.tableForm.controls.title.setValue(table.title, {emitEvent: false});
     this.tableForm.controls.description.setValue(table.description, {emitEvent: false});
