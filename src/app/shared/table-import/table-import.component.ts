@@ -136,6 +136,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
   tbRepositoriesConfigVegetation = environment.tbRepositoriesConfigVegetation;
   availableRepository: Array<any> = [];
   taxonomicList: Array<Taxo> = [];
+  displayedTaxonomicColumns = ['customColumn1', 'repository', 'name'];
   isLoadingTaxonomicList = false;
   isEditingTaxon = false;
   resetEditTaxonBox = false;
@@ -891,12 +892,22 @@ export class TableImportComponent implements OnInit, OnDestroy {
       // At less 1 item with 'other/unknown' repository
       this.stepNames.currentStatus = 'warning';
       this.stepNames.message = 'Certains noms ne sont pas liés à un référentiel';
-      this.stepNames.tip = 'Essayez de lier le plus de noms possible à un référentiel. Continuez si certains noms ne sont pas disponibles dans les référentiels';
+      this.stepNames.tip = 'Essayez de lier le plus de noms possible à un référentiel dans votre fichier d\'origine. Continuez si certains noms ne sont pas disponibles dans les référentiels';
     } else {
       // Every item has a repository
       this.stepNames.currentStatus = 'complete';
       this.stepNames.message = 'Parfait !';
       this.stepNames.tip = 'Vous pouvez passer à l\'étape suivante';
+    }
+  }
+
+  getTaxoName(taxo: Taxo): string {
+    if (taxo.validation && taxo.validation.validName) {
+      return taxo.validation.validName;
+    } else if (taxo.validation && taxo.validation.inputName) {
+      return taxo.validation.inputName;
+    } else {
+      return '?';
     }
   }
 

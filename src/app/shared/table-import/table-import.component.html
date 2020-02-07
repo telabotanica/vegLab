@@ -94,31 +94,65 @@
         <div style="width: 0; height: 0; overflow: hidden;"><input #hiddenInput></div>
         <div *ngIf="isLoadingTaxonomicList">Vérification des noms...</div>
         <div *ngIf="!isLoadingTaxonomicList && taxonomicList.length > 0">
-          <div *ngFor="let taxo of taxonomicList" class="name-validation-box">
-            <div class="status">
-              <mat-icon *ngIf="taxo.rim && taxo.rim.repository !== 'otherunknown'"
-                class="status-icon valid"
-                [ngbPopover]="popNameValidationContentValid" [popoverTitle]="popNameValidationTitleValid" container="body" triggers="mouseenter:mouseleave">check</mat-icon>
-              <mat-icon *ngIf="!taxo.rim || taxo.rim && taxo.rim.repository === 'otherunknown'"
-                class="status-icon warning"
-                [ngbPopover]="popNameValidationContentWarning" [popoverTitle]="popNameValidationTitleWarning" container="body" triggers="mouseenter:mouseleave">priority_high</mat-icon>
-            </div>
-            <div class="tsb-search-box">
-              <tb-tsb-search-box
-                [tbRepositoriesConfig]="tbRepositoriesConfig"
-                [defaultRepository]="taxo.validation.repository"
-                [startWithValue]="taxo.rim"
-                [autoResetWhenSelected]="false"
-                (newData)="updateTaxon(taxo, $event)">
-              </tb-tsb-search-box>
-            </div>
+          
+          <table mat-table
+            *ngIf="taxonomicList.length > 0"
+            [dataSource]="taxonomicList"
+            multiTemplateDataRows
+            class="taxonomic-table">
+            <ng-container matColumnDef="customColumn1">
+              <th mat-header-cell *matHeaderCellDef style="width: 50px;"> Statut </th>
+              <td mat-cell *matCellDef="let element">
+                <div class="status">
+                  <mat-icon *ngIf="element.rim && element.rim.repository !== 'otherunknown'"
+                    class="status-icon valid"
+                    [ngbPopover]="popNameValidationContentValid" [popoverTitle]="popNameValidationTitleValid" container="body" triggers="mouseenter:mouseleave">check</mat-icon>
+                  <mat-icon *ngIf="!element.rim || element.rim && element.rim.repository === 'otherunknown'"
+                    class="status-icon warning"
+                    [ngbPopover]="popNameValidationContentWarning" [popoverTitle]="popNameValidationTitleWarning" container="body" triggers="mouseenter:mouseleave">priority_high</mat-icon>
+                </div>
+                <!-- popover editing releves templates -->
+                <ng-template #popNameValidationTitleValid>Taxon</ng-template>
+                <ng-template #popNameValidationContentValid>Le taxon a pu être identifié dans le référentiel "{{ element.rim.repository }}"</ng-template>
+                <ng-template #popNameValidationTitleWarning>Taxon</ng-template>
+                <ng-template #popNameValidationContentWarning>Le taxon n'a pas pu être identifié dans un référentiel</ng-template>
+              </td>
+            </ng-container>
 
-            <!-- popover editing releves templates -->
-            <ng-template #popNameValidationTitleValid>Taxon</ng-template>
-            <ng-template #popNameValidationContentValid>Le taxon a pu être identifié dans le référentiel "{{ taxo.rim.repository }}"</ng-template>
-            <ng-template #popNameValidationTitleWarning>Taxon</ng-template>
-            <ng-template #popNameValidationContentWarning>Le taxon n'a pas pu être identifié dans un référentiel</ng-template>
+            <ng-container matColumnDef="repository">
+              <th mat-header-cell *matHeaderCellDef style="min-width: 100px;"> Référentiel </th>
+              <td mat-cell *matCellDef="let element">{{ element.rim.repository }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef style="width: 100%;"> Nom </th>
+              <td mat-cell *matCellDef="let element" class="name-value" title="{{ getTaxoName(element) }}">
+                {{ getTaxoName(element) }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedTaxonomicColumns"></tr>
+            <tr mat-row *matRowDef="let element; columns: displayedTaxonomicColumns;"></tr>
+          </table>
+
+          <!-- Uncomment to use tsb-search-box item (editable taxa)
+          <div class="tsb-search-box">
+            <tb-tsb-search-box
+              [tbRepositoriesConfig]="tbRepositoriesConfig"
+              [defaultRepository]="taxo.validation.repository"
+              [startWithValue]="taxo.rim"
+              [autoResetWhenSelected]="false"
+              (newData)="updateTaxon(taxo, $event)">
+            </tb-tsb-search-box>
           </div>
+          -->
+          <!-- popover editing releves templates -->
+          <!--<ng-template #popNameValidationTitleValid>Taxon</ng-template>
+          <ng-template #popNameValidationContentValid>Le taxon a pu être identifié dans le référentiel "{{ taxo.rim.repository }}"</ng-template>
+          <ng-template #popNameValidationTitleWarning>Taxon</ng-template>
+          <ng-template #popNameValidationContentWarning>Le taxon n'a pas pu être identifié dans un référentiel</ng-template>
+          -->
+
         </div>
       </div>
 

@@ -65,6 +65,14 @@ h2 {
     text-align: center;
   }
 
+  .taxonomic-table {
+    td.name-value {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
   .author-table {
     width: 100%;
     tr {
