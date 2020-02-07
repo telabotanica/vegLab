@@ -1,5 +1,5 @@
 <form [formGroup]="tableForm">
-  <h1>Enregistrer le tableau</h1>
+  <h1 *ngIf="title">{{ title }}</h1>
 
   <div class="form-items">
     <!-- Title -->

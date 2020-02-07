@@ -86,7 +86,7 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <button mat-button (click)="setTaxonomicList()" [disabled]="stepNames.started">Lancer la vérification des noms</button>
+          <button mat-button (click)="setTaxonomicList()" [disabled]="importFile.status !== 'complete' || stepNames.started">Lancer la vérification des noms</button>
         </div>
       </div>
 
@@ -149,7 +149,7 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <button mat-button (click)="setAuthorDateList()" [disabled]="stepAuthorsDates.started">Lancer la vérification des auteurs et des dates</button>
+          <button mat-button (click)="setAuthorDateList()" [disabled]="importFile.status !== 'complete' || stepAuthorsDates.started">Lancer la vérification des auteurs et des dates</button>
         </div>
       </div>
 
@@ -300,12 +300,12 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <button mat-button (click)="setLocationList()" [disabled]="stepPlaces.started">Lancer la vérification des localisations</button>
+          <button mat-button (click)="setLocationList()" [disabled]="importFile.status !== 'complete' || stepPlaces.started">Lancer la vérification des localisations</button>
         </div>
       </div>
       
       <div fxFlex="100" fxFill class="step-content">       
-        <div fxLayout="row" fxLayoutAlign="center start">
+        <div *ngIf="locationList.length > 0" fxLayout="row" fxLayoutAlign="center start">
           <!-- map -->
           <div class="locationMap">
             <tb-geoloc-map
@@ -465,7 +465,7 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <button mat-button (click)="setMetadataList()" [disabled]="stepMetadata.started">Lancer la vérification des métadonnées</button>
+          <button mat-button (click)="setMetadataList()" [disabled]="importFile.status !== 'complete' || stepMetadata.started">Lancer la vérification des métadonnées</button>
         </div>
       </div>
 
@@ -606,7 +606,7 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <button mat-button (click)="setBiblioList()" [disabled]="stepBiblio.started">Lancer la vérification des références bibliographique</button>
+          <button mat-button (click)="setBiblioList()" [disabled]="importFile.status !== 'complete' || stepBiblio.started">Lancer la vérification des références bibliographique</button>
         </div>
       </div>
 
@@ -720,7 +720,7 @@
 
         <div class="step-ahead">
           <div class="inline-form">
-            <button mat-button (click)="setValidationList()" [disabled]="stepValidation.started">Lancer la vérification des identifications</button>
+            <button mat-button (click)="setValidationList()" [disabled]="importFile.status !== 'complete' || stepValidation.started">Lancer la vérification des identifications</button>
           </div>
         </div>
 
@@ -930,14 +930,14 @@
     <mat-step fxFlex="100" fxLayout="column">
       <ng-template matStepLabel>Enregistrer</ng-template>
 
-      <div class="step-content">
-        <vl-table-form></vl-table-form>
+      <div class="step-content save" fxLayout="column">
+        <h3>Prévisualiser le tableau</h3>
+        <div class="preview-table" fxLayout="row" fxLayoutAlign="center center">
+          <button mat-button color="primary" (click)="setTable()" [disabled]="!allStepsCompleted()">Afficher le tableau</button>
+        </div>
+        <h3>Enregistrer le tableau</h3>
+        <vl-table-form [title]="null"></vl-table-form>
       </div>
     </mat-step>
   </mat-horizontal-stepper>
-
-  <div class="action-table-finish" fxLayout="row" fxLayoutAlign="center center">
-    <button mat-flat-button color="primary" [disabled]="!allStepsCompleted()" (click)="setTable()">Afficher le tableau</button>
-    <button mat-flat-button color="primary" [disabled]="!allStepsCompleted()">Sauvegarder le tableau</button>
-  </div>
 </div>

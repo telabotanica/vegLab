@@ -351,14 +351,6 @@ h2 {
       }
     }
   }
-
-  .action-table-finish {
-    margin-bottom: 20px;
-    button {
-      margin-right: 5px;
-      margin-left: 5px;
-    }
-  }
   
 }
 
@@ -498,6 +490,15 @@ mat-icon {
 
 .step-content {
   overflow: overlay;
+  &.save {
+    h3 {
+      text-align: center;
+      font-size: 1.5em;
+    }
+    .preview-table {
+      margin-bottom: 50px;
+    }
+  }
 }
 
 .mat-horizontal-content-container{

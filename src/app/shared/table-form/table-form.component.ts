@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { UserService } from 'src/app/_services/user.service';
@@ -25,6 +25,8 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./table-form.component.scss']
 })
 export class TableFormComponent implements OnInit, OnDestroy {
+  @Input() title = 'Enregistrer le tableau';
+
   // ---
   // VAR
   // ---
