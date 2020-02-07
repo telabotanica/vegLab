@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subscription, Observable, Subscriber } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 
+import { AppConfigService } from 'src/app/_config/app-config.service';
 import { UserService } from 'src/app/_services/user.service';
 import { NotificationService } from '../../_services/notification.service';
 import { MetadataService } from 'src/app/_services/metadata.service';
@@ -93,6 +94,7 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
   // CODE
   // ----
   constructor(
+    private appConfig: AppConfigService,
     private userService: UserService,
     private notificationService: NotificationService,
     private metadataService: MetadataService,
@@ -103,6 +105,9 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
     private locationService: LocationService) { }
 
   ngOnInit() {
+    // App config
+    setTimeout(() => { this.appConfig.setTableEditable(); }); // Avoid 'ExpressionChangedAfterItHasBeenCheckedError'
+
     // Get current user
     this.currentUser = this.userService.currentUser.getValue();
     if (this.currentUser == null) {

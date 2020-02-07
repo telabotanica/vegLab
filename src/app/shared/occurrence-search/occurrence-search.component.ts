@@ -16,6 +16,7 @@ import { environment } from 'src/environments/environment';
 
 import { FieldDataType } from 'src/app/_enums/field-data-type-enum';
 
+import { AppConfigService } from 'src/app/_config/app-config.service';
 import { LayerService } from 'src/app/_services/layer.service';
 import { MetadataService } from 'src/app/_services/metadata.service';
 import { OccurrenceService } from 'src/app/_services/occurrence.service';
@@ -158,6 +159,7 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
   displayResults: 'cards' | 'inline' = 'inline';
 
   constructor(
+    private appConfig: AppConfigService,
     private http: HttpClient,
     private zone: NgZone,
     private layerService: LayerService,
@@ -169,6 +171,9 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
     private notificationService: NotificationService) { }
 
   ngOnInit() {
+    // App config
+    setTimeout(() => { this.appConfig.setTableEditable(); }); // Avoid 'ExpressionChangedAfterItHasBeenCheckedError'
+
     // Get current user
     this.currentUser = this.userService.currentUser.getValue();
     if (this.currentUser == null) {

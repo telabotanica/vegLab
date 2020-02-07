@@ -21,8 +21,13 @@
             <div class="progress-bar-container" *ngIf="tableService.isLoadingData | async">
               <mat-progress-bar mode="indeterminate"></mat-progress-bar>
             </div>
-            <div class="table-area" #tableArea>
-              <vl-table></vl-table>
+            <div class="table-area-wrapper" #tableArea>
+              <div class="table-area" *ngIf="_tableView === 'view'">
+                <vl-table-simple></vl-table-simple>
+              </div>
+              <div class="table-area" *ngIf="_tableView === 'edit'">
+                <vl-table></vl-table>
+              </div>
             </div>
             <div *ngIf="!infoPanelActive" class="info-panel-button">
               <button mat-mini-fab color="primary" (click)="openInfoPanel()">

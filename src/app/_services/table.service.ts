@@ -41,7 +41,7 @@ export class TableService {
   private currentTable: Table;
   public currentTableOccurrencesIds = new BehaviorSubject<Array<number>>([]);
   public currentTableChanged: EventEmitter<boolean> = new EventEmitter<boolean>();
-  public tableDataView: EventEmitter<Array<TableRow>> = new EventEmitter<Array<TableRow>>();
+  public tableDataView: BehaviorSubject<Array<TableRow>> = new BehaviorSubject<Array<TableRow>>(null);
   public groupsPositions: Array<GroupPositions> = [];
   public columnsPositions: Array<ColumnPositions> = [];
   public isSavingCurrentTable = false;

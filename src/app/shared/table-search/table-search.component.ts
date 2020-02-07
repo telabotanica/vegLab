@@ -3,6 +3,7 @@ import { CdkDragDrop, transferArrayItem, moveItemInArray } from '@angular/cdk/dr
 import { trigger, transition, style, animate } from '@angular/animations';
 import { PageEvent, MatSidenav } from '@angular/material';
 
+import { AppConfigService } from 'src/app/_config/app-config.service';
 import { TableService } from 'src/app/_services/table.service';
 import { NotificationService } from 'src/app/_services/notification.service';
 import { UserService } from 'src/app/_services/user.service';
@@ -70,11 +71,15 @@ export class TableSearchComponent implements OnInit, OnDestroy {
   currentUser: UserModel = null;
   currentUserChangeSubscription: Subscription;
 
-  constructor(private tableService: TableService,
+  constructor(private appConfig: AppConfigService,
+              private tableService: TableService,
               private notificationService: NotificationService,
               private userService: UserService) { }
 
   ngOnInit() {
+    // App config
+    setTimeout(() => { this.appConfig.setTableEditable(); }); // Avoid 'ExpressionChangedAfterItHasBeenCheckedError'
+
     // get current table id
     let ct = this.tableService.getCurrentTable();
     this.currentTableId = ct && ct.id ? ct.id : null;

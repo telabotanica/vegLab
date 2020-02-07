@@ -79,12 +79,12 @@ export class TableFormComponent implements OnInit, OnDestroy {
 
     // if current table has id -> bind form
     const ct = this.tableService.getCurrentTable();
-    if (ct.id) {
+    if (!this.tableService.isTableEmpty(ct) && ct.id) {
       this.bindForm(ct);
     }
 
     // if current table has pdf file
-    if (ct.pdf) {
+    if (!this.tableService.isTableEmpty(ct) && ct.pdf) {
       this.currentTablePdfFiles.push(ct.pdf);
     }
   }

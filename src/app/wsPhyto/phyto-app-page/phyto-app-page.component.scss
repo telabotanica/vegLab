@@ -41,10 +41,15 @@
       .progress-bar-container {
         min-height: 4px;
       }
-      .table-area {
+      .table-area-wrapper {
         width: 100%;
         height: 100%;
+        .table-area {
+          width: 100%;
+          height: 100%;
+        }
       }
+      
     }
   }
   

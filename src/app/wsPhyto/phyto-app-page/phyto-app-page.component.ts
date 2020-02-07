@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, EventEmitter, ElementRef, ViewChild } fro
 
 import { wsPhytoMenu as WSPMenu } from '../../_menus/main-menus';
 
+import { AppConfigService } from 'src/app/_config/app-config.service';
 import { MenuService } from '../../_services/menu.service';
 import { WorkspaceService } from 'src/app/_services/workspace.service';
 import { WsPhytoService, WsPhytoPanels } from '../_services/ws-phyto.service';
@@ -19,6 +20,10 @@ import { Subscription } from 'rxjs';
 export class PhytoAppPageComponent implements OnInit, OnDestroy {
   @ViewChild('tableArea') tableAreaDomElement: ElementRef;
 
+  // App config cars
+  _tableView: string;
+  tableViewSubscription: Subscription;
+
   // Panels vars
   infoPanelActive = true;
   infoAreaActive = false;
@@ -31,7 +36,8 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
   actionPanelOpenCloseSubscription: Subscription;
 
 
-  constructor(private menuService: MenuService,
+  constructor(private appConfig: AppConfigService,
+              private menuService: MenuService,
               private tableService: TableService,
               private wsService: WorkspaceService,
               private wsPhytoService: WsPhytoService,
@@ -39,8 +45,16 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
               public router: Router) { }
 
   ngOnInit() {
+    // Ws config
     this.wsService.currentWS.next('phyto');
+
+    // Menu config
     this.menuService.setMenu(WSPMenu);
+
+    // App config
+    this.tableViewSubscription = this.appConfig.tableView.subscribe(value => {
+      if (this._tableView !== value) { this._tableView = value; }
+    });
 
     // Subscribe to action panel open / close
     this.actionPanelOpenCloseSubscription = this.wsPhytoService.panels.subscribe((panels: WsPhytoPanels) => {
@@ -51,6 +65,7 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.actionPanelOpenCloseSubscription) { this.actionPanelOpenCloseSubscription.unsubscribe(); }
+    if (this.tableViewSubscription) { this.tableViewSubscription.unsubscribe(); }
   }
 
   actionPanelDragEnd(gutterNum: number, sizes: Array<number>): void {

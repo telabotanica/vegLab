@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation, OnDestroy 
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 
+import { AppConfigService } from 'src/app/_config/app-config.service';
 import { NotificationService } from '../../_services/notification.service';
 import { RepositoryService } from '../../_services/repository.service';
 import { RepositoryService as TsbRepositoryService, RepositoryModel } from 'tb-tsb-lib';
@@ -200,6 +201,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
 
   constructor(
+    private appConfig: AppConfigService,
     private notificationService: NotificationService,
     private repositoryService: RepositoryService,
     private tsbRepositoryService: TsbRepositoryService,
@@ -216,6 +218,9 @@ export class TableImportComponent implements OnInit, OnDestroy {
     private userService: UserService) { }
 
   ngOnInit() {
+    // App config
+    setTimeout(() => { this.appConfig.setTableViewable(); }); // Avoid 'ExpressionChangedAfterItHasBeenCheckedError'
+
     // Reset component vars
     this.resetComponent();
 
