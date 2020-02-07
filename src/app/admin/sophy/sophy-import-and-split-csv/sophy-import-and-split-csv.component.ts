@@ -206,7 +206,7 @@ export class SophyImportAndSplitCsvComponent implements OnInit {
     const propertyValues = _.map(rows, r => r[propertyIndex]);
     const property = _.uniq(_.compact(propertyValues));
     if (property && property !== null && property.length === 1) {
-      const _cleanStr = property[0].replace(/ +(?= )/g, '').replace(/;/g, ',').replace(' . , ', ', ').replace('.,', ',').trim();
+      const _cleanStr = property[0].replace(/ +(?= )/g, '').replace(/"/g, '\'').replace(/;/g, ',').replace(' . , ', ', ').replace('.,', ',').trim();
       return _cleanStr;
     } else if (property && property !== null && property.length > 1) {
       // Several values
