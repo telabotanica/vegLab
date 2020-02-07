@@ -262,7 +262,7 @@ export class SophyImportAndSplitCsvComponent implements OnInit {
                   const station     = this.getRawTableProperty(currentReleve, this.SOPHY.STATION.position);
                   const inseeId     = this.getRawTableProperty(currentReleve, this.SOPHY.INSEE_ID.position);
                   const elevation   = this.getRawTableProperty(currentReleve, this.SOPHY.ELEVATION.position);
-                  const author      = this.getRawTableProperty(currentReleve, this.SOPHY.AUTHOR.position);
+                  const author      = this.parseAuthor(this.getRawTableProperty(currentReleve, this.SOPHY.AUTHOR.position));
                   const date        = this.parseDate(this.getRawTableProperty(currentReleve, this.SOPHY.YEAR.position));
                   const latitude    = this.getRawTableProperty(currentReleve, this.SOPHY.LAT_WGS.position);
                   const longitude   = this.getRawTableProperty(currentReleve, this.SOPHY.LNG_WGS.position);
@@ -692,6 +692,17 @@ export class SophyImportAndSplitCsvComponent implements OnInit {
     const coef = row[this.SOPHY.COEF.position];
 
     return coef && coef !== null ? coef : '';
+  }
+
+  /**
+   * Format authors & returns comma sparate authors
+   * @param authors a string like 'BRISSE (H.) et GRANDJOUAN (G.)'
+   */
+  parseAuthor(authors: string): string {
+    if (authors == null) { return ''; }
+    const _authors = authors.replace(' ET ', ' et ').split(' et ');
+
+    return _.map(_authors, a => a.replace(/([()])/g, '')).join(', '); // remove parenthese et join result
   }
 
   parseDate(year: string): string {
