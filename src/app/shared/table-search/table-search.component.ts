@@ -78,7 +78,10 @@ export class TableSearchComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // App config
-    setTimeout(() => { this.appConfig.setTableEditable(); }); // Avoid 'ExpressionChangedAfterItHasBeenCheckedError'
+    setTimeout(() => {                    // Avoid 'ExpressionChangedAfterItHasBeenCheckedError'
+      this.appConfig.setTableEditable();
+      this.appConfig.enableInfoPanel();
+    });
 
     // get current table id
     let ct = this.tableService.getCurrentTable();

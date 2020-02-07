@@ -23,6 +23,8 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
   // App config cars
   _tableView: string;
   tableViewSubscription: Subscription;
+  _infoPanelDisabled: boolean;
+  infoPanelDisabledSubscription: Subscription;
 
   // Panels vars
   infoPanelActive = true;
@@ -55,6 +57,12 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
     this.tableViewSubscription = this.appConfig.tableView.subscribe(value => {
       if (this._tableView !== value) { this._tableView = value; }
     });
+    this.infoPanelDisabledSubscription = this.appConfig.infoPanelDisabled.subscribe(value => {
+      if (this._infoPanelDisabled !== value) {
+        if (value === true) { this.closeInfoPanel(); } else if (value === false) { this.openInfoPanel(); }
+        this._infoPanelDisabled = value;
+      }
+    });
 
     // Subscribe to action panel open / close
     this.actionPanelOpenCloseSubscription = this.wsPhytoService.panels.subscribe((panels: WsPhytoPanels) => {
@@ -66,6 +74,7 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.actionPanelOpenCloseSubscription) { this.actionPanelOpenCloseSubscription.unsubscribe(); }
     if (this.tableViewSubscription) { this.tableViewSubscription.unsubscribe(); }
+    if (this.infoPanelDisabledSubscription) { this.infoPanelDisabledSubscription.unsubscribe(); }
   }
 
   actionPanelDragEnd(gutterNum: number, sizes: Array<number>): void {
@@ -98,6 +107,18 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
     this.infoPanelActive = true;
     this.panelsSizeOrPositionHaveBeenUpdated();
     this.tableAreaChanged();
+  }
+
+  infoPanelToggleButtonLabel(): string | null {
+    if (this._infoPanelDisabled) {
+      return 'Le panneau d\'informations n\'est pas accessible';
+    } else if (this.infoPanelActive){
+      return 'Masquer le panneau d\'informations';
+    } else if (!this.infoAreaActive) {
+      return 'Afficher le panneau d\'informations';
+    } else {
+      return null;
+    }
   }
 
   toggleSplitInfoPanel(): void {

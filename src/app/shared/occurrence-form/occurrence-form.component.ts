@@ -106,7 +106,10 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // App config
-    setTimeout(() => { this.appConfig.setTableEditable(); }); // Avoid 'ExpressionChangedAfterItHasBeenCheckedError'
+    setTimeout(() => {                    // Avoid 'ExpressionChangedAfterItHasBeenCheckedError'
+      this.appConfig.setTableEditable();
+      this.appConfig.enableInfoPanel();
+    });
 
     // Get current user
     this.currentUser = this.userService.currentUser.getValue();

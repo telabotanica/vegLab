@@ -220,7 +220,10 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // App config
-    setTimeout(() => { this.appConfig.setTableViewable(); }); // Avoid 'ExpressionChangedAfterItHasBeenCheckedError'
+    setTimeout(() => {                    // Avoid 'ExpressionChangedAfterItHasBeenCheckedError'
+      this.appConfig.setTableViewable();
+      this.appConfig.disableInfoPanel();
+    });
 
     // Reset component vars
     this.resetComponent();
