@@ -1,10 +1,9 @@
 export const wsPhytoMenu = [
   { label: 'Créer', children: [
     { label: 'Un relevé', path: '/phyto/app/create-occurrence' },
-    { label: 'Un tableau', path: '/phyto/app/create-table'}]
+    { label: 'Un tableau', path: '/phyto/app'}]
   }, {
     label: 'Importer', children: [
-      {label: 'Un relevé', path: '/phyto/app/import-occurrence' },
       { label: 'Un tableau', path: '/phyto/app/import-table' }
     ]
   },
