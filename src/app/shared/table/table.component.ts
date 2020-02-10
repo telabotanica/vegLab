@@ -701,6 +701,10 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  // --------------
+  // INITIALIZATION
+  // --------------
+
   constructor(private tableService: TableService,
               private cdr: ChangeDetectorRef,
               public router: Router,
@@ -766,10 +770,10 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     // Subscribe to current table dataView changes
     this.currentTableDataViewSubscription = this.tableService.tableDataView.subscribe(dataView => {
 
+      this._currentTable = _.clone(this.tableService.getCurrentTable());
+
       this.currentSyes = this._currentTable.sye;
       this.updateTableValuesAndMetadata(dataView);
-
-      this._currentTable = _.clone(this.tableService.getCurrentTable());
 
       this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this._currentTable);
 
@@ -808,7 +812,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Check view data
     if (!dataView || dataView.length === 0) {
-      // @Todo log error
+      this.currentDataView = null;
+      this.tableInstance.loadData([]);
       return;
     }
 
@@ -1037,6 +1042,13 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       );
     }
+  }
+
+  // ---------
+  // NEW TABLE
+  // ---------
+  createEmptyTable(): void {
+    this.tableService.setCurrentTable(this.tableService.createTable(), true);
   }
 
   // -----

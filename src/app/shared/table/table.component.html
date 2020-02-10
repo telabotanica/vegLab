@@ -1,7 +1,61 @@
 <div id="table-wrapper" [class.hide-table]="!currentDataView">
   <div class="table-menu">
-    <button mat-button (click)="quickSaveTable()" [disabled]="isSavingTable || !currentTableOwnedByCurrentUser"><mat-spinner *ngIf="isSavingTable" diameter="16"></mat-spinner> Enregistrer</button>
-    <button mat-button (click)="router.navigate(['/phyto/app/create-table'])" [disabled]="isSavingTable || !currentTableOwnedByCurrentUser"><mat-spinner *ngIf="isSavingTable" diameter="16"></mat-spinner> Enregistrer sous</button>
+    <div class="button first">
+      <button mat-button
+        matTooltip=""
+        (click)="createEmptyTable()">
+        <mat-icon>delete_sweep</mat-icon>
+        <span> Nouv. tab.</span>
+      </button>
+    </div>
+
+    <div class="button">
+      <button mat-button
+        [matMenuTriggerFor]="menuSaveAction"
+        matTooltip=""
+        [disabled]="isSavingTable || !currentTableOwnedByCurrentUser"
+        [class.spinner]="isSavingTable">
+        <mat-icon>save</mat-icon>
+        <span> Enregistrer</span>
+      </button>
+    </div>
+    <mat-menu #menuSaveAction="matMenu">
+      <button mat-menu-item [disabled]="_currentTable.id == null" (click)="quickSaveTable()">Enregistrer</button>
+      <button mat-menu-item (click)="router.navigate(['/phyto/app/create-table'])">Enregistrer sous</button>
+    </mat-menu>
+
+    <div class="button">
+      <button mat-button
+        matTooltip="Dupliquer la tableau courant">
+        <mat-icon>file_copy</mat-icon>
+        <span> Dupliquer</span>
+      </button>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="button">
+      <button mat-button class="button">
+        <mat-icon>undo</mat-icon>
+      </button>
+    </div>
+    <div class="button">
+      <button mat-button class="button">
+        <mat-icon>redo</mat-icon>
+      </button>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="button">
+      <button mat-button class="button" disabled>
+        <mat-icon>forum</mat-icon>
+      </button>
+    </div>
+    <!--
+    <div class="button first"><button mat-button (click)="quickSaveTable()" [disabled]="isSavingTable || !currentTableOwnedByCurrentUser"><mat-spinner *ngIf="isSavingTable" diameter="16"></mat-spinner> Enregistrer</button></div>
+    <div class="button first"><button mat-button (click)="router.navigate(['/phyto/app/create-table'])" [disabled]="isSavingTable || !currentTableOwnedByCurrentUser"><mat-spinner *ngIf="isSavingTable" diameter="16"></mat-spinner> Enregistrer sous</button></div>
+    -->
   </div>
   <table>
     <tbody>

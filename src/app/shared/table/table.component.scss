@@ -61,6 +61,22 @@
   .table-menu {
     background-color: #EEEEEE;
     height: 40px;
+    display: flex;
+    flex-direction: row;
+
+    .button {
+      margin-left: 5px;
+      margin-right: 5px;
+      &.first {
+        margin-left: 0;
+      }
+    }
+    .separator {
+      width: 2px;
+      border: 1px solid #ccc;
+      margin-left: 10px;
+      margin-right: 10px;
+    }
   }
   .handsontable-container {
     width: 100%;
