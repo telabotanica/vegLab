@@ -44,7 +44,7 @@ export class SsoService {
   public identity(): void {
     const headers = new HttpHeaders();
     // headers.set('Content-Type', 'text/plain').set('Accept', 'text/plain');
-    this.http.get<IdentiteResponse>(this.identiteEndpoint, { headers, withCredentials: true }).subscribe(
+    this.http.get<IdentiteResponse>(this.identiteEndpoint, { headers, withCredentials: false }).subscribe(
       result => {
         this.setToken(result.token);
         // The token expires after 15 minutes. We need to refresh it periodically to always keep it fresh
@@ -67,7 +67,7 @@ export class SsoService {
   public getIdentity(): Observable<IdentiteResponse> {
     const headers = new HttpHeaders();
     headers.set('Content-Type', 'text/plain').set('Accept', 'text/plain');
-    return this.http.get<IdentiteResponse>(this.identiteEndpoint, { headers, withCredentials: true}).pipe(
+    return this.http.get<IdentiteResponse>(this.identiteEndpoint, { headers, withCredentials: false}).pipe(
       tap(identite => {
         // The token expires after 15 minutes. We need to refresh it periodically to always keep it fresh
         if (!this.refreshTokenSet) {

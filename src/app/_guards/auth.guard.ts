@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, CanActivateChild, CanLoad, Route, UrlSegment, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
 
-import { Observable, interval } from 'rxjs';
+import { Observable, interval, of } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 
 import { SsoService } from '../_services/sso.service';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +42,10 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
           // Navigate to the login page
           this.routerService.navigate(['/login']);
           return false;
+        }), catchError(error => {
+          // Navigate to the login page
+          this.routerService.navigate(['/login']);
+          return of(false);
         })
       );
     } else if (token) {
@@ -63,22 +67,20 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
         map(identity => {
           if (identity && identity.token) {
             this.ssoService.setToken(identity.token);
-
-            // The token expires after 15 minutes. We need to refresh it periodically to always keep it fresh
-            interval(this.refreshInterval).subscribe((resp) => { console.log('REFRESHING TOKEN'); this.ssoService.refreshToken(); });
-
             return true;
           } else {
             // Navigate to the login page
-            const redirectUrl = next.url;
-            this.routerService.navigate(['/login'], {queryParams: {redirectUrl}});
+            this.routerService.navigate(['/login']);
             return false;
           }
         }, error => {
           // Navigate to the login page
-          const redirectUrl = next.url;
-          this.routerService.navigate(['/login'], {queryParams: {redirectUrl}});
+          this.routerService.navigate(['/login']);
           return false;
+        }), catchError(error => {
+          // Navigate to the login page
+          this.routerService.navigate(['/login']);
+          return of(false);
         })
       );
     } else if (token) {
