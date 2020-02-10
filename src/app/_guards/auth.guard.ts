@@ -35,16 +35,28 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
             return true;
           } else {
             // Navigate to the login page
-            this.routerService.navigate(['/login']);
+            this.routerService.navigate(['/login'], {
+              queryParams: {
+                redirectUrl: next.routeConfig.path
+              }
+            });
             return false;
           }
         }, error => {
           // Navigate to the login page
-          this.routerService.navigate(['/login']);
+          this.routerService.navigate(['/login'], {
+            queryParams: {
+              redirectUrl: next.routeConfig.path
+            }
+          });
           return false;
         }), catchError(error => {
           // Navigate to the login page
-          this.routerService.navigate(['/login']);
+          this.routerService.navigate(['/login'], {
+            queryParams: {
+              redirectUrl: next.routeConfig.path
+            }
+          });
           return of(false);
         })
       );
