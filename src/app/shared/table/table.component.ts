@@ -14,6 +14,7 @@ import { TableRow } from 'src/app/_models/table-row-definition.model';
 import * as _ from 'lodash';
 import { Sye } from 'src/app/_models/sye.model';
 import { UserModel } from 'src/app/_models/user.model';
+import { Table } from 'src/app/_models/table.model';
 
 @Component({
   selector: 'vl-table',
@@ -23,6 +24,7 @@ import { UserModel } from 'src/app/_models/user.model';
 })
 export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   // VAR global
+  _currentTable: Table;
   currentDataView: Array<TableRow> = null;
   manuallyMoveColumnsAt = null;
   currentSyes: Array<Sye> = [];
@@ -38,6 +40,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // VAR subscribers
   currentTableDataViewSubscription: Subscription;
+  currentTableSubscription: Subscription;
 
   // Var Handsontable data
   public dataView: Array<TableRow>;
@@ -225,16 +228,16 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         const rowId = this.tableInstance.getCellMeta(startRowPosition, this.tablePhytoStartCol + 1)._occurrenceId;
         const groupId = this.tableInstance.getCellMeta(startRowPosition, this.tablePhytoStartCol + 1)._occurrenceId;
 
-        const isMultipleGroupsSelected = this.tableService.isMultipleGroupsSelected(this.tableService.getCurrentTable(), startRowPosition, endRowPosition);
+        const isMultipleGroupsSelected = this.tableService.isMultipleGroupsSelected(this._currentTable, startRowPosition, endRowPosition);
         if (isMultipleGroupsSelected) {
           // @Todo notify user that he can't make a selection over several groups
           // Remove aflterSelection hook
           this.tableInstance.removeHook('afterSelection', this.onAfterSelection);
 
           // Select all rows
-          const groupPositions = this.tableService.getGroupPositionsForRowId(this.tableService.getCurrentTable(), this.tableInstance.getCellMeta(startRowPosition, this.tablePhytoStartCol)._rowId);
+          const groupPositions = this.tableService.getGroupPositionsForRowId(this._currentTable, this.tableInstance.getCellMeta(startRowPosition, this.tablePhytoStartCol)._rowId);
           if (selectionDirection === 'topToBottom') {
-            const nextGroup = this.tableService.getGroupPositionsForRowId(this.tableService.getCurrentTable(), endRowPosition);
+            const nextGroup = this.tableService.getGroupPositionsForRowId(this._currentTable, endRowPosition);
             if (nextGroup) {
               this.tableInstance.selectRows(nextGroup.titleRowPosition, endRowPosition);
               startRowPosition = nextGroup.titleRowPosition;
@@ -313,7 +316,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
         // Select all rows
         const t = this.tableInstance.getCellMeta(startRowPosition, this.tablePhytoStartCol)._rowId;
-        const groupPositions = this.tableService.getGroupPositionsForRowId(this.tableService.getCurrentTable(), this.tableInstance.getCellMeta(startRowPosition, this.tablePhytoStartCol)._rowId);
+        const groupPositions = this.tableService.getGroupPositionsForRowId(this._currentTable, this.tableInstance.getCellMeta(startRowPosition, this.tablePhytoStartCol)._rowId);
         this.tableInstance.selectRows(groupPositions.titleRowPosition, groupPositions.endRowPosition);
 
         // Add removed hook
@@ -344,16 +347,16 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         const rowId = null;
         const groupId = null;
 
-        const isMultipleSyeSelected = this.tableService.isMultipleSyeSelected(this.tableService.getCurrentTable(), startColPosition, endColPosition);
+        const isMultipleSyeSelected = this.tableService.isMultipleSyeSelected(this._currentTable, startColPosition, endColPosition);
         if (isMultipleSyeSelected) {
           // @Todo notify user that he can't make a selection over several sye
           // Remove aflterSelection hook
           this.tableInstance.removeHook('afterSelection', this.onAfterSelection);
 
           // Select all rows
-          const columnPositions = this.tableService.getSyePositionsForColId(this.tableService.getCurrentTable(), startColPosition);
+          const columnPositions = this.tableService.getSyePositionsForColId(this._currentTable, startColPosition);
           if (selectionDirection === 'leftToRight') {
-            const nextSye = this.tableService.getSyePositionsForColId(this.tableService.getCurrentTable(), endColPosition);
+            const nextSye = this.tableService.getSyePositionsForColId(this._currentTable, endColPosition);
             if (nextSye) {
               this.tableInstance.selectColumns(nextSye.startColumnPosition, endColPosition);
               startColPosition = nextSye.startColumnPosition;
@@ -557,7 +560,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   onBeforeCellChange = (changes: Array<any>, source: string) => {
     const selectedCell: Array<Array<number>> = this.tableInstance.getSelected();
     const selectedRow = selectedCell[0][0];
-    const editedGroup = this.tableService.getGroupPositionsForRowId(this.tableService.getCurrentTable(), selectedRow);
+    const editedGroup = this.tableService.getGroupPositionsForRowId(this._currentTable, selectedRow);
     if (editedGroup.titleRowPosition === selectedRow - this.tablePhytoStartRow) {
       return this.tableService.beforeTitleGroupCellChange(editedGroup.groupId, changes[0][2], changes[0][3]);
     }
@@ -572,8 +575,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       return; // no double-click
     } else if (now - cellMetaLastClick < 200) {
       // double-clik detected
-      const syePositions = this.tableService.getSyePositionsForColId(this.tableService.getCurrentTable(), coords.col);
-      const groupPositions = this.tableService.getGroupPositionsForRowId(this.tableService.getCurrentTable(), coords.row);
+      const syePositions = this.tableService.getSyePositionsForColId(this._currentTable, coords.col);
+      const groupPositions = this.tableService.getGroupPositionsForRowId(this._currentTable, coords.row);
       if (!syePositions || !groupPositions) { return; }
       this.tableInstance.selectCell(groupPositions.startRowPosition, syePositions.startColumnPosition, groupPositions.endRowPosition, syePositions.endColumnPosition);
     }
@@ -595,8 +598,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       // arrow right
       // select next sye bloc
       if (event.keyCode === 39) {
-        const nextSyePosition = this.tableService.getNextSyePositionsForColId(this.tableService.getCurrentTable(), this.tableInstance.getSelected()[0][1]);
-        const groupPositions = this.tableService.getGroupPositionsForRowId(this.tableService.getCurrentTable(), this.tableInstance.getSelected()[0][0]);
+        const nextSyePosition = this.tableService.getNextSyePositionsForColId(this._currentTable, this.tableInstance.getSelected()[0][1]);
+        const groupPositions = this.tableService.getGroupPositionsForRowId(this._currentTable, this.tableInstance.getSelected()[0][0]);
         if (nextSyePosition) {
           this.tableInstance.selectCell(groupPositions.startRowPosition, nextSyePosition.startColumnPosition, groupPositions.endRowPosition, nextSyePosition.endColumnPosition);
         }
@@ -604,8 +607,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       // arrow left
       // select previous sye bloc
       if (event.keyCode === 37) {
-        const previousSyePosition = this.tableService.getPreviousSyePositionsForColId(this.tableService.getCurrentTable(), this.tableInstance.getSelected()[0][1]);
-        const groupPositions = this.tableService.getGroupPositionsForRowId(this.tableService.getCurrentTable(), this.tableInstance.getSelected()[0][0]);
+        const previousSyePosition = this.tableService.getPreviousSyePositionsForColId(this._currentTable, this.tableInstance.getSelected()[0][1]);
+        const groupPositions = this.tableService.getGroupPositionsForRowId(this._currentTable, this.tableInstance.getSelected()[0][0]);
         if (previousSyePosition) {
           this.tableInstance.selectCell(groupPositions.startRowPosition, previousSyePosition.startColumnPosition, groupPositions.endRowPosition, previousSyePosition.endColumnPosition);
         }
@@ -613,8 +616,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       // arrow down
       // select next group bloc
       if (event.keyCode === 40) {
-        const syePositions = this.tableService.getSyePositionsForColId(this.tableService.getCurrentTable(), this.tableInstance.getSelected()[0][1]);
-        const nextGroupPositions = this.tableService.getNextGroupPositionsForRowId(this.tableService.getCurrentTable(), this.tableInstance.getSelected()[0][0]);
+        const syePositions = this.tableService.getSyePositionsForColId(this._currentTable, this.tableInstance.getSelected()[0][1]);
+        const nextGroupPositions = this.tableService.getNextGroupPositionsForRowId(this._currentTable, this.tableInstance.getSelected()[0][0]);
 
         if (nextGroupPositions) {
           this.tableInstance.selectCell(nextGroupPositions.startRowPosition, syePositions.startColumnPosition, nextGroupPositions.endRowPosition, syePositions.endColumnPosition);
@@ -623,8 +626,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       // arrow up
       // select previuos group bloc
       if (event.keyCode === 38) {
-        const syePositions = this.tableService.getSyePositionsForColId(this.tableService.getCurrentTable(), this.tableInstance.getSelected()[0][1]);
-        const previousGroupPositions = this.tableService.getPreviousGroupPositionsForRowId(this.tableService.getCurrentTable(), this.tableInstance.getSelected()[0][0]);
+        const syePositions = this.tableService.getSyePositionsForColId(this._currentTable, this.tableInstance.getSelected()[0][1]);
+        const previousGroupPositions = this.tableService.getPreviousGroupPositionsForRowId(this._currentTable, this.tableInstance.getSelected()[0][0]);
 
         if (previousGroupPositions) {
           this.tableInstance.selectCell(previousGroupPositions.startRowPosition, syePositions.startColumnPosition, previousGroupPositions.endRowPosition, syePositions.endColumnPosition);
@@ -706,6 +709,12 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
               private notificationService: NotificationService) { }
 
   ngOnInit() {
+    // Get current table
+    const _ct = this.tableService.getCurrentTable();
+    if (_ct && _ct !== null) {
+      this._currentTable = _.clone(_ct);
+    }
+
     // Get current user
     this.currentUser = this.userService.currentUser.getValue();
     if (this.currentUser == null) {
@@ -719,7 +728,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.userSubscription = this.userService.currentUser.subscribe(
       user => {
         this.currentUser = user;
-        this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this.tableService.getCurrentTable());
+        this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this._currentTable);
       },
       error => {
         // @Todo manage error
@@ -730,10 +739,11 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     // Current table owned by current user ?
-    this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this.tableService.getCurrentTable());
+    this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this._currentTable);
   }
 
   ngOnDestroy() {
+    if (this.currentTableSubscription) { this.currentTableSubscription.unsubscribe(); }
     if (this.currentTableDataViewSubscription) { this.currentTableDataViewSubscription.unsubscribe(); }
   }
 
@@ -754,13 +764,20 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.tableInstance.addHook('beforeKeyDown', this.onBeforeKeyDown);
     this.tableInstance.addHook('afterDocumentKeyDown', this.onAfterDocumentKeyDown);
 
+    // Subscribe to table change
+    this.currentTableSubscription = this.tableService.currentTableChanged.subscribe(change => {
+      if (change === true) {
+        this._currentTable = _.clone(this.tableService.getCurrentTable());
+      }
+    });
+
     // Subscribe to current table dataView changes
     this.currentTableDataViewSubscription = this.tableService.tableDataView.subscribe(dataView => {
 
-      this.currentSyes = this.tableService.getCurrentTable().sye;
+      this.currentSyes = this._currentTable.sye;
       this.updateTableValuesAndMetadata(dataView);
 
-      this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this.tableService.getCurrentTable());
+      this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this._currentTable);
 
       this.cdr.detectChanges();
     });
@@ -938,7 +955,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       for (const columnPositions of this.tableService.columnsPositions) {
         if (startCol >= columnPositions.startColumnPosition && endCol <= columnPositions.endColumnPosition) {
-          sorteredSye = this.tableService.getSyeById(this.tableService.getCurrentTable(), columnPositions.id);
+          sorteredSye = this.tableService.getSyeById(this._currentTable, columnPositions.id);
         }
       }
     }
@@ -992,12 +1009,12 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     const startCol = _.min(colsVisulaIndexes);
     const endCol = _.max(colsVisulaIndexes);
 
-    const currentSye = this.tableService.getSyeForColId(this.tableService.getCurrentTable(), startCol);
+    const currentSye = this.tableService.getSyeForColId(this._currentTable, startCol);
 
     if (!currentSye) { return; }
 
     currentSye.onlyShowSyntheticColumn = !currentSye.onlyShowSyntheticColumn;
-    this.tableService.updateDataView(this.tableService.getCurrentTable());
+    this.tableService.updateDataView(this._currentTable);
 
     // update selection (select synthetic column)
     const columnPositions = this.tableService.getColumnPositionsForSyeById(currentSye.syeId);
@@ -1010,14 +1027,14 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   // SAVE TABLE
   // ----------
   public isCurrentTableExistsInDb(): boolean {
-    const table = this.tableService.getCurrentTable();
+    const table = this._currentTable;
     return table && table.id ? true : false;
   }
 
   public quickSaveTable(): void {
     if (this.isCurrentTableExistsInDb()) {
       this.isSavingTable = true;
-      this.tableService.putTable(this.tableService.getCurrentTable()).subscribe(
+      this.tableService.putTable(this._currentTable).subscribe(
         savedTable => {
           this.isSavingTable = false;
         }, error => {
@@ -1050,8 +1067,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     const startRow = _.min(selectedRows);
     const endRow = _.max(selectedRows);
 
-    const startRowGroupPositions = this.tableService.getGroupPositionsForRowId(this.tableService.getCurrentTable(), startRow);
-    const endRowGroupPositions = this.tableService.getGroupPositionsForRowId(this.tableService.getCurrentTable(), endRow);
+    const startRowGroupPositions = this.tableService.getGroupPositionsForRowId(this._currentTable, startRow);
+    const endRowGroupPositions = this.tableService.getGroupPositionsForRowId(this._currentTable, endRow);
 
     if (startRowGroupPositions === endRowGroupPositions) { return true; }
     return false;
@@ -1100,7 +1117,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     const startCol = _.min(colsVisulaIndexes);
     const endCol = _.max(colsVisulaIndexes);
 
-    const currentSye = this.tableService.getSyeForColId(this.tableService.getCurrentTable(), startCol);
+    const currentSye = this.tableService.getSyeForColId(this._currentTable, startCol);
 
     if (!currentSye) {
       return true;
@@ -1126,7 +1143,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   isCurrentTableContainsNoOneOrOnlyOneSye(): boolean {
-    return this.tableService.getCurrentTable().sye.length > 1 ? false : true;
+    return this._currentTable.sye.length > 1 ? false : true;
   }
 
   isPartialSyeSelected(): boolean {
@@ -1139,8 +1156,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     const startRow = _.min(selectedRows);
     const endRow = _.max(selectedRows);
 
-    const startRowGroupPositions = this.tableService.getGroupPositionsForRowId(this.tableService.getCurrentTable(), startRow);
-    const endRowGroupPositions = this.tableService.getGroupPositionsForRowId(this.tableService.getCurrentTable(), endRow);
+    const startRowGroupPositions = this.tableService.getGroupPositionsForRowId(this._currentTable, startRow);
+    const endRowGroupPositions = this.tableService.getGroupPositionsForRowId(this._currentTable, endRow);
 
     if (startRowGroupPositions === endRowGroupPositions) {
       if (startRow === startRowGroupPositions.titleRowPosition && endRow === startRowGroupPositions.endRowPosition) { return true; }
@@ -1155,8 +1172,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     const startRow = _.min(selectedRows);
     const endRow = _.max(selectedRows);
 
-    const startRowGroupPositions = this.tableService.getGroupPositionsForRowId(this.tableService.getCurrentTable(), startRow);
-    const endRowGroupPositions = this.tableService.getGroupPositionsForRowId(this.tableService.getCurrentTable(), endRow);
+    const startRowGroupPositions = this.tableService.getGroupPositionsForRowId(this._currentTable, startRow);
+    const endRowGroupPositions = this.tableService.getGroupPositionsForRowId(this._currentTable, endRow);
 
     if (startRowGroupPositions === endRowGroupPositions) {
       if (startRow === startRowGroupPositions.startRowPosition && endRow === startRowGroupPositions.endRowPosition) { return true; }
@@ -1169,7 +1186,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   // UI & STYLING
   // ------------
   getSyeVisibleWidth(syeId: number): string {
-    const sye = this.tableService.getSyeById(this.tableService.getCurrentTable(), syeId);
+    const sye = this.tableService.getSyeById(this._currentTable, syeId);
     return ((sye.occurrencesCount + 1) * this.commonColWidth).toString() + 'px'; // +1 for synthetic column
   }
 
