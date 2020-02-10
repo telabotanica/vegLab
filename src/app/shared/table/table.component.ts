@@ -40,7 +40,6 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // VAR subscribers
   currentTableDataViewSubscription: Subscription;
-  currentTableSubscription: Subscription;
 
   // Var Handsontable data
   public dataView: Array<TableRow>;
@@ -713,6 +712,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     const _ct = this.tableService.getCurrentTable();
     if (_ct && _ct !== null) {
       this._currentTable = _.clone(_ct);
+      this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this._currentTable);
     }
 
     // Get current user
@@ -743,7 +743,6 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    if (this.currentTableSubscription) { this.currentTableSubscription.unsubscribe(); }
     if (this.currentTableDataViewSubscription) { this.currentTableDataViewSubscription.unsubscribe(); }
   }
 
@@ -764,18 +763,13 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.tableInstance.addHook('beforeKeyDown', this.onBeforeKeyDown);
     this.tableInstance.addHook('afterDocumentKeyDown', this.onAfterDocumentKeyDown);
 
-    // Subscribe to table change
-    this.currentTableSubscription = this.tableService.currentTableChanged.subscribe(change => {
-      if (change === true) {
-        this._currentTable = _.clone(this.tableService.getCurrentTable());
-      }
-    });
-
     // Subscribe to current table dataView changes
     this.currentTableDataViewSubscription = this.tableService.tableDataView.subscribe(dataView => {
 
       this.currentSyes = this._currentTable.sye;
       this.updateTableValuesAndMetadata(dataView);
+
+      this._currentTable = _.clone(this.tableService.getCurrentTable());
 
       this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this._currentTable);
 
