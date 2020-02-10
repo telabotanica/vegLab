@@ -1,11 +1,18 @@
 <mat-toolbar class="app-toolbar">
   <mat-toolbar-row>
-    <a class="navbar-brand" [routerLink]="['/']">VegLab<span class="ws">{{ currentWorkspace }}</span></a>
+    <a class="navbar-brand" [routerLink]="['/']">
+      <div class="title">VegLab</div>
+      <div *ngIf="currentWorkspace !== '*'" class="triangle vl"></div>
+    </a>
+    <a *ngIf="currentWorkspace !== '*'" class="navbar-brand ws" [routerLink]="getWorkspaceNavigationPath()">
+      <div class="title">{{ currentWorkspace | wsLabel }}</div>
+      <div class="triangle ws"></div>
+    </a>
     <mat-toolbar class="app-toolbar">
       <ng-container *ngFor="let menuItem of menuTree">
         <button mat-menu-item [matMenuTriggerFor]="sub_menu" class="app-toolbar-button" style="width: auto !important;">{{ menuItem.label }}</button>
         <mat-menu #sub_menu="matMenu">
-          <button mat-menu-item *ngFor="let subItem of menuItem.children" (click)="goTaPage(subItem.path)">{{ subItem.label }}</button>
+          <button mat-menu-item *ngFor="let subItem of menuItem.children" (click)="goToPage(subItem.path)">{{ subItem.label }}</button>
         </mat-menu>
       </ng-container>
 

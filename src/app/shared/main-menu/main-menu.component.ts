@@ -41,8 +41,16 @@ export class MainMenuComponent implements OnInit, OnDestroy {
     if (this.menuSubscriber) { this.menuSubscriber.unsubscribe(); }
   }
 
-  goTaPage(path) {
+  goToPage(path) {
     this.router.navigate([path]);
+  }
+
+  getWorkspaceNavigationPath(): Array<string> {
+    if (this.currentWorkspace !== null) {
+      return [this.currentWorkspace];
+    } else {
+      return [''];
+    }
   }
 
 }

@@ -7,5 +7,13 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 export class WorkspaceService {
   currentWS = new BehaviorSubject<string>('*');
 
+  WS: Array<{id: string, labelShort: string, labelFull: string}> = [
+    {
+      id: 'phyto',
+      labelShort: 'Phyto.',
+      labelFull: 'Phytosociologie'
+    }
+  ];
+
   constructor() { }
 }
