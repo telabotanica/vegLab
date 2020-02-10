@@ -489,6 +489,10 @@ export class TableService {
       return true;
     }
 
+    if (table !== null && table.id == null) {
+      return true;
+    }
+
     if (currentUser) {
       if (table !== null &&
           table.createdBy !== null &&
