@@ -26,18 +26,18 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   currentDataView: Array<TableRow> = null;
   manuallyMoveColumnsAt = null;
   currentSyes: Array<Sye> = [];
+  currentTableOwnedByCurrentUser: boolean;
 
   // VAR user
   userSubscription: Subscription;
   currentUser: UserModel;
-  isCurrentTableOwned = false;
 
   // VAR PERF
   t0colMove = 0;
   t1colMove = 0;
 
   // VAR subscribers
-  currentTableSubscription: Subscription;
+  currentTableDataViewSubscription: Subscription;
 
   // Var Handsontable data
   public dataView: Array<TableRow>;
@@ -719,19 +719,22 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.userSubscription = this.userService.currentUser.subscribe(
       user => {
         this.currentUser = user;
-        this.isCurrentTableOwned = this.ownedTable();
+        this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this.tableService.getCurrentTable());
       },
       error => {
         // @Todo manage error
+        // @Todo logout ? retry ? redirect ?
+        this.currentUser = null;
+        this.currentTableOwnedByCurrentUser = false;
       }
     );
 
     // Current table owned by current user ?
-    this.isCurrentTableOwned = this.ownedTable(); // + ADD table->owned = true/false !!!
+    this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this.tableService.getCurrentTable());
   }
 
   ngOnDestroy() {
-    if (this.currentTableSubscription) { this.currentTableSubscription.unsubscribe(); }
+    if (this.currentTableDataViewSubscription) { this.currentTableDataViewSubscription.unsubscribe(); }
   }
 
   ngAfterViewInit() {
@@ -751,12 +754,14 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.tableInstance.addHook('beforeKeyDown', this.onBeforeKeyDown);
     this.tableInstance.addHook('afterDocumentKeyDown', this.onAfterDocumentKeyDown);
 
-    // Subscribe to current table changes
-    this.currentTableSubscription = this.tableService.tableDataView.subscribe(dataView => {
-      this.isCurrentTableOwned = this.ownedTable(); // + ADD table->owned = true/false !!!
+    // Subscribe to current table dataView changes
+    this.currentTableDataViewSubscription = this.tableService.tableDataView.subscribe(dataView => {
 
       this.currentSyes = this.tableService.getCurrentTable().sye;
       this.updateTableValuesAndMetadata(dataView);
+
+      this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this.tableService.getCurrentTable());
+
       this.cdr.detectChanges();
     });
 
@@ -1026,22 +1031,6 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   // -----
   // UTILS
   // -----
-  /**
-   * Is current table owned by current user ?
-   */
-  private ownedTable(): boolean {
-    const currentTable = this.tableService.getCurrentTable();
-    if (this.currentUser && this.currentUser.id && currentTable) {
-      if (currentTable.userId == null) {
-        return true;
-      } else if (Number(this.currentUser.id) === currentTable.userId) {
-        // owned
-        return true;
-      } else {
-        return false;
-      }
-    } else { return false; }
-  }
 
   applyClass(elem, className) {
     if (!Handsontable.dom.hasClass(elem, className)) {

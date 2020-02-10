@@ -67,18 +67,13 @@ export class TableService {
    * Get a table
    */
   getTableById(id: number): Observable<Table> {
-    const currentUser = this.userService.currentUser.getValue();
     return this.http.get<Table>(`${environment.apiBaseUrl}/tables/${id}`).pipe(
       map(t => this.parseGeometryAndIntegerifyElevation(t)),
       map(t => this.orderSye(t)),
       map(t => this.orderSyeOccurrences(t)),
       map(t => {
         // Is table owned by current user ?
-        if (currentUser !== null) {
-          t.ownedByCurrentUser = currentUser && Number(currentUser.id) === t.createdBy;
-        } else {
-          t.ownedByCurrentUser = false;
-        }
+        t.ownedByCurrentUser = this.isTableOwnedByCurrentUser(t);
         return t;
       })
     );
@@ -181,13 +176,12 @@ export class TableService {
   // TABLE I/O (ES)
   // --------------
   getEsTables(): Observable<Array<EsTableModel>> {
-    const currentUser = this.userService.currentUser.getValue();
     return this.http.get<EsTableResultModel>(`${environment.esBaseUrl}/vl_tables/_search`).pipe(
       map(result => _.map(result.hits.hits, hit => hit._source)),
       map(result => {
         // Are tables owned by current user ?
         for (const esTable of result) {
-          esTable.ownedByCurrentUser = currentUser && Number(currentUser.id) === esTable.userId;
+          esTable.ownedByCurrentUser = this.isEsTableOwnedByCurrentUser(esTable);
         }
         return result;
       })
@@ -227,7 +221,7 @@ export class TableService {
       map(result => {
         // Are tables owned by current user ?
         for (const esTable of result) {
-          esTable.ownedByCurrentUser = currentUser && Number(currentUser.id) === esTable.userId;
+          esTable.ownedByCurrentUser = this.isEsTableOwnedByCurrentUser(esTable);
         }
         return {tables: result, count};
       })
@@ -483,6 +477,67 @@ export class TableService {
       if (table.sye[0].occurrences == null || table.sye[0].occurrences.length === 0) { return true; }
     }
     return false;
+  }
+
+  /**
+   * A Table is owned by an user if createdBy === table user's id
+   */
+  isTableOwnedByCurrentUser(table: Table): boolean {
+    const currentUser = this.userService.currentUser.getValue();
+
+    if (table !== null && this.isTableEmpty(table)) {
+      return true;
+    }
+
+    if (currentUser) {
+      if (table !== null &&
+          table.createdBy !== null &&
+          Number(table.createdBy) === Number(currentUser.id)) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Aa ES Table is owned by an user if createdBy === table user's id
+   */
+  isEsTableOwnedByCurrentUser(esTable: EsTableModel): boolean {
+    const currentUser = this.userService.currentUser.getValue();
+
+    if (currentUser) {
+      if (esTable !== null &&
+          esTable.createdBy !== null &&
+          Number(esTable.createdBy) === Number(currentUser.id)) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * A table can be an 'instance' (not really, we use interfaces) of Table or EsTableModel
+   */
+  isTableInstanceOfTable(table: Table | EsTableModel): boolean {
+    if (table == null) {
+      return false;
+    }
+    try {
+      const _table = table as Table;
+      if (_table && _table.sye) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      return false;
+    }
   }
 
   // -----------------------

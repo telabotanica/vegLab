@@ -1,7 +1,7 @@
 <div id="table-wrapper" [class.hide-table]="!currentDataView">
   <div class="table-menu">
-    <button mat-button (click)="quickSaveTable()" [disabled]="isSavingTable || !isCurrentTableOwned"><mat-spinner *ngIf="isSavingTable" diameter="16"></mat-spinner> Enregistrer</button>
-    <button mat-button (click)="router.navigate(['/phyto/app/create-table'])" [disabled]="isSavingTable || !isCurrentTableOwned"><mat-spinner *ngIf="isSavingTable" diameter="16"></mat-spinner> Enregistrer sous</button>
+    <button mat-button (click)="quickSaveTable()" [disabled]="isSavingTable || !currentTableOwnedByCurrentUser"><mat-spinner *ngIf="isSavingTable" diameter="16"></mat-spinner> Enregistrer</button>
+    <button mat-button (click)="router.navigate(['/phyto/app/create-table'])" [disabled]="isSavingTable || !currentTableOwnedByCurrentUser"><mat-spinner *ngIf="isSavingTable" diameter="16"></mat-spinner> Enregistrer sous</button>
   </div>
   <table>
     <tbody>

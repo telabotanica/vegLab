@@ -7,7 +7,9 @@ export interface EsTableModel {
   pdfContentUrl:          string;
   userId:                 number;
   ownedByCurrentUser:     boolean;  // not included in the database ; this field is populated at GET Table (table service)
+  createdBy:              number;
   createdAt:              string;
+  updatedBy:              number;
   updatedAt:              string;
   occurrencesCount:       number;
   rowsCount:              number;
