@@ -17,6 +17,13 @@ export class BaseflorDiagramSelectorComponent implements OnInit, OnDestroy {
   constructor(private tableService: TableService) { }
 
   ngOnInit() {
+    // Is table set ?
+    const ct = this.tableService.getCurrentTable();
+    if (ct !== null && !this.tableService.isTableEmpty(ct)) {
+      this.tableSet = true;
+    }
+
+    // Subscribe to table change
     this.tableSubscriber = this.tableService.currentTableChanged.subscribe(
       value => {
         if (value === true) {
