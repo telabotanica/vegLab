@@ -16,6 +16,8 @@ import { OccurrenceModel } from 'src/app/_models/occurrence.model';
 import { UserModel } from 'src/app/_models/user.model';
 import { environment } from 'src/environments/environment';
 
+import { TableActionEnum } from 'src/app/_enums/table-action-enum';
+
 import { Subscription, Observable, zip } from 'rxjs';
 import * as _ from 'lodash';
 
@@ -438,11 +440,21 @@ export class TableSearchComponent implements OnInit, OnDestroy {
           // keep syes
           const newTable = this.tableService.mergeSyesToTable(syes, ct, this.currentUser);
           this.tableService.setCurrentTable(newTable, true);
+
+          // @Action
+          console.log('MERGE TABLE');
+          this.tableService.createAction(TableActionEnum.mergeTable);
+
           this.tableService.isLoadingData.next(false);
         } else {
           // keep relevés
           const newTable = this.tableService.mergeRelevesToTable(occurrences, ct, this.currentUser);
           this.tableService.setCurrentTable(newTable, true);
+
+          // @Action
+          console.log('MERGE TABLE');
+          this.tableService.createAction(TableActionEnum.mergeTable);
+
           this.tableService.isLoadingData.next(false);
         }
       }, error => {

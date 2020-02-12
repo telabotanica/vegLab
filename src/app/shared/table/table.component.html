@@ -20,7 +20,7 @@
       </button>
     </div>
     <mat-menu #menuSaveAction="matMenu">
-      <button mat-menu-item [disabled]="_currentTable.id == null" (click)="quickSaveTable()">Enregistrer</button>
+      <button mat-menu-item [disabled]="_currentTable.id == null || tableActions.length === 0" (click)="quickSaveTable()">Enregistrer</button>
       <button mat-menu-item (click)="router.navigate(['/phyto/app/create-table'])">Enregistrer sous</button>
     </mat-menu>
 

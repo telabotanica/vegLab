@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpInterceptor, HttpRequest, HttpHandler, Htt
 import { AbstractControl } from '@angular/forms';
 
 import { Level } from '../_enums/level-enum';
+import { TableActionEnum } from '../_enums/table-action-enum';
 
 import { Table } from '../_models/table.model';
 import { OccurrenceModel } from '../_models/occurrence.model';
@@ -27,6 +28,7 @@ import { EsTableModel } from '../_models/es-table.model';
 import { GroupPositions } from '../_models/table/group-positions.model';
 import { TableSelectedElement } from '../_models/table/table-selected-element.model';
 import { UserModel } from '../_models/user.model';
+import { TableAction } from '../_models/table-action.model';
 
 import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -49,6 +51,8 @@ export class TableService {
   public isLoadingData: EventEmitter<boolean> = new EventEmitter<boolean>();
   public tableAreaDimensions: EventEmitter<{width: number, height: number}> = new EventEmitter();
   public tableSelectionElement: BehaviorSubject<TableSelectedElement> = new BehaviorSubject<TableSelectedElement>(null);
+
+  public currentActions: BehaviorSubject<Array<TableAction>> = new BehaviorSubject<Array<TableAction>>([]);
 
   constructor(
     private userService: UserService,
@@ -423,6 +427,15 @@ export class TableService {
       }
     }
     return releves;
+  }
+
+  resetCurrentTable(): void {
+    this.createFreshTable();
+  }
+
+  createFreshTable(): void {
+    this.resetActions();
+    this.setCurrentTable(this.createTable(), true);
   }
 
   updateDataView(table: Table) {
@@ -1073,6 +1086,9 @@ export class TableService {
       // update rowId values
       let j = 0; for (const row of this.currentTable.rowsDefinition) { row.rowId = j; j++; }
 
+      // @Action
+      this.createAction(TableActionEnum.rowGroupMove);
+
       // Emit new dataView
       // Maybe we should improve by updating only the dataView instead of creating a new one servered to handsontable instance...
       this.tableDataView.next(this.createDataView(this.currentTable));
@@ -1092,6 +1108,9 @@ export class TableService {
 
       // update groupsPositions
       this.updateGroupsPositions(this.currentTable);
+
+      // @Action
+      this.createAction(TableActionEnum.moveRow);
 
       // Emit new dataView
       // Maybe we should improve by updating only the dataView instead of creating a new one servered to handsontable instance...
@@ -1118,6 +1137,9 @@ export class TableService {
 
       // update groupsPositions
       this.updateGroupsPositions(this.currentTable);
+
+      // @Action
+      this.createAction(TableActionEnum.moveRow);
 
       // Emit new dataView
       // Maybe we should improve by updating only the dataView instead of creating a new one servered to handsontable instance...
@@ -1188,22 +1210,26 @@ export class TableService {
   private spliceGroupWhithinTableRowsDefinitionById(id: number) {
     const groupToSplice = this.getGroupPositionsById(this.currentTable, id);
     const splicedGroup = this.currentTable.rowsDefinition.splice(groupToSplice.titleRowPosition, groupToSplice.endRowPosition - groupToSplice.titleRowPosition + 1);
+
     return splicedGroup ? splicedGroup : null;
   }
 
   private insertRowsAboveGroup(rowsToInsert: Array<TableRowDefinition>, aboveGroup: GroupPositions): void {
     let positionToInsert = aboveGroup.titleRowPosition;
     if (positionToInsert < 0 ) { positionToInsert = 0; }
+
     this.currentTable.rowsDefinition.splice(aboveGroup.titleRowPosition, 0, ...rowsToInsert);
   }
 
   private insertRowsUnderGroup(rowsToInsert: Array<TableRowDefinition>, underGroup: GroupPositions): void {
     let positionToInsert = underGroup.endRowPosition + 1;
     if (positionToInsert > this.currentTable.rowsDefinition.length) { positionToInsert = this.currentTable.rowsDefinition.length; }
+
     this.currentTable.rowsDefinition.splice(positionToInsert, 0, ...rowsToInsert);
   }
 
   private insertRowsAtTheBottom(rowsToInsert: Array<TableRowDefinition>): void {
+
     this.currentTable.rowsDefinition.push(...rowsToInsert);
   }
 
@@ -1271,6 +1297,9 @@ export class TableService {
         rId++;
       }
 
+      // @Action
+      this.createAction(TableActionEnum.moveRow);
+
       // emit new dataView
       this.tableDataView.next(this.createDataView(this.currentTable));
 
@@ -1298,6 +1327,9 @@ export class TableService {
 
       // update rowId values
       let j = 0; for (const row of this.currentTable.rowsDefinition) { row.rowId = j; j++; }
+
+      // @Action
+      this.createAction(TableActionEnum.rowGroupMove);
 
       // Emit new dataView
       // Maybe we should improve by updating only the dataView instead of creating a new one servered to handsontable instance...
@@ -1327,6 +1359,9 @@ export class TableService {
 
       // update rowId values
       let j = 0; for (const row of this.currentTable.rowsDefinition) { row.rowId = j; j++; }
+
+      // @Action
+      this.createAction(TableActionEnum.rowGroupMove);
 
       // Emit new dataView
       // Maybe we should improve by updating only the dataView instead of creating a new one servered to handsontable instance...
@@ -1387,6 +1422,9 @@ export class TableService {
       const sorteredRowsWithFrequency = _.orderBy(splicedRowsWithFrequency, item => item.frequency, order); // sorting
       const sorteredRows = _.map(sorteredRowsWithFrequency, item => item.row);
       this.currentTable.rowsDefinition.splice(startRow, 0, ...sorteredRows);
+
+      // @Action
+      this.createAction(TableActionEnum.sortRow);
 
       this.tableDataView.next(this.createDataView(this.currentTable));
     } else {
@@ -1615,6 +1653,9 @@ export class TableService {
       // update columnsPositions
       this.updateColumnsPositions(this.currentTable);
 
+      // @Action
+      this.createAction(TableActionEnum.syeMove);
+
       // Emit new dataView
       // Maybe we should improve by updating only the dataView instead of creating a new one servered to handsontable instance...
       this.tableDataView.next(this.createDataView(this.currentTable));
@@ -1636,6 +1677,9 @@ export class TableService {
 
       // update columnsPositions
       this.updateColumnsPositions(this.currentTable);
+
+      // @Action
+      this.createAction(TableActionEnum.moveColumn);
 
       // Emit new dataView
       this.tableDataView.next(this.createDataView(this.currentTable));
@@ -1662,6 +1706,9 @@ export class TableService {
 
       // update columnsPositions
       this.updateColumnsPositions(this.currentTable);
+
+      // @Action
+      this.createAction(TableActionEnum.moveColumn);
 
       // Emit new dataView
       this.tableDataView.next(this.createDataView(this.currentTable));
@@ -1702,6 +1749,9 @@ export class TableService {
       // update source sye synthetic column
       sourceSye.syntheticColumn = this.createSyntheticColumn(sourceSye.occurrences, currentUser, sourceSye);
 
+      // @Action
+      this.createAction(TableActionEnum.moveColumn);
+
       // emit new dataView
       this.tableDataView.next(this.createDataView(this.currentTable));
 
@@ -1730,6 +1780,9 @@ export class TableService {
       const splicedSye = this.currentTable.sye.splice(syeSourcePositionInTable, 1);
       this.currentTable.sye.splice(syeTargetPositionInTable, 0, ...splicedSye);
 
+      // @Action
+      this.createAction(TableActionEnum.syeMove);
+
       // Emit new dataView
       this.tableDataView.next(this.createDataView(this.currentTable));
 
@@ -1755,6 +1808,9 @@ export class TableService {
       if (syeSourcePositionInTable === 0 ) { return false; } else { syeTargetPositionInTable = syeSourcePositionInTable - 1; }
       const splicedSye = this.currentTable.sye.splice(syeSourcePositionInTable, 1);
       this.currentTable.sye.splice(syeTargetPositionInTable, 0, ...splicedSye);
+
+      // @Action
+      this.createAction(TableActionEnum.syeMove);
 
       // Emit new dataView
       this.tableDataView.next(this.createDataView(this.currentTable));
@@ -1823,6 +1879,9 @@ export class TableService {
       // replace sorted occurrences
       const sorteredOccurrences = _.map(sorteredOccurrencesWithCount, item => item.occurrence);
       targetSye.occurrences.splice(targetIndex, 0, ...sorteredOccurrences);
+
+      // @Action
+      this.createAction(TableActionEnum.sortColumn);
 
       this.tableDataView.next(this.createDataView(this.currentTable));
     }
@@ -2034,6 +2093,10 @@ export class TableService {
       }
       if (rowDefinitionsUpdated) {
         group.label = newTitle;
+
+        // @Action
+        this.createAction(TableActionEnum.groupRename);
+
         return true;
       } else {
         // @Note this should happen only if handsontable front data (dataView) are desynchronized
@@ -2499,6 +2562,26 @@ export class TableService {
   tableHasBeenModified(table: Table): void {
     // if (table.id !== null) { table.id = null; }
     // if current table => set owned by current user = true
+  }
+
+  // -------
+  // ACTIONS
+  // -------
+  createAction(type: TableActionEnum): void {
+    const _currentActions: Array<TableAction> = this.currentActions.getValue();
+
+    const _action: TableAction = {
+      id: _.random(10000000, false),
+      type
+    };
+
+    const _mergedActions: Array<TableAction> = _.concat(_currentActions, _action);
+
+    this.currentActions.next(_mergedActions);
+  }
+
+  resetActions(): void {
+    this.currentActions.next([]);
   }
 
   // -----

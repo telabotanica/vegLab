@@ -10,11 +10,14 @@ import { NotificationService } from 'src/app/_services/notification.service';
 
 import { Subscription } from 'rxjs';
 import { TableRow } from 'src/app/_models/table-row-definition.model';
-
-import * as _ from 'lodash';
 import { Sye } from 'src/app/_models/sye.model';
 import { UserModel } from 'src/app/_models/user.model';
 import { Table } from 'src/app/_models/table.model';
+import { TableAction } from 'src/app/_models/table-action.model';
+
+import { TableActionEnum } from 'src/app/_enums/table-action-enum';
+
+import * as _ from 'lodash';
 
 @Component({
   selector: 'vl-table',
@@ -40,6 +43,10 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // VAR subscribers
   currentTableDataViewSubscription: Subscription;
+  currentTableActionsSubscription: Subscription;
+
+  // VAR Table actions
+  tableActions: Array<TableAction> = [];
 
   // Var Handsontable data
   public dataView: Array<TableRow>;
@@ -744,10 +751,28 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Current table owned by current user ?
     this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this._currentTable);
+
+    // Get current Table Actions
+    this.tableActions = this.tableService.currentActions.getValue();
+
+    // Subscribe to Table Actions
+    // Most of actions are catched within ngAfterViewInit
+    // but some actions don't need to redrawn (render) the table
+    // so we have to manually filter thoses actions and perform a change detection manually
+    this.currentTableActionsSubscription = this.tableService.currentActions.subscribe(actions => {
+      const lastAction = actions !== null && actions.length > 0 ? actions[0] : null;
+      if (lastAction !== null && lastAction.type === TableActionEnum.groupRename) {
+        this.tableActions = actions;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   ngOnDestroy() {
     if (this.currentTableDataViewSubscription) { this.currentTableDataViewSubscription.unsubscribe(); }
+    if (this.currentTableActionsSubscription) { this.currentTableActionsSubscription.unsubscribe(); }
+
+    this.tableService.resetCurrentTable();
   }
 
   ngAfterViewInit() {
@@ -776,6 +801,9 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       this.updateTableValuesAndMetadata(dataView);
 
       this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this._currentTable);
+
+      // Get current Table Actions
+      this.tableActions = this.tableService.currentActions.getValue();
 
       this.cdr.detectChanges();
     });
@@ -1048,7 +1076,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   // NEW TABLE
   // ---------
   createEmptyTable(): void {
-    this.tableService.setCurrentTable(this.tableService.createTable(), true);
+    this.tableService.createFreshTable();
   }
 
   // -----

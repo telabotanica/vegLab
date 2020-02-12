@@ -755,6 +755,10 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
           occurrences.push(rOcc);
           if (i === this.selectedOccurrencesIds.length - 1) {
             const mergedTable = this.tableService.mergeRelevesToTable(occurrences, _table, this.currentUser);
+
+            // @Action
+            console.log('MERGE RELEVES TO TABLE');
+
             this.tableService.setCurrentTable(mergedTable, true);
           }
           i++;
