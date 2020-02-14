@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation, OnDestroy, Input } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 
@@ -45,7 +45,7 @@ import * as moment from 'moment-timezone';
 import { RepositoryItemModel } from 'tb-tsb-lib';
 import { NominatimObject } from 'tb-geoloc-lib';
 import { flatMap, map } from 'rxjs/operators';
-import { of, Subscription } from 'rxjs';
+import { of, Subscription, BehaviorSubject } from 'rxjs';
 import { MatStepper } from '@angular/material';
 
 @Component({
@@ -94,15 +94,18 @@ export class TableImportComponent implements OnInit, OnDestroy {
   contentFullWidth = false;
 
   // step health
-  importFile: {status: 'complete' | 'warning' | 'error' | 'pending', messages: Array<string>} = {status: 'pending', messages: []};
+  importFileStatus: BehaviorSubject<'complete' | 'warning' | 'error' | 'pending'> = new BehaviorSubject<'complete' | 'warning' | 'error' | 'pending'>('pending');
+  importFileMessages: BehaviorSubject<Array<string>> = new BehaviorSubject<Array<string>>([]);
+
+  // importFile: BehaviorSubject<{status: 'complete' | 'warning' | 'error' | 'pending', messages: Array<string>}> = new BehaviorSubject<{status: 'complete' | 'warning' | 'error' | 'pending', messages: Array<string>}>({status: 'pending', messages: []});
 
   // step status
-  stepNames: StepStatus =        { started: false, currentStatus: 'pending', message: 'Lancez la vérification des noms pour commencer', tip: ''};
-  stepPlaces: StepStatus =       { started: false, currentStatus: 'pending', message: 'Lancez la vérification des localisations pour commencer', tip: ''};
-  stepAuthorsDates: StepStatus = { started: false, currentStatus: 'pending', message: 'Lancez la vérification des auteurs et des dates pour commencer', tip: ''};
-  stepMetadata: StepStatus =     { started: false, currentStatus: 'pending', message: 'Lancez la vérification des métadonnées pour commencer', tip: ''};
-  stepBiblio: StepStatus =       { started: false, currentStatus: 'pending', message: 'Lancez la vérification des références bibliographiques pour commencer', tip: '' };
-  stepValidation: StepStatus =   { started: false, currentStatus: 'pending', message: 'Lancez la vérification des identifications pour commencer', tip: '' };
+  stepNames: BehaviorSubject<StepStatus> =        new BehaviorSubject<StepStatus>({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des noms pour commencer', tip: ''});
+  stepPlaces: BehaviorSubject<StepStatus> =       new BehaviorSubject<StepStatus> ({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des localisations pour commencer', tip: ''});
+  stepAuthorsDates: BehaviorSubject<StepStatus> = new BehaviorSubject<StepStatus> ({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des auteurs et des dates pour commencer', tip: ''});
+  stepMetadata: BehaviorSubject<StepStatus> =     new BehaviorSubject<StepStatus> ({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des métadonnées pour commencer', tip: ''});
+  stepBiblio: BehaviorSubject<StepStatus> =       new BehaviorSubject<StepStatus> ({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des références bibliographiques pour commencer', tip: '' });
+  stepValidation: BehaviorSubject<StepStatus> =   new BehaviorSubject<StepStatus> ({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des identifications pour commencer', tip: '' });
 
   // File rows / col properties
   GROUP_ROW_POS         = { initialPos: 0,  groupPosition: 0, keywords: ['Groupe'] };
@@ -254,7 +257,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
     }
 
     // Set initial import status
-    this.importFile.status = 'pending';
+    this.importFileStatus.next('pending');
   }
 
   ngOnDestroy() {
@@ -271,14 +274,14 @@ export class TableImportComponent implements OnInit, OnDestroy {
     this.rawMetadata = [];
     this.rawContent = [];
 
-    this.importFile.status = 'pending';
-    this.importFile.messages = [];
-    this.stepNames =        { started: false, currentStatus: 'pending', message: 'Lancez la vérification des noms pour commencer', tip: ''};
-    this.stepPlaces =       { started: false, currentStatus: 'pending', message: 'Lancez la vérification des localisations pour commencer', tip: ''};
-    this.stepAuthorsDates = { started: false, currentStatus: 'pending', message: 'Lancez la vérification des auteurs et des dates pour commencer', tip: ''};
-    this.stepMetadata =     { started: false, currentStatus: 'pending', message: 'Lancez la vérification des métadonnées pour commencer', tip: ''};
-    this.stepBiblio =       { started: false, currentStatus: 'pending', message: 'Lancez la vérification des références bibliographiques pour commencer', tip: '' };
-    this.stepValidation =   { started: false, currentStatus: 'pending', message: 'Lancez la vérification des identifications pour commencer', tip: '' };
+    this.importFileStatus.next('pending');
+    this.importFileMessages.next([]);
+    this.stepNames.next({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des noms pour commencer', tip: ''});
+    this.stepPlaces.next({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des localisations pour commencer', tip: ''});
+    this.stepAuthorsDates.next({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des auteurs et des dates pour commencer', tip: ''});
+    this.stepMetadata.next({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des métadonnées pour commencer', tip: ''});
+    this.stepBiblio.next({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des références bibliographiques pour commencer', tip: '' });
+    this.stepValidation.next({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des identifications pour commencer', tip: '' });
 
     this.taxonomicList = [];
     this.locationList = [];
@@ -326,8 +329,8 @@ export class TableImportComponent implements OnInit, OnDestroy {
    * @param data array of rejected files
    */
   rejectedFiles(data: Array<RejectedFileData>): void {
-    this.importFile.status = 'error';
-    this.importFile.messages = ['Le fichier importé n\'est pas au bon format'];
+    this.importFileStatus.next('error');
+    this.importFileMessagesPush('Le fichier importé n\'est pas au bon format');
   }
 
   /**
@@ -336,6 +339,12 @@ export class TableImportComponent implements OnInit, OnDestroy {
    */
   deletedFiles(data: Array<FileData>): void {
     this.resetComponent();
+  }
+
+  importFileMessagesPush(message: string): void {
+    const _ifMessages = this.importFileMessages.getValue();
+    _ifMessages.push(message);
+    this.importFileMessages.next(_ifMessages);
   }
 
   // ********
@@ -349,20 +358,23 @@ export class TableImportComponent implements OnInit, OnDestroy {
             // Csv file has some errors, log to user and abort
             console.log(results.errors);
             this.notificationService.error(results.errors.toString());
-            this.importFile.status = 'error';
-            this.importFile.messages = ['Le fichier importé n\'est pas conforme'];
+            this.importFileStatus.next('error');
+            this.importFileMessagesPush('Le fichier importé n\'est pas conforme');
           } else {
             this.parsedCsvFile = results.data;
             console.log(this.parsedCsvFile);
             this.splitCsvFile();
             this.checkImportedFile(); // chekcs CSV errors and change this.importFile status and messages
-            if (this.importFile.status === 'pending') { this.importFile = {status: 'complete', messages: ['Votre fichier est conforme']}; }
+            if (this.importFileStatus.getValue() === 'pending') {
+              this.importFileStatus.next('complete');
+              this.importFileMessagesPush('Votre fichier est conforme');
+            }
           }
         }
       });
     } else {
-      this.importFile.status = 'error';
-      this.importFile.messages = ['Le fichier a bien été chargé mais nous n\'arrivons pas à lire les données'];
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush('Le fichier a bien été chargé mais nous n\'arrivons pas à lire les données');
     }
   }
 
@@ -438,105 +450,105 @@ export class TableImportComponent implements OnInit, OnDestroy {
   checkImportedFile(): void {
     // 0. Keywords
     if (this.GROUP_ROW_POS.keywords.indexOf(this.rawHeaders[this.GROUP_ROW_POS.groupPosition][this.ignoreFirstXCols - 1]) === -1) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push(`Votre tableau ne contient pas de donnée '${this.GROUP_ROW_POS.keywords.toString()}'`);
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush(`Votre tableau ne contient pas de donnée '${this.GROUP_ROW_POS.keywords.toString()}'`);
     }
     if (this.REFERENCE_ROW_POS.keywords.indexOf(this.rawHeaders[this.REFERENCE_ROW_POS.groupPosition][this.ignoreFirstXCols - 1]) === -1) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push(`Votre tableau ne contient pas de donnée '${this.REFERENCE_ROW_POS.keywords.toString()}'`);
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush(`Votre tableau ne contient pas de donnée '${this.REFERENCE_ROW_POS.keywords.toString()}'`);
     }
     if (this.AUTHOR_ROW_POS.keywords.indexOf(this.rawHeaders[this.AUTHOR_ROW_POS.groupPosition][this.ignoreFirstXCols - 1]) === -1) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push(`Votre tableau ne contient pas de donnée '${this.AUTHOR_ROW_POS.keywords.toString()}'`);
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush(`Votre tableau ne contient pas de donnée '${this.AUTHOR_ROW_POS.keywords.toString()}'`);
     }
     if (this.DATE_ROW_POS.keywords.indexOf(this.rawHeaders[this.DATE_ROW_POS.groupPosition][this.ignoreFirstXCols - 1]) === -1) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push(`Votre tableau ne contient pas de donnée '${this.DATE_ROW_POS.keywords.toString()}'`);
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush(`Votre tableau ne contient pas de donnée '${this.DATE_ROW_POS.keywords.toString()}'`);
     }
 
     if (this.LATITUDE_ROW_POS.keywords.indexOf(this.rawLocation[this.LATITUDE_ROW_POS.groupPosition][this.ignoreFirstXCols - 1]) === -1) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push(`Votre tableau ne contient pas de donnée '${this.LATITUDE_ROW_POS.keywords.toString()}'`);
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush(`Votre tableau ne contient pas de donnée '${this.LATITUDE_ROW_POS.keywords.toString()}'`);
     }
     if (this.LONGITUDE_ROW_POS.keywords.indexOf(this.rawLocation[this.LONGITUDE_ROW_POS.groupPosition][this.ignoreFirstXCols - 1]) === -1) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push(`Votre tableau ne contient pas de donnée '${this.LONGITUDE_ROW_POS.keywords.toString()}'`);
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush(`Votre tableau ne contient pas de donnée '${this.LONGITUDE_ROW_POS.keywords.toString()}'`);
     }
     if (this.ELEVATION_ROW_POS.keywords.indexOf(this.rawLocation[this.ELEVATION_ROW_POS.groupPosition][this.ignoreFirstXCols - 1]) === -1) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push(`Votre tableau ne contient pas de donnée '${this.ELEVATION_ROW_POS.keywords.toString()}'`);
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush(`Votre tableau ne contient pas de donnée '${this.ELEVATION_ROW_POS.keywords.toString()}'`);
     }
     if (this.COUNTRY_ROW_POS.keywords.indexOf(this.rawLocation[this.COUNTRY_ROW_POS.groupPosition][this.ignoreFirstXCols - 1]) === -1) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push(`Votre tableau ne contient pas de donnée '${this.COUNTRY_ROW_POS.keywords.toString()}'`);
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush(`Votre tableau ne contient pas de donnée '${this.COUNTRY_ROW_POS.keywords.toString()}'`);
     }
     if (this.DEPARTEMENT_ROW_POS.keywords.indexOf(this.rawLocation[this.DEPARTEMENT_ROW_POS.groupPosition][this.ignoreFirstXCols - 1]) === -1) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push(`Votre tableau ne contient pas de donnée '${this.DEPARTEMENT_ROW_POS.keywords.toString()}'`);
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush(`Votre tableau ne contient pas de donnée '${this.DEPARTEMENT_ROW_POS.keywords.toString()}'`);
     }
     if (this.CITY_ROW_POS.keywords.indexOf(this.rawLocation[this.CITY_ROW_POS.groupPosition][this.ignoreFirstXCols - 1]) === -1) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push(`Votre tableau ne contient pas de donnée '${this.CITY_ROW_POS.keywords.toString()}'`);
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush(`Votre tableau ne contient pas de donnée '${this.CITY_ROW_POS.keywords.toString()}'`);
     }
     if (this.PLACE_ROW_POS.keywords.indexOf(this.rawLocation[this.PLACE_ROW_POS.groupPosition][this.ignoreFirstXCols - 1]) === -1) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push(`Votre tableau ne contient pas de donnée '${this.PLACE_ROW_POS.keywords.toString()}'`);
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush(`Votre tableau ne contient pas de donnée '${this.PLACE_ROW_POS.keywords.toString()}'`);
     }
 
     if (this.REPOSITORY_ROW_POS.keywords.indexOf(this.rawValidation[this.REPOSITORY_ROW_POS.groupPosition][this.ignoreFirstXCols - 1]) === -1) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push(`Votre tableau ne contient pas de donnée '${this.REPOSITORY_ROW_POS.keywords.toString()}'`);
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush(`Votre tableau ne contient pas de donnée '${this.REPOSITORY_ROW_POS.keywords.toString()}'`);
     }
     if (this.REPOSITORY_ID_ROW_POS.keywords.indexOf(this.rawValidation[this.REPOSITORY_ID_ROW_POS.groupPosition][this.ignoreFirstXCols - 1]) === -1) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push(`Votre tableau ne contient pas de donnée '${this.REPOSITORY_ID_ROW_POS.keywords.toString()}'`);
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush(`Votre tableau ne contient pas de donnée '${this.REPOSITORY_ID_ROW_POS.keywords.toString()}'`);
     }
 
     // 0. Empty columns
     if (!this.noEmptyColumn(this.spliceStartingCols(this.rawHeaders))) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push('Votre tableau contient un ou plusieurs colonnes d\'en-tête vide');
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush('Votre tableau contient un ou plusieurs colonnes d\'en-tête vide');
     }
 
     // 0. Rows size
     if (!this.arrayConstantRowSize(this.spliceStartingCols(this.rawHeaders))) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push('Les valeurs des lignes d\'en-tête doivent contenir un nombre de données identiques');
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush('Les valeurs des lignes d\'en-tête doivent contenir un nombre de données identiques');
     }
 
     // 1. Must contains data for Groupe
     const group = this.spliceXCols(this.rawHeaders[this.GROUP_ROW_POS.groupPosition], this.ignoreFirstXCols);
     if (!this.noEmptyValues(group)) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push('Les valeurs de \'Groupe\' sont incomplètes');
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush('Les valeurs de \'Groupe\' sont incomplètes');
     }
 
     // 2. Must contains data for Numéro de relevé + no duplicates + format
     const references = this.spliceXCols(this.rawHeaders[this.REPOSITORY_ID_ROW_POS.groupPosition], this.ignoreFirstXCols);
     if (!this.noEmptyValues(references)) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push('Les valeurs de \'Numéro de relevé\' sont incomplètes');
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush('Les valeurs de \'Numéro de relevé\' sont incomplètes');
     }
     if (!this.noDuplicate(references)) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push('Les valeurs de \'Numéro de relevé\' contiennent des doublons');
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush('Les valeurs de \'Numéro de relevé\' contiennent des doublons');
     }
     if (!this.isInteger(references)) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push('Les valeurs de \'Numéro de relevé\' doivent être des nombres entiers');
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush('Les valeurs de \'Numéro de relevé\' doivent être des nombres entiers');
     }
 
     // 3. Must contains data for Auteur + check size
     const author = this.spliceXCols(this.rawHeaders[this.AUTHOR_ROW_POS.groupPosition], this.ignoreFirstXCols);
     if (!this.noEmptyValues(author)) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push('Les valeurs de \'Auteur\' sont incomplètes');
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush('Les valeurs de \'Auteur\' sont incomplètes');
     }
     // Must contains data for Date + check size
     const date = this.spliceXCols(this.rawHeaders[this.DATE_ROW_POS.groupPosition], this.ignoreFirstXCols);
     if (!this.noEmptyValues(date)) {
-      this.importFile.status = 'error';
-      this.importFile.messages.push('Les valeurs de \'Date\' sont incomplètes');
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush('Les valeurs de \'Date\' sont incomplètes');
     }
 
     // Nomen must be set
@@ -566,8 +578,8 @@ export class TableImportComponent implements OnInit, OnDestroy {
         if (this.isArrayEmpty(coefValues)) {
           // no coef value
         } else {
-          this.importFile.status = 'error';
-          this.importFile.messages.push(`La ligne ${j} ne contient aucune valeur 'Nomen' ni 'Strate' mais présente des coefficients`);
+          this.importFileStatus.next('error');
+          this.importFileMessagesPush(`La ligne ${j} ne contient aucune valeur 'Nomen' ni 'Strate' mais présente des coefficients`);
         }
       }
       j++;
@@ -583,8 +595,8 @@ export class TableImportComponent implements OnInit, OnDestroy {
         const coefValues = _.takeRight(row, row.length - this.COEF_MATRIX_START_COL);
         if (this.isArrayEmpty(coefValues)) {
           // no coef value
-          this.importFile.status = 'error';
-          this.importFile.messages.push(`La ligne ${k} contient une valeur 'Nomen' ou 'Strate' mais aucun coefficient`);
+          this.importFileStatus.next('error');
+          this.importFileMessagesPush(`La ligne ${k} contient une valeur 'Nomen' ou 'Strate' mais aucun coefficient`);
         }
       }
       k++;
@@ -779,10 +791,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
         this.isLoadingTaxonomicList = (countRow === rowNb) ? false : true;
       } else if (currentContent !== undefined && Number(t[this.NOMEN_COL_POS.position]) && useRepo !== null && useRepo !== 'otherunknown') {
         // row with nomenclatural data
-        this.stepNames.currentStatus = 'pending';
-        this.stepNames.started = true;
-        this.stepNames.message = 'Recherche des informations en cours...';
-        this.stepNames.tip = 'Merci de patienter';
+        this.stepNames.next({currentStatus: 'pending', started: true, message: 'Recherche des informations en cours...', tip: 'Merci de patienter'});
 
         if (_.find(availableRepositories, ar => ar.id === inputRepo) !== undefined) {
           useRepo = inputRepo;
@@ -814,7 +823,8 @@ export class TableImportComponent implements OnInit, OnDestroy {
             // this.isLoadingTaxonomicList = (countRow === rowNb) ? false : true;
             if (countRow === rowNb) {
               this.isLoadingTaxonomicList = false;
-              this.stepNames.currentStatus = 'complete';
+              const _stepName = this.stepNames.getValue();
+              this.stepNames.next({currentStatus: 'complete', started: _stepName.started, message: _stepName.message, tip: _stepName.tip});
               this.checkNamesStatus();
             } else { this.isLoadingTaxonomicList = true; }
           },
@@ -841,9 +851,8 @@ export class TableImportComponent implements OnInit, OnDestroy {
             // this.isLoadingTaxonomicList = (countRow === rowNb) ? false : true;
             if (countRow === rowNb) {
               this.isLoadingTaxonomicList = false;
-              this.stepNames.currentStatus = 'error';
-              this.stepNames.message = 'Impossible de récupérer tous les noms';
-              this.stepNames.tip = 'Le serveur ne répond pas';  // @Todo @Important log error and notify user !!
+              const _stepNames = this.stepNames.getValue();
+              this.stepNames.next({currentStatus: 'error', started: _stepNames.started, message: 'Impossible de récupérer tous les noms', tip: 'Le serveur ne répond pas'});
               this.checkNamesStatus();
             } else { this.isLoadingTaxonomicList = true; }
           }
@@ -872,14 +881,16 @@ export class TableImportComponent implements OnInit, OnDestroy {
         // this.isLoadingTaxonomicList = (countRow === rowNb) ? false : true;
         if (countRow === rowNb) {
           this.isLoadingTaxonomicList = false;
-          this.stepNames.currentStatus = 'complete';
+          const _stepNames = this.stepNames.getValue();
+          this.stepNames.next({currentStatus: 'complete', started: _stepNames.started, message: _stepNames.message, tip: _stepNames.tip});
           this.checkNamesStatus();
         } else { this.isLoadingTaxonomicList = true; }
       } else {
         countRow++;
         if (countRow === rowNb) {
           this.isLoadingTaxonomicList = false;
-          this.stepNames.currentStatus = 'complete';
+          const _stepNames = this.stepNames.getValue();
+          this.stepNames.next({currentStatus: 'complete', started: _stepNames.started, message: _stepNames.message, tip: _stepNames.tip});
           this.checkNamesStatus();
         }
       }
@@ -891,16 +902,13 @@ export class TableImportComponent implements OnInit, OnDestroy {
     for (const item of this.taxonomicList) {
       if (!item.rim || item.rim.repository === 'otherunknown') { countUnknonwnRepositoryItems++; }
     }
+    const _stepNames = this.stepNames.getValue();
     if (countUnknonwnRepositoryItems > 0) {
       // At less 1 item with 'other/unknown' repository
-      this.stepNames.currentStatus = 'warning';
-      this.stepNames.message = 'Certains noms ne sont pas liés à un référentiel';
-      this.stepNames.tip = 'Essayez de lier le plus de noms possible à un référentiel dans votre fichier d\'origine. Continuez si certains noms ne sont pas disponibles dans les référentiels';
+      this.stepNames.next({currentStatus: 'warning', started: _stepNames.started, message: 'Certains noms ne sont pas liés à un référentiel', tip: 'Essayez de lier le plus de noms possible à un référentiel dans votre fichier d\'origine. Continuez si certains noms ne sont pas disponibles dans les référentiels'});
     } else {
       // Every item has a repository
-      this.stepNames.currentStatus = 'complete';
-      this.stepNames.message = 'Parfait !';
-      this.stepNames.tip = 'Vous pouvez passer à l\'étape suivante';
+      this.stepNames.next({currentStatus: 'complete', started: _stepNames.started, message: 'Parfait !', tip: 'Vous pouvez passer à l\'étape suivante'});
     }
   }
 
@@ -939,8 +947,8 @@ export class TableImportComponent implements OnInit, OnDestroy {
   }
 
   setAuthorDateList() {
-    this.stepAuthorsDates.currentStatus = 'complete';
-    this.stepAuthorsDates.started = true;
+    const _stepAuthorsDates = this.stepAuthorsDates.getValue();
+    this.stepAuthorsDates.next({currentStatus: 'complete', started: true, message: _stepAuthorsDates.message, tip: _stepAuthorsDates.tip});
 
     this.prepareAuthorList();
     this.setDateList();
@@ -995,14 +1003,11 @@ export class TableImportComponent implements OnInit, OnDestroy {
         globalStatus = 'warning';
       }
     }
+    const _stepAuthorsDates = this.stepAuthorsDates.getValue();
     if (globalStatus === 'warning') {
-      this.stepAuthorsDates.currentStatus = 'warning';
-      this.stepAuthorsDates.message = 'Certain(e)s auteurs ou dates ne sont pas valides';
-      this.stepAuthorsDates.tip = 'Essayez de valider tous les auteurs et toutes les dates. Vous pouvez continuer avec des données manquantes';
+      this.stepAuthorsDates.next({currentStatus: 'warning', started: _stepAuthorsDates.started, message: 'Certain(e)s auteurs ou dates ne sont pas valides', tip: 'Essayez de valider tous les auteurs et toutes les dates. Vous pouvez continuer avec des données manquantes'});
     } else {
-      this.stepAuthorsDates.currentStatus = 'complete';
-      this.stepAuthorsDates.message = 'Parfait !';
-      this.stepAuthorsDates.tip = 'Vous pouvez passer à l\'étape suivante';
+      this.stepAuthorsDates.next({currentStatus: 'complete', started: _stepAuthorsDates.started, message: 'Parfait !', tip: 'Vous pouvez passer à l\'étape suivante'});
     }
   }
 
@@ -1171,7 +1176,8 @@ export class TableImportComponent implements OnInit, OnDestroy {
   }
 
   checkBiblioStatus() {
-    this.stepBiblio.started = true;
+    const _stepBiblio = this.stepBiblio.getValue();
+    this.stepBiblio.next({currentStatus: _stepBiblio.currentStatus, started: true, message: _stepBiblio.message, tip: _stepBiblio.tip});
     let globalStatus = '';
     for (const biblio of this.biblioList) {
       if (biblio.biblioSelected == null) {
@@ -1179,13 +1185,9 @@ export class TableImportComponent implements OnInit, OnDestroy {
       }
     }
     if (globalStatus === 'warning') {
-      this.stepBiblio.currentStatus = 'warning';
-      this.stepBiblio.message = 'Certaines données biblio. ne sont pas valides';
-      this.stepBiblio.tip = 'Essayez de valider toutes les références. Vous pouvez continuer avec des références manquantes';
+      this.stepBiblio.next({currentStatus: 'warning', started: _stepBiblio.started, message: 'Certaines données biblio. ne sont pas valides', tip: 'Essayez de valider toutes les références. Vous pouvez continuer avec des références manquantes'});
     } else {
-      this.stepBiblio.currentStatus = 'complete';
-      this.stepBiblio.message = 'Parfait !';
-      this.stepBiblio.tip = 'Vous pouvez passer à l\'étape suivante';
+      this.stepBiblio.next({currentStatus: 'complete', started: _stepBiblio.started, message: 'Parfait !', tip: 'Vous pouvez passer à l\'étape suivante'});
     }
   }
 
@@ -1270,10 +1272,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
   searchPlaces(): void {
 
-    this.stepPlaces.started = true;
-    this.stepPlaces.currentStatus = 'pending';
-    this.stepPlaces.message = 'Recherche des informations géographiques';
-    this.stepPlaces.tip = 'Merci de patienter...';
+    this.stepPlaces.next({currentStatus: 'pending', started: true, message: 'Recherche des informations géographiques', tip: 'Merci de patienter...'});
 
     if (this.locationList.length > 0) {
       for (const location of this.locationList) {
@@ -1514,15 +1513,11 @@ export class TableImportComponent implements OnInit, OnDestroy {
     for (const location of this.locationList) {
       if (this.isLocationComplete(location)) { nbCompletedLocation++; }
     }
-
+    const _stepPlaces = this.stepPlaces.getValue();
     if (nbCompletedLocation === this.locationList.length) {
-      this.stepPlaces.currentStatus = 'complete';
-      this.stepPlaces.message = 'Parfait !';
-      this.stepPlaces.tip = 'Vous pouvez passer à l\'étape suivante';
+      this.stepPlaces.next({currentStatus: 'complete', started: _stepPlaces.started, message: 'Parfait !', tip: 'Vous pouvez passer à l\'étape suivante'});
     } else {
-      this.stepPlaces.currentStatus = 'warning';
-      this.stepPlaces.message = 'Certains relevés ne sont pas localisés';
-      this.stepPlaces.tip = 'Essayez de localiser le plus de relevés possible. Continuez si certains relevés ne peuvent l\'être';
+      this.stepPlaces.next({currentStatus: 'warning', started: _stepPlaces.started, message: 'Certains relevés ne sont pas localisés', tip: 'Essayez de localiser le plus de relevés possible. Continuez si certains relevés ne peuvent l\'être'});
     }
   }
 
@@ -1557,9 +1552,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
   }
 
   setMetadataList() {
-    this.stepMetadata.started = true;
-    this.stepMetadata.currentStatus = 'pending';
-    this.stepMetadata.message = 'Chargement des données en cours';
+    this.stepMetadata.next({currentStatus: 'pending', started: true, message: 'Chargement des données en cours', tip: 'Merci de patienter...'});
     this.prepareMetadataList();
     if (this.metadataList.length > 0 && this.rawMetadata.length > 0) {
       console.log('RAW META', this.rawMetadata);
@@ -1616,14 +1609,11 @@ export class TableImportComponent implements OnInit, OnDestroy {
         if (!meta.checkedValue.isValid) { countUncheckedMetadata++; }
       }
     }
+    const _stepMetadata = this.stepMetadata.getValue();
     if (countUncheckedMetadata > 0) {
-      this.stepMetadata.currentStatus = 'warning';
-      this.stepMetadata.message = 'Certaines métadonnées ne sont pas validées';
-      this.stepMetadata.tip = 'Complétez au mieux ces données. Les données incomplètes ne seront pas importées';
+      this.stepMetadata.next({currentStatus: 'warning', started: _stepMetadata.started, message: 'Certaines métadonnées ne sont pas validées', tip: 'Complétez au mieux ces données. Les données incomplètes ne seront pas importées'});
     } else {
-      this.stepMetadata.currentStatus = 'complete';
-      this.stepMetadata.message = 'Parfait !';
-      this.stepMetadata.tip = 'Vous pouvez passer à l\'étape suivante';
+      this.stepMetadata.next({currentStatus: 'complete', started: _stepMetadata.started, message: 'Parfait !', tip: 'Vous pouvez passer à l\'étape suivante'});
     }
   }
 
@@ -1845,11 +1835,10 @@ export class TableImportComponent implements OnInit, OnDestroy {
   }
 
   setValidationList(): void {
-    this.stepValidation.started = true;
+    this.stepValidation.next({currentStatus: 'pending', started: true, message: 'Chargement des données', tip: 'Merci de patienter'});
     this.prepareValidationList();
     this.checkRepositoryValues();
     this.consolidRepositoryValues();  // asynchronous
-    this.stepValidation.message = 'Chargement des données';
   }
 
   updateStepValidationStatus(): void {
@@ -1865,14 +1854,11 @@ export class TableImportComponent implements OnInit, OnDestroy {
       }
     }
 
+    const _stepValidation = this.stepValidation.getValue();
     if (unconsolidedData === 0) {
-      this.stepValidation.currentStatus = 'complete';
-      this.stepValidation.message = 'Parfait !';
-      this.stepValidation.tip = '';
+      this.stepValidation.next({currentStatus: 'complete', started: _stepValidation.started, message: 'Parfait !', tip: ''});
     } else {
-      this.stepValidation.currentStatus = 'warning';
-      this.stepValidation.message = 'Certains éléments ne sont pas identifiés';
-      this.stepValidation.tip = 'Complétez au mieux les identifications et essayant de nommer les végétations d\'après un référentiel. Cette étape n\'est pas obligatoire.';
+      this.stepValidation.next({currentStatus: 'warning', started: _stepValidation.started, message: 'Certains éléments ne sont pas identifiés', tip: 'Complétez au mieux les identifications et essayant de nommer les végétations d\'après un référentiel. Cette étape n\'est pas obligatoire.'});
     }
   }
 
@@ -2719,13 +2705,13 @@ export class TableImportComponent implements OnInit, OnDestroy {
   }
 
   allStepsCompleted(): boolean {
-    return this.importFile.status === 'complete'
-           && this.stepNames.started
-           && this.stepPlaces.started
-           && this.stepAuthorsDates.started
-           && this.stepMetadata.started
-           && this.stepBiblio.started
-           && this.stepValidation.started;
+    return this.importFileStatus.getValue() === 'complete'
+           && this.stepNames.getValue().started
+           && this.stepPlaces.getValue().started
+           && this.stepAuthorsDates.getValue().started
+           && this.stepMetadata.getValue().started
+           && this.stepBiblio.getValue().started
+           && this.stepValidation.getValue().started;
   }
 
 

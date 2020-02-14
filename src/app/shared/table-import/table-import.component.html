@@ -43,7 +43,7 @@
           (deletedFiles)="deletedFiles($event)">
         </tb-dropfile-box>
 
-        <div *ngIf="importFile.status === 'pending'" class="import-table-notice">
+        <div *ngIf="(importFileStatus | async) === 'pending'" class="import-table-notice">
           <p>Vous allez importez un tableau. Ce processus est rigoureux.</p>
           <p>
             Le tableau que vous fournissez doit suivre le modèle indiqué :
@@ -59,16 +59,16 @@
       <div class="step-status">
         <div class="step-status">
           <!-- Status-->
-          <div class="status-box" [ngClass]="importFile.status">
+          <div class="status-box" [ngClass]="(importFileStatus | async)">
             <div class="tick">
-              <mat-icon *ngIf="importFile.status === 'error'">priority_high</mat-icon>
-              <mat-icon *ngIf="importFile.status === 'aborted'">priority_high</mat-icon>
-              <mat-icon *ngIf="importFile.status === 'complete'">done</mat-icon>
-              <mat-icon *ngIf="importFile.status === 'pending'">more_horiz</mat-icon>
+              <mat-icon *ngIf="(importFileStatus | async) === 'error'">priority_high</mat-icon>
+              <mat-icon *ngIf="(importFileStatus | async) === 'aborted'">priority_high</mat-icon>
+              <mat-icon *ngIf="(importFileStatus | async) === 'complete'">done</mat-icon>
+              <mat-icon *ngIf="(importFileStatus | async) === 'pending'">more_horiz</mat-icon>
             </div>
             <div class=content>
               <div class="title">Importation du fichier</div>
-              <div class="sub-title" *ngFor="let message of importFile?.messages">{{ message }}</div>
+              <div class="sub-title" *ngFor="let message of (importFileMessages | async)">{{ message }}</div>
             </div>
             <div class="actions">
               <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
@@ -86,7 +86,7 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <button mat-button (click)="setTaxonomicList()" [disabled]="importFile.status !== 'complete' || stepNames.started">Lancer la vérification des noms</button>
+          <button mat-button (click)="setTaxonomicList()" [disabled]="(importFileStatus | async) !== 'complete' || (stepNames | async)?.started">Lancer la vérification des noms</button>
         </div>
       </div>
 
@@ -157,16 +157,16 @@
       </div>
 
       <div class="step-status">
-        <div class="status-box" [ngClass]="stepNames.currentStatus">
+        <div class="status-box" [ngClass]="(stepNames | async)?.currentStatus">
           <div class="tick">
-            <mat-icon *ngIf="stepNames.currentStatus === 'complete'">done</mat-icon>
-            <mat-icon *ngIf="stepNames.currentStatus === 'warning'">priority_high</mat-icon>
-            <mat-icon *ngIf="stepNames.currentStatus === 'error'">close</mat-icon>
-            <mat-icon *ngIf="stepNames.currentStatus === 'pending'">more_horiz</mat-icon>
+            <mat-icon *ngIf="(stepNames | async)?.currentStatus === 'complete'">done</mat-icon>
+            <mat-icon *ngIf="(stepNames | async)?.currentStatus === 'warning'">priority_high</mat-icon>
+            <mat-icon *ngIf="(stepNames | async)?.currentStatus === 'error'">close</mat-icon>
+            <mat-icon *ngIf="(stepNames | async)?.currentStatus === 'pending'">more_horiz</mat-icon>
           </div>
           <div class=content>
-            <div class="title">{{ stepNames.message }}</div>
-            <div class="sub-title">{{ stepNames.tip }}</div>
+            <div class="title">{{ (stepNames | async)?.message }}</div>
+            <div class="sub-title">{{ (stepNames | async)?.tip }}</div>
           </div>
           <div class="actions">
             <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
@@ -183,7 +183,7 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <button mat-button (click)="setAuthorDateList()" [disabled]="importFile.status !== 'complete' || stepAuthorsDates.started">Lancer la vérification des auteurs et des dates</button>
+          <button mat-button (click)="setAuthorDateList()" [disabled]="(importFileStatus | async) !== 'complete' || (stepAuthorsDates | async)?.started">Lancer la vérification des auteurs et des dates</button>
         </div>
       </div>
 
@@ -307,16 +307,16 @@
       <ng-template #popDateValidationContentError>La date n'est pas valide</ng-template>
 
       <div class="step-status">
-        <div class="status-box" [ngClass]="stepAuthorsDates.currentStatus">
+        <div class="status-box" [ngClass]="(stepAuthorsDates | async)?.currentStatus">
           <div class="tick">
-            <mat-icon *ngIf="stepAuthorsDates.currentStatus === 'complete'">done</mat-icon>
-            <mat-icon *ngIf="stepAuthorsDates.currentStatus === 'warning'">priority_high</mat-icon>
-            <mat-icon *ngIf="stepAuthorsDates.currentStatus === 'error'">close</mat-icon>
-            <mat-icon *ngIf="stepAuthorsDates.currentStatus === 'pending'">more_horiz</mat-icon>
+            <mat-icon *ngIf="(stepAuthorsDates | async)?.currentStatus === 'complete'">done</mat-icon>
+            <mat-icon *ngIf="(stepAuthorsDates | async)?.currentStatus === 'warning'">priority_high</mat-icon>
+            <mat-icon *ngIf="(stepAuthorsDates | async)?.currentStatus === 'error'">close</mat-icon>
+            <mat-icon *ngIf="(stepAuthorsDates | async)?.currentStatus === 'pending'">more_horiz</mat-icon>
           </div>
           <div class=content>
-            <div class="title">{{ stepAuthorsDates.message }}</div>
-            <div class="sub-title">{{ stepAuthorsDates.tip }}</div>
+            <div class="title">{{ (stepAuthorsDates | async)?.message }}</div>
+            <div class="sub-title">{{ (stepAuthorsDates | async)?.tip }}</div>
           </div>
           <div class="actions">
             <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
@@ -334,7 +334,7 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <button mat-button (click)="setLocationList()" [disabled]="importFile.status !== 'complete' || stepPlaces.started">Lancer la vérification des localisations</button>
+          <button mat-button (click)="setLocationList()" [disabled]="(importFileStatus | async) !== 'complete' || (stepPlaces | async)?.started">Lancer la vérification des localisations</button>
         </div>
       </div>
       
@@ -472,16 +472,16 @@
       </div>
 
       <div class="step-status">
-        <div class="status-box" [ngClass]="stepPlaces.currentStatus">
+        <div class="status-box" [ngClass]="(stepPlaces | async)?.currentStatus">
           <div class="tick">
-            <mat-icon *ngIf="stepPlaces.currentStatus === 'complete'">done</mat-icon>
-            <mat-icon *ngIf="stepPlaces.currentStatus === 'warning'">priority_high</mat-icon>
-            <mat-icon *ngIf="stepPlaces.currentStatus === 'error'">close</mat-icon>
-            <mat-icon *ngIf="stepPlaces.currentStatus === 'pending'">more_horiz</mat-icon>
+            <mat-icon *ngIf="(stepPlaces | async)?.currentStatus.currentStatus === 'complete'">done</mat-icon>
+            <mat-icon *ngIf="(stepPlaces | async)?.currentStatus.currentStatus === 'warning'">priority_high</mat-icon>
+            <mat-icon *ngIf="(stepPlaces | async)?.currentStatus.currentStatus === 'error'">close</mat-icon>
+            <mat-icon *ngIf="(stepPlaces | async)?.currentStatus.currentStatus === 'pending'">more_horiz</mat-icon>
           </div>
           <div class=content>
-            <div class="title">{{ stepPlaces.message }}</div>
-            <div class="sub-title">{{ stepPlaces.tip }}</div>
+            <div class="title">{{ (stepPlaces | async)?.currentStatus.message }}</div>
+            <div class="sub-title">{{ (stepPlaces | async)?.currentStatus.tip }}</div>
           </div>
           <div class="actions">
             <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
@@ -499,7 +499,7 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <button mat-button (click)="setMetadataList()" [disabled]="importFile.status !== 'complete' || stepMetadata.started">Lancer la vérification des métadonnées</button>
+          <button mat-button (click)="setMetadataList()" [disabled]="(importFileStatus | async) !== 'complete' || (stepMetadata | async)?.started">Lancer la vérification des métadonnées</button>
         </div>
       </div>
 
@@ -613,16 +613,16 @@
       </div>
 
       <div class="step-status">
-        <div class="status-box" [ngClass]="stepMetadata.currentStatus">
+        <div class="status-box" [ngClass]="(stepMetadata | async)?.currentStatus.currentStatus">
           <div class="tick">
-            <mat-icon *ngIf="stepMetadata.currentStatus === 'complete'">done</mat-icon>
-            <mat-icon *ngIf="stepMetadata.currentStatus === 'warning'">priority_high</mat-icon>
-            <mat-icon *ngIf="stepMetadata.currentStatus === 'error'">close</mat-icon>
-            <mat-icon *ngIf="stepMetadata.currentStatus === 'pending'">more_horiz</mat-icon>
+            <mat-icon *ngIf="(stepMetadata | async)?.currentStatus === 'complete'">done</mat-icon>
+            <mat-icon *ngIf="(stepMetadata | async)?.currentStatus === 'warning'">priority_high</mat-icon>
+            <mat-icon *ngIf="(stepMetadata | async)?.currentStatus === 'error'">close</mat-icon>
+            <mat-icon *ngIf="(stepMetadata | async)?.currentStatus === 'pending'">more_horiz</mat-icon>
           </div>
           <div class=content>
-            <div class="title">{{ stepMetadata.message }}</div>
-            <div class="sub-title">{{ stepMetadata.tip }}</div>
+            <div class="title">{{ (stepMetadata | async)?.message }}</div>
+            <div class="sub-title">{{ (stepMetadata | async)?.tip }}</div>
           </div>
           <div class="actions">
             <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
@@ -640,7 +640,7 @@
 
       <div class="step-ahead">
         <div class="inline-form">
-          <button mat-button (click)="setBiblioList()" [disabled]="importFile.status !== 'complete' || stepBiblio.started">Lancer la vérification des références bibliographique</button>
+          <button mat-button (click)="setBiblioList()" [disabled]="(importFileStatus | async) !== 'complete' || (stepBiblio | async)?.started">Lancer la vérification des références bibliographique</button>
         </div>
       </div>
 
@@ -728,16 +728,16 @@
       <ng-template #popBiblioValidationContentError>La référence bibliographique n'a pas pu être identifiée. Veuillez la selectionner manuellement à l'aide du champ de recherche.</ng-template>
 
       <div class="step-status">
-        <div class="status-box" [ngClass]="stepBiblio.currentStatus">
+        <div class="status-box" [ngClass]="(stepBiblio | async)?.currentStatus">
           <div class="tick">
-            <mat-icon *ngIf="stepBiblio.currentStatus === 'complete'">done</mat-icon>
-            <mat-icon *ngIf="stepBiblio.currentStatus === 'warning'">priority_high</mat-icon>
-            <mat-icon *ngIf="stepBiblio.currentStatus === 'error'">close</mat-icon>
-            <mat-icon *ngIf="stepBiblio.currentStatus === 'pending'">more_horiz</mat-icon>
+            <mat-icon *ngIf="(stepBiblio | async)?.currentStatus === 'complete'">done</mat-icon>
+            <mat-icon *ngIf="(stepBiblio | async)?.currentStatus === 'warning'">priority_high</mat-icon>
+            <mat-icon *ngIf="(stepBiblio | async)?.currentStatus === 'error'">close</mat-icon>
+            <mat-icon *ngIf="(stepBiblio | async)?.currentStatus === 'pending'">more_horiz</mat-icon>
           </div>
           <div class=content>
-            <div class="title">{{ stepBiblio.message }}</div>
-            <div class="sub-title">{{ stepBiblio.tip }}</div>
+            <div class="title">{{ (stepBiblio | async)?.message }}</div>
+            <div class="sub-title">{{ (stepBiblio | async)?.tip }}</div>
           </div>
           <div class="actions">
             <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
@@ -754,7 +754,7 @@
 
         <div class="step-ahead">
           <div class="inline-form">
-            <button mat-button (click)="setValidationList()" [disabled]="importFile.status !== 'complete' || stepValidation.started">Lancer la vérification des identifications</button>
+            <button mat-button (click)="setValidationList()" [disabled]="(importFileStatus | async) !== 'complete' || (stepValidation | async)?.started">Lancer la vérification des identifications</button>
           </div>
         </div>
 
@@ -939,16 +939,16 @@
         
         <div class="step-status">
           <!-- Status-->
-          <div class="status-box" [ngClass]="stepValidation.currentStatus">
+          <div class="status-box" [ngClass]="(stepValidation | async)?.currentStatus">
             <div class="tick">
-              <mat-icon *ngIf="stepValidation.currentStatus === 'complete'">done</mat-icon>
-              <mat-icon *ngIf="stepValidation.currentStatus === 'warning'">priority_high</mat-icon>
-              <mat-icon *ngIf="stepValidation.currentStatus === 'error'">close</mat-icon>
-              <mat-icon *ngIf="stepValidation.currentStatus === 'pending'">more_horiz</mat-icon>
+              <mat-icon *ngIf="(stepValidation | async)?.currentStatus === 'complete'">done</mat-icon>
+              <mat-icon *ngIf="(stepValidation | async)?.currentStatus === 'warning'">priority_high</mat-icon>
+              <mat-icon *ngIf="(stepValidation | async)?.currentStatus === 'error'">close</mat-icon>
+              <mat-icon *ngIf="(stepValidation | async)?.currentStatus === 'pending'">more_horiz</mat-icon>
             </div>
             <div class=content>
-              <div class="title">{{ stepValidation.message }}</div>
-              <div class="sub-title">{{ stepValidation.tip }}</div>
+              <div class="title">{{ (stepValidation | async)?.message }}</div>
+              <div class="sub-title">{{ (stepValidation | async)?.tip }}</div>
             </div>
             <div class="actions">
               <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
