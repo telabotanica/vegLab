@@ -65,7 +65,8 @@ export class TableImportComponent implements OnInit, OnDestroy {
   @ViewChild('hiddenInput') hiddenInput: ElementRef;  // @Todo ng8 and above : add opts {read: ElementRef, static: false}
   @ViewChild('stepper') stepper: MatStepper;          // @Todo ng8 and above : add opts {read: ElementRef, static: false}
 
-  @Input() forcePostObserver = true;
+  @Input() forcePostObserver = false;
+  @Input() observerFuzzySearch = false;
 
   // Global vars
   allowedFileTypes = ['csv'];

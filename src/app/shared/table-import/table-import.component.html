@@ -221,6 +221,7 @@
                 <td mat-cell *matCellDef="let element" style="display: flex; flex-direction: row; align-items: center;">
                   <vl-observer-search
                     placeholder="auteur"
+                    [fuzzySearch]="observerFuzzySearch"
                     [observerStr]="element.authorUserInput"
                     [autoselectIfOneResult]="true"
                     (inputChange)="authorInputChange(element)"
