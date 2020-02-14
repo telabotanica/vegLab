@@ -65,6 +65,8 @@ export class TableImportComponent implements OnInit, OnDestroy {
   @ViewChild('hiddenInput') hiddenInput: ElementRef;  // @Todo ng8 and above : add opts {read: ElementRef, static: false}
   @ViewChild('stepper') stepper: MatStepper;          // @Todo ng8 and above : add opts {read: ElementRef, static: false}
 
+  @Input() forcePostObserver = true;
+
   // Global vars
   allowedFileTypes = ['csv'];
   uploadedFile: File;
@@ -948,7 +950,8 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
   setAuthorDateList() {
     const _stepAuthorsDates = this.stepAuthorsDates.getValue();
-    this.stepAuthorsDates.next({currentStatus: 'complete', started: true, message: _stepAuthorsDates.message, tip: _stepAuthorsDates.tip});
+    this.stepAuthorsDates.next({currentStatus: 'pending', started: true, message: 'Recherche des informations en cours', tip: 'Merci de patienter...'});
+    // this.stepAuthorsDates.next({currentStatus: 'complete', started: true, message: _stepAuthorsDates.message, tip: _stepAuthorsDates.tip});
 
     this.prepareAuthorList();
     this.setDateList();
@@ -972,6 +975,24 @@ export class TableImportComponent implements OnInit, OnDestroy {
   noResultForAuthorStr(author: {authorUserInput: string, noResult?: boolean, noResultFor?: string, isAddingObserver?: boolean, authorSelected?: Observer}, str: string): void {
     author.noResult = true;
     author.noResultFor = str;
+    if (this.forcePostObserver === true) {
+      this.stepAuthorsDates.next({currentStatus: 'pending', started: true, message: 'Enregistrement d\'un nouvel observateur en cours', tip: 'Merci de patineter...'});
+
+      // Force observer Creation
+      this.observerService.createObserver(str).subscribe(
+        result => {
+          author.isAddingObserver = false;
+          author.noResult = false;
+          author.noResultFor = null;
+          this.expandedElement = null;
+          author.authorSelected = result;
+          this.checkAuthorDateStatus();
+        }, error => {
+          author.isAddingObserver = false;
+          this.notificationService.error(`Nous ne parvenons pas à ajouter le nouvel observateur ${str}.`);
+        }
+      );
+    }
     this.checkAuthorDateStatus();
   }
 
