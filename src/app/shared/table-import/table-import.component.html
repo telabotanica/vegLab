@@ -474,14 +474,14 @@
       <div class="step-status">
         <div class="status-box" [ngClass]="(stepPlaces | async)?.currentStatus">
           <div class="tick">
-            <mat-icon *ngIf="(stepPlaces | async)?.currentStatus.currentStatus === 'complete'">done</mat-icon>
-            <mat-icon *ngIf="(stepPlaces | async)?.currentStatus.currentStatus === 'warning'">priority_high</mat-icon>
-            <mat-icon *ngIf="(stepPlaces | async)?.currentStatus.currentStatus === 'error'">close</mat-icon>
-            <mat-icon *ngIf="(stepPlaces | async)?.currentStatus.currentStatus === 'pending'">more_horiz</mat-icon>
+            <mat-icon *ngIf="(stepPlaces | async)?.currentStatus === 'complete'">done</mat-icon>
+            <mat-icon *ngIf="(stepPlaces | async)?.currentStatus === 'warning'">priority_high</mat-icon>
+            <mat-icon *ngIf="(stepPlaces | async)?.currentStatus === 'error'">close</mat-icon>
+            <mat-icon *ngIf="(stepPlaces | async)?.currentStatus === 'pending'">more_horiz</mat-icon>
           </div>
           <div class=content>
-            <div class="title">{{ (stepPlaces | async)?.currentStatus.message }}</div>
-            <div class="sub-title">{{ (stepPlaces | async)?.currentStatus.tip }}</div>
+            <div class="title">{{ (stepPlaces | async)?.message }}</div>
+            <div class="sub-title">{{ (stepPlaces | async)?.tip }}</div>
           </div>
           <div class="actions">
             <!--<button mat-flat-button color="primary" matStepperNext>Continuer</button>-->
@@ -613,7 +613,7 @@
       </div>
 
       <div class="step-status">
-        <div class="status-box" [ngClass]="(stepMetadata | async)?.currentStatus.currentStatus">
+        <div class="status-box" [ngClass]="(stepMetadata | async)?.currentStatus">
           <div class="tick">
             <mat-icon *ngIf="(stepMetadata | async)?.currentStatus === 'complete'">done</mat-icon>
             <mat-icon *ngIf="(stepMetadata | async)?.currentStatus === 'warning'">priority_high</mat-icon>
