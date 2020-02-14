@@ -22,12 +22,17 @@ import { TableImportComponent } from './shared/table-import/table-import.compone
 import { MyDataPageComponent } from './user/my-data-page/my-data-page.component';
 
 import { AuthGuard } from './_guards/auth.guard';
+import { CanDeactivateTableGuard } from './_guards/can-deactivate-table.guard';
 
 const routes: Routes = [
   { path: '', component: HomePageComponent },
   { path: 'login', component: LoginPageComponent },
   { path: 'phyto', component: PhytoHomePageComponent},
-  { path: 'phyto/app', component: PhytoAppPageComponent, canActivate: [AuthGuard], canActivateChild: [AuthGuard], children: [
+  { path: 'phyto/app', component: PhytoAppPageComponent,
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],
+    canDeactivate: [CanDeactivateTableGuard],
+    children: [
     { path: 'create-occurrence', component: OccurrenceFormComponent },
     { path: 'search-occurrence', component: OccurrenceSearchComponent },
     { path: 'create-table', component: TableFormComponent },

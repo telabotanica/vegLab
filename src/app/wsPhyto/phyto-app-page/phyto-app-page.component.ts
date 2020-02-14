@@ -8,6 +8,7 @@ import { WorkspaceService } from 'src/app/_services/workspace.service';
 import { WsPhytoService, WsPhytoPanels } from '../_services/ws-phyto.service';
 import { TableService } from 'src/app/_services/table.service';
 import { NotificationService } from 'src/app/_services/notification.service';
+import { DialogService } from 'src/app/_services/dialog.service';
 
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -40,11 +41,12 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
 
   constructor(private appConfig: AppConfigService,
               private menuService: MenuService,
-              private tableService: TableService,
+              public tableService: TableService,
               private wsService: WorkspaceService,
               private wsPhytoService: WsPhytoService,
               private notificationService: NotificationService,
-              public router: Router) { }
+              public router: Router,
+              public dialogService: DialogService) { }
 
   ngOnInit() {
     // Ws config
