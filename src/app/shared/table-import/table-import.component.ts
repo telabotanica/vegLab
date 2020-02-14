@@ -65,8 +65,12 @@ export class TableImportComponent implements OnInit, OnDestroy {
   @ViewChild('hiddenInput') hiddenInput: ElementRef;  // @Todo ng8 and above : add opts {read: ElementRef, static: false}
   @ViewChild('stepper') stepper: MatStepper;          // @Todo ng8 and above : add opts {read: ElementRef, static: false}
 
-  @Input() forcePostObserver = false;
-  @Input() observerFuzzySearch = false;
+  @Input() forcePostObserver = false;     // create (POST) a new Observer if no result
+  @Input() observerFuzzySearch = true;    // fuzzy will use ElastiSearch, else API Platform
+
+  @Input() forcePostBiblio = false;      // create (POST) a new Biblio if no result
+  @Input() biblioFuzzySearch = false;    // fuzzy will use ElasticSearch, else API Platform
+  @Input() autoSelectIfOneResultBiblio = true;
 
   // Global vars
   allowedFileTypes = ['csv'];
@@ -1178,6 +1182,27 @@ export class TableImportComponent implements OnInit, OnDestroy {
   noResultForBiblioStr(biblio: {biblioUserInput: string, noResult?: boolean, noResultFor?: string, isAddingBiblio?: boolean, biblioSelected?: Biblio}, str: string): void {
     biblio.noResult = true;
     biblio.noResultFor = str;
+
+    if (this.forcePostBiblio === true) {
+      this.stepBiblio.next({currentStatus: 'pending', started: true, message: 'Enregistrement d\'une nouvelle référence bibliographique en cours', tip: 'Merci de patineter...'});
+
+      // Create a new Biblio
+      biblio.isAddingBiblio = true;
+      this.biblioService.createBiblio(str).subscribe(
+        result => {
+          biblio.isAddingBiblio = false;
+          biblio.noResult = false;
+          biblio.noResultFor = null;
+          this.expandedBiblioElement = null;
+          biblio.biblioSelected = result;
+          this.checkBiblioStatus();
+        }, error => {
+          biblio.isAddingBiblio = false;
+          this.notificationService.error(`Nous ne parvenons pas à ajouter la nouvelle référence bibliographique ${str}.`);
+        }
+      );
+    }
+
     this.checkBiblioStatus();
   }
 

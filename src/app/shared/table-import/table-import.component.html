@@ -683,8 +683,8 @@
                     style="width: 100%"
                     placeholder="Ref. biblio."
                     [biblioStr]="element.biblioUserInput"
-                    [autoselectIfOneResult]="false"
-                    [fuzzySearch]="true"
+                    [autoselectIfOneResult]="autoSelectIfOneResultBiblio"
+                    [fuzzySearch]="biblioFuzzySearch"
                     (inputChange)="biblioInputChange(element)"
                     (selectedBiblio)="setSelectedBiblio(element, $event)"
                     (noResultForStr)="noResultForBiblioStr(element, $event)"></vl-biblio-search>
