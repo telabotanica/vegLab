@@ -35,7 +35,7 @@ export class BiblioService {
         {
           "fuzzy": {
             "title": {
-              "value": "${explodItem}",
+              "value": "${explodItem.toLowerCase()}",
               "fuzziness": "AUTO",
               "prefix_length": 0,
               "transpositions": "true"
