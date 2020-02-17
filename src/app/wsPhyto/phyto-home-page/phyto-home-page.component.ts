@@ -33,11 +33,11 @@ export class PhytoHomePageComponent implements OnInit {
   }
 
   setCounters(): void {
-    this.tableService.countTables(['phyto']).subscribe(result => this.countTables = result.count);
-    this.occurrenceService.countReleves(['phyto'], [], this.countTopLevelsReleves).subscribe(result => this.countReleves = result.count);
-    this.occurrenceService.countReleves(['phyto'], ['microcenosis'], this.countTopLevelsReleves).subscribe(result => this.countRelevesMicrocenosis = result.count);
-    this.occurrenceService.countReleves(['phyto'], ['synusy'], this.countTopLevelsReleves).subscribe(result => this.countRelevesSynusies = result.count);
-    this.occurrenceService.countIdiotaxons(['phyto']).subscribe(result => this.countIdiotaxons = result.count);
+    this.tableService.countTables(['phyto', 'none']).subscribe(result => this.countTables = result.count);
+    this.occurrenceService.countReleves(['phyto', 'none'], [], this.countTopLevelsReleves).subscribe(result => this.countReleves = result.count);
+    this.occurrenceService.countReleves(['phyto', 'none'], ['microcenosis'], this.countTopLevelsReleves).subscribe(result => this.countRelevesMicrocenosis = result.count);
+    this.occurrenceService.countReleves(['phyto', 'none'], ['synusy'], this.countTopLevelsReleves).subscribe(result => this.countRelevesSynusies = result.count);
+    this.occurrenceService.countIdiotaxons(['phyto', 'none']).subscribe(result => this.countIdiotaxons = result.count);
   }
 
 }

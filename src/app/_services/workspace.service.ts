@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
   providedIn: 'root'
 })
 export class WorkspaceService {
-  currentWS = new BehaviorSubject<string>('*');
+  currentWS = new BehaviorSubject<string>('none');
 
   WS: Array<{id: string, labelShort: string, labelFull: string}> = [
     {

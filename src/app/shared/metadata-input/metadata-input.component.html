@@ -1,6 +1,6 @@
 <!-- Floating number with min and max values -->
 <mat-form-field *ngIf="metadataContext.metadata.dataType == 'Décimal' && (metadataContext.metadata.minValue != null && metadataContext.metadata.maxValue != null)" [hidden]="!metadataContext.metadata.isVisible">
-  <input matInput type="number" pattern="[0-9]+([,\.][0-9]+)?" min="{{metadataContext.metadata.minValue}}" max="{{metadataContext.metadata.maxValue}}" [formControl]="metadataContext.control" placeholder="{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? '*' : '' }}" autocomplete="off">
+  <input matInput type="number" pattern="[0-9]+([,\.][0-9]+)?" min="{{metadataContext.metadata.minValue}}" max="{{metadataContext.metadata.maxValue}}" [formControl]="metadataContext.control" placeholder="{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? 'none' : '' }}" autocomplete="off">
   <mat-hint>Nombre compris entre {{metadataContext.metadata.minValue}} et {{metadataContext.metadata.maxValue}}</mat-hint>
   <mat-error *ngIf="metadataContext.control.invalid && metadataTranslation != null && metadataTranslation.errorMessage">{{ metadataTranslation.errorMessage }}</mat-error>
   <span matSuffix *ngIf="metadataContext.metadata.unit">{{metadataContext.metadata.unit}}</span>
@@ -8,7 +8,7 @@
 
 <!-- Floating number whithout min and max values -->
 <mat-form-field *ngIf="metadataContext.metadata.dataType == 'Décimal' && (!metadataContext.metadata.minValue && !metadataContext.metadata.maxValue)" [hidden]="!metadataContext.metadata.isVisible">
-  <input matInput type="number" pattern="[0-9]+([,\.][0-9]+)?" [formControl]="metadataContext.control" placeholder="{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? '*' : '' }}" autocomplete="off">
+  <input matInput type="number" pattern="[0-9]+([,\.][0-9]+)?" [formControl]="metadataContext.control" placeholder="{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? 'none' : '' }}" autocomplete="off">
   <mat-hint></mat-hint>
   <mat-error *ngIf="metadataContext.control.invalid && metadataTranslation != null && metadataTranslation.errorMessage">{{ metadataTranslation.errorMessage }}</mat-error>
   <span matSuffix *ngIf="metadataContext.metadata.unit">{{metadataContext.metadata.unit}}</span>
@@ -16,7 +16,7 @@
 
 <!-- Integer number with min and max values -->
 <mat-form-field *ngIf="metadataContext.metadata.dataType == 'Entier' && (metadataContext.metadata.minValue != null && metadataContext.metadata.maxValue != null)" [hidden]="!metadataContext.metadata.isVisible">
-  <input matInput type="number" pattern="[0-9]+" min="{{metadataContext.metadata.minValue}}" max="{{metadataContext.metadata.maxValue}}" [formControl]="metadataContext.control" placeholder="{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? '*' : '' }}" autocomplete="off">
+  <input matInput type="number" pattern="[0-9]+" min="{{metadataContext.metadata.minValue}}" max="{{metadataContext.metadata.maxValue}}" [formControl]="metadataContext.control" placeholder="{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? 'none' : '' }}" autocomplete="off">
   <mat-hint>Nombre entier compris entre {{metadataContext.metadata.minValue}} et {{metadataContext.metadata.maxValue}}</mat-hint>
   <mat-error *ngIf="metadataContext.control.invalid && metadataTranslation != null && metadataTranslation.errorMessage">{{ metadataTranslation.errorMessage }}</mat-error>
   <span matSuffix *ngIf="metadataContext.metadata.unit">{{metadataContext.metadata.unit}}</span>
@@ -24,7 +24,7 @@
 
 <!-- Integer number whithout min and max values -->
 <mat-form-field *ngIf="metadataContext.metadata.dataType == 'Entier' && (!metadataContext.metadata.minValue && !metadataContext.metadata.maxValue)" [hidden]="!metadataContext.metadata.isVisible">
-  <input matInput type="number" pattern="[0-9]+" [formControl]="metadataContext.control" placeholder="{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? '*' : '' }}" autocomplete="off">
+  <input matInput type="number" pattern="[0-9]+" [formControl]="metadataContext.control" placeholder="{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? 'none' : '' }}" autocomplete="off">
   <mat-hint></mat-hint>
   <mat-error *ngIf="metadataContext.control.invalid && metadataTranslation != null && metadataTranslation.errorMessage">{{ metadataTranslation.errorMessage }}</mat-error>
   <span matSuffix *ngIf="metadataContext.metadata.unit">{{metadataContext.metadata.unit}}</span>
@@ -32,7 +32,7 @@
 
 <!-- String with regexp -->
 <mat-form-field *ngIf="metadataContext.metadata.dataType == 'Texte' && metadataContext.metadata.regexp" [hidden]="!metadataContext.metadata.isVisible">
-  <input matInput type="text" pattern="{{metadataContext.metadata.pattern}}" [formControl]="metadataContext.control" placeholder="{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? '*' : '' }}" autocomplete="off">
+  <input matInput type="text" pattern="{{metadataContext.metadata.pattern}}" [formControl]="metadataContext.control" placeholder="{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? 'none' : '' }}" autocomplete="off">
   <mat-hint></mat-hint>
   <mat-error *ngIf="metadataContext.control.invalid && metadataTranslation != null && metadataTranslation.errorMessage">{{ metadataTranslation.errorMessage }}</mat-error>
   <span matSuffix *ngIf="metadataContext.metadata.unit">{{metadataContext.metadata.unit}}</span>
@@ -40,12 +40,12 @@
 
 <!-- Date -->
 <mat-form-field *ngIf="metadataContext.metadata.dataType == 'Date'" [hidden]="!metadataContext.metadata.isVisible">
-  <input matInput [matDatepicker]="picker" [formControl]="metadataContext.control" placeholder="{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? '*' : '' }}">
+  <input matInput [matDatepicker]="picker" [formControl]="metadataContext.control" placeholder="{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? 'none' : '' }}">
   <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
   <mat-datepicker #picker></mat-datepicker>
 </mat-form-field>
 
 <!-- Boolean -->
 <div *ngIf="metadataContext.metadata.dataType == 'Booléen'" [hidden]="!metadataContext.metadata.isVisible">
-  <mat-slide-toggle color="primary" [formControl]="metadataContext.control">{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? '*' : '' }}</mat-slide-toggle>
+  <mat-slide-toggle color="primary" [formControl]="metadataContext.control">{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? 'none' : '' }}</mat-slide-toggle>
 </div>

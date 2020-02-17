@@ -2,9 +2,9 @@
   <mat-toolbar-row>
     <a class="navbar-brand" [routerLink]="['/']">
       <div class="title">VegLab</div>
-      <div *ngIf="currentWorkspace !== '*'" class="triangle vl"></div>
+      <div *ngIf="currentWorkspace !== 'none'" class="triangle vl"></div>
     </a>
-    <a *ngIf="currentWorkspace !== '*'" class="navbar-brand ws" [routerLink]="getWorkspaceNavigationPath()">
+    <a *ngIf="currentWorkspace !== 'none'" class="navbar-brand ws" [routerLink]="getWorkspaceNavigationPath()">
       <div class="title">{{ currentWorkspace | wsLabel }}</div>
       <div class="triangle ws"></div>
     </a>

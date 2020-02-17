@@ -17,7 +17,7 @@ export class HomePageComponent implements OnInit {
               private wsService: WorkspaceService) { }
 
   ngOnInit() {
-    this.wsService.currentWS.next('*');
+    this.wsService.currentWS.next('none');
     this.menuService.setMenu(this.homeMenu);
 
     /*const o = this.occurrenceService.getEsOccurrenceWithChildrenById(47);

@@ -31,7 +31,7 @@ export class AppComponent implements OnInit {
               private ssoService: SsoService) { }
 
   ngOnInit() {
-    this.wsService.currentWS.next('*');
+    this.wsService.currentWS.next('none');
     this.metadataService.retrieveMetadataList();  // Retrieve metadatas from local storage
     this.metadataService.refreshMetadataList();   // Get metadatas from API
     this.tableService.setCurrentTable(this.tableService.createTable()); // Create a fresh table and set it as current table

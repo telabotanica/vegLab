@@ -32,7 +32,7 @@ export class LoginPageComponent implements OnInit {
 
   ngOnInit() {
     this.redirectUrl = this.route.snapshot.queryParams['redirectUrl'] || '/';
-    this.wsService.currentWS.next('*');
+    this.wsService.currentWS.next('none');
   }
 
   getErrorMessage(): string {
