@@ -1,0 +1,103 @@
+<h2>Importer un jeu de données SOPHY</h2>
+<div class="sophy-import-wrapper" fxLayout="column" fxLayoutAlign="start center">
+  <!-- Files upload -->
+  <div fxLayout="row" fxLayoutAlign="center center" class="vl-dropfile-wrapper">
+    <tb-dropfile-box
+      label="Ajouter les fichiers CSV"
+      [showTable]="false"
+      [maxFileSize]="maxFileSize"
+      [allowedFileTypes]="allowedFileTypes"
+      (acceptedFiles)="acceptedFiles($event)"
+      (rejectedFiles)="rejectedFiles($event)"
+      (deletedFiles)="deletedFiles($event)">
+    </tb-dropfile-box>
+  </div>
+
+  <!-- Import table view -->
+  <div fxLayout="row" fxLayoutAlign="center center" fxFlexFill>
+
+    <table mat-table [dataSource]="fq" class="mat-elevation-z8" class="table-view">
+
+      <!--- Note that these columns can be defined in any order.
+            The actual rendered columns are set as a property on the row definition" -->
+    
+      <ng-container matColumnDef="filename">
+        <th mat-header-cell *matHeaderCellDef> Fichier </th>
+        <td mat-cell *matCellDef="let element"> {{element.file.file.name}} </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="stepFile">
+        <th mat-header-cell *matHeaderCellDef> stepFile </th>
+        <td mat-cell *matCellDef="let element" class="step" [ngClass]="element.stepFile"> {{element.stepFile}} </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="stepNames">
+        <th mat-header-cell *matHeaderCellDef> stepNames </th>
+        <td mat-cell *matCellDef="let element" class="step" [ngClass]="element.stepNames"> {{element.stepNames}} </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="stepPlaces">
+        <th mat-header-cell *matHeaderCellDef> stepPlaces </th>
+        <td mat-cell *matCellDef="let element" class="step" [ngClass]="element.stepPlaces"> {{element.stepPlaces}} </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="stepAuthorsDates">
+        <th mat-header-cell *matHeaderCellDef> stepAuthorsDates </th>
+        <td mat-cell *matCellDef="let element" class="step" [ngClass]="element.stepAuthorsDates"> {{element.stepAuthorsDates}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="stepMetadata">
+        <th mat-header-cell *matHeaderCellDef> stepMetadata </th>
+        <td mat-cell *matCellDef="let element" class="step" [ngClass]="element.stepMetadata"> {{element.stepMetadata}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="stepBiblio">
+        <th mat-header-cell *matHeaderCellDef> stepBiblio </th>
+        <td mat-cell *matCellDef="let element" class="step" [ngClass]="element.stepBiblio"> {{element.stepBiblio}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="stepValidation">
+        <th mat-header-cell *matHeaderCellDef> stepValidation </th>
+        <td mat-cell *matCellDef="let element" class="step" [ngClass]="element.stepValidation"> {{element.stepValidation}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="saving">
+        <th mat-header-cell *matHeaderCellDef> Enregistrement </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="ts" *ngIf="!element.isSaving && !element.saveFinish && ! element.saveError"> - </span>
+          <span class="ts saving" *ngIf="element.isSaving"> En cours </span>
+          <span class="ts complete" *ngIf="!element.isSaving && element.saveFinish"> Ok </span>
+          <span class="ts error" *ngIf="!element.isSaving && element.saveError"> Erreur </span>
+        </td>
+      </ng-container>
+    
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+        
+  </div>
+
+  <!-- Table import component -->
+  <div class="vl-table-import-wrapper">
+    <div *ngIf="fileToProcess">
+      <vl-table-import
+      [fileToProcess]="fileToProcess"
+      [autoLaunchSteps]="true"
+      [forcePostObserver]="true"
+      [observerFuzzySearch]="true"
+      [forcePostBiblio]="true"
+      [biblioFuzzySearch]="false"
+      [autoSelectIfOneResultBiblio]="true"
+      [getTable]="setTable"
+      (stepFileStatus)="currentFileProcessingStepFileChanges($event)"
+      (stepNamesStatus)="currentFileProcessingStepNamesChanges($event)"
+      (stepPlacesStatus)="currentFileProcessingStepPlacesChanges($event)"
+      (stepAuthorsDatesStatus)="currentFileProcessingStepAuthorsDatesChanges($event)"
+      (stepMetadataStatus)="currentFileProcessingStepMetadataChanges($event)"
+      (stepBiblioStatus)="currentFileProcessingStepBiblioChanges($event)"
+      (stepValidationStatus)="currentFileProcessingStepValidationChanges($event)"
+      (table)="newTable($event)"
+        ></vl-table-import>
+    </div>
+  </div>
+</div>

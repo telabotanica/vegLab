@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 
@@ -72,6 +72,22 @@ export class TableImportComponent implements OnInit, OnDestroy {
   @Input() biblioFuzzySearch = false;    // fuzzy will use ElasticSearch, else API Platform
   @Input() autoSelectIfOneResultBiblio = true;
 
+  @Input() fileToProcess: FileData = null;
+
+  @Input() autoLaunchSteps = false;
+  @Input() set getTable(value: boolean) {
+    if (value && value === true) { this.table.emit(this.setTable(false)); }
+  }
+
+  @Output() stepFileStatus =         new EventEmitter<'complete' | 'warning' | 'error' | 'pending'>();
+  @Output() stepNamesStatus =        new EventEmitter<'complete' | 'warning' | 'error' | 'pending'>();
+  @Output() stepPlacesStatus =       new EventEmitter<'complete' | 'warning' | 'error' | 'pending'>();
+  @Output() stepAuthorsDatesStatus = new EventEmitter<'complete' | 'warning' | 'error' | 'pending'>();
+  @Output() stepMetadataStatus =     new EventEmitter<'complete' | 'warning' | 'error' | 'pending'>();
+  @Output() stepBiblioStatus =       new EventEmitter<'complete' | 'warning' | 'error' | 'pending'>();
+  @Output() stepValidationStatus =   new EventEmitter<'complete' | 'warning' | 'error' | 'pending'>();
+  @Output() table = new EventEmitter<Table>();
+
   // Global vars
   allowedFileTypes = ['csv'];
   uploadedFile: File;
@@ -113,6 +129,14 @@ export class TableImportComponent implements OnInit, OnDestroy {
   stepMetadata: BehaviorSubject<StepStatus> =     new BehaviorSubject<StepStatus> ({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des métadonnées pour commencer', tip: ''});
   stepBiblio: BehaviorSubject<StepStatus> =       new BehaviorSubject<StepStatus> ({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des références bibliographiques pour commencer', tip: '' });
   stepValidation: BehaviorSubject<StepStatus> =   new BehaviorSubject<StepStatus> ({ started: false, currentStatus: 'pending', message: 'Lancez la vérification des identifications pour commencer', tip: '' });
+
+  stepFileSubscription: Subscription;
+  stepNamesSubscription: Subscription;
+  stepPlacesSubscription: Subscription;
+  stepAuthorsDatesSubscription: Subscription;
+  stepMetadataSubscription: Subscription;
+  stepBiblioSubscription: Subscription;
+  stepValidationSubscription: Subscription;
 
   // File rows / col properties
   GROUP_ROW_POS         = { initialPos: 0,  groupPosition: 0, keywords: ['Groupe'] };
@@ -263,12 +287,29 @@ export class TableImportComponent implements OnInit, OnDestroy {
       this.metadataService.refreshMetadataList();
     }
 
+    // Steps subscriptions
+    this.stepFileSubscription         = this.importFileStatus.subscribe(value => { this.stepFileStatus.emit(value); } );
+    this.stepNamesSubscription        = this.stepNames.subscribe(value => { this.stepNamesStatus.emit(value.currentStatus); } );
+    this.stepPlacesSubscription       = this.stepPlaces.subscribe(value => { this.stepPlacesStatus.emit(value.currentStatus); } );
+    this.stepAuthorsDatesSubscription = this.stepAuthorsDates.subscribe(value => { this.stepAuthorsDatesStatus.emit(value.currentStatus); } );
+    this.stepMetadataSubscription     = this.stepMetadata.subscribe(value => { this.stepMetadataStatus.emit(value.currentStatus); } );
+    this.stepBiblioSubscription       = this.stepBiblio.subscribe(value => { this.stepBiblioStatus.emit(value.currentStatus); } );
+    this.stepValidationSubscription   = this.stepValidation.subscribe(value => { this.stepValidationStatus.emit(value.currentStatus); } );
+
     // Set initial import status
     this.importFileStatus.next('pending');
   }
 
   ngOnDestroy() {
     if (this.userSubscription) { this.userSubscription.unsubscribe(); }
+
+    if (this.stepFileSubscription) { this.stepFileSubscription.unsubscribe(); }
+    if (this.stepNamesSubscription) { this.stepNamesSubscription.unsubscribe(); }
+    if (this.stepPlacesSubscription) { this.stepPlacesSubscription.unsubscribe(); }
+    if (this.stepAuthorsDatesSubscription) { this.stepAuthorsDatesSubscription.unsubscribe(); }
+    if (this.stepMetadataSubscription) { this.stepMetadataSubscription.unsubscribe(); }
+    if (this.stepBiblioSubscription) { this.stepBiblioSubscription.unsubscribe(); }
+    if (this.stepValidationSubscription) { this.stepValidationSubscription.unsubscribe(); }
   }
 
   resetComponent(): void {
@@ -307,6 +348,11 @@ export class TableImportComponent implements OnInit, OnDestroy {
       this.stepper.reset();
     } catch (error) {
       //
+    }
+
+    // Is there a file to process ?
+    if (this.fileToProcess !== null) {
+      this.uploadedFiles([this.fileToProcess]);
     }
 
   }
@@ -375,6 +421,15 @@ export class TableImportComponent implements OnInit, OnDestroy {
             if (this.importFileStatus.getValue() === 'pending') {
               this.importFileStatus.next('complete');
               this.importFileMessagesPush('Votre fichier est conforme');
+              if (this.autoLaunchSteps) {
+                // Launch all steps
+                this.setTaxonomicList();
+                this.setAuthorDateList();
+                this.setLocationList();
+                this.setMetadataList();
+                this.setBiblioList();
+                this.setValidationList();
+              }
             }
           }
         }
@@ -1617,7 +1672,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
           metaValues.metadataName = rowMetadata[this.HEADERS_LABELS_COL_POS.position];
           metaValues.metadataValue = rowMetadata[this.ignoreFirstXCols + j];
           metaValues.isEditing = false;
-          this.metadataList[j].metadata.push(metaValues);
+          if (metaValues.metadataValue !== null && metaValues.metadataValue !== '') { this.metadataList[j].metadata.push(metaValues); }
         }
       }
     }
@@ -2113,7 +2168,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
   // *****
   // TABLE
   // *****
-  setTable(): Table {
+  setTable(forceReloadDataView = true): Table {
     // user values
     // note: user values are set on the backend regardless of input values (back looks for user trough SSO process)
     // however, I think it's better to have the user values here, at less for debugging
@@ -2505,7 +2560,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
     console.log(this.tableService.toString(newTable));
     console.log(newTable);
-    this.tableService.setCurrentTable(newTable, true);
+    this.tableService.setCurrentTable(newTable, forceReloadDataView);
 
     return newTable;
   }

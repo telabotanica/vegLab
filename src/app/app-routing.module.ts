@@ -12,6 +12,7 @@ import { AdminHomePageComponent } from './admin/admin-home-page/admin-home-page.
 import { AdminMetadataPageComponent } from './admin/metadata/admin-metadata-page/admin-metadata-page.component';
 import { AdminTestMetadataComponent } from './admin/metadata/admin-test-metadata/admin-test-metadata.component';
 import { SophyImportAndSplitCsvComponent } from './admin/sophy/sophy-import-and-split-csv/sophy-import-and-split-csv.component';
+import { SophyImportComponent } from './admin/sophy/sophy-import/sophy-import.component';
 
 import { OccurrenceFormComponent } from './shared/occurrence-form/occurrence-form.component';
 import { OccurrenceSearchComponent } from './shared/occurrence-search/occurrence-search.component';
@@ -45,7 +46,8 @@ const routes: Routes = [
   { path: 'admin', component: AdminHomePageComponent, children: [
     { path: 'metadata-manager', component: AdminMetadataPageComponent },
     { path: 'metadata-test', component: AdminTestMetadataComponent},
-    { path: 'sophy-import', component: SophyImportAndSplitCsvComponent }
+    { path: 'sophy-consolidate', component: SophyImportAndSplitCsvComponent },
+    { path: 'sophy-import', component: SophyImportComponent }
   ]},
   { path: '**', component: FatalErrorPageComponent, data: { error: 404 } },
 ];

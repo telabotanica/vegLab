@@ -22,7 +22,7 @@ export class ObserverService {
     } else {
       // make manual request
       const parsedQuery = query.toLowerCase().replace(/\./gm, ''); // lower case and remove dot
-      const explodedQuery: Array<string> = parsedQuery.split(' ');
+      const explodedQuery: Array<string> = parsedQuery.split(' ').join('~').split('-').join('~').split('~');
       for (let explod of explodedQuery) {
         explod = explod.replace(/[^a-z0-9]+/ig, '');     // replace all non alpha-numeric characters
       }

@@ -1,0 +1,21 @@
+.vl-table-import-wrapper {
+  position: absolute;
+  left: -1000px;
+}
+
+.table-view {
+  width: 100%;
+  .step {
+    font-weight: bold;
+    &.error { color: red; }
+    &.warning { color: orange; }
+    &.complete { color: green; }
+    &.pending { color: black; }
+  }
+  .ts {
+    font-weight: bold;
+    &.error { color: red; }
+    &.complete { color: green; }
+    &.saving { color: black; }
+  }
+}

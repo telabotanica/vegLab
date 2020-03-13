@@ -4,6 +4,8 @@ import { FormControl, Validators, ValidatorFn } from '@angular/forms';
 import { Observable, BehaviorSubject } from 'rxjs';
 
 import { ExtendedFieldModel } from '../_models/extended-field.model';
+import { OccurrenceModel } from '../_models/occurrence.model';
+import { ExtendedFieldOccurrence } from '../_models/extended-field-occurrence';
 import { FieldDataType } from '../_enums/field-data-type-enum';
 
 import { environment } from '../../environments/environment';
@@ -44,6 +46,17 @@ export class MetadataService {
       } else {
         return null;
       }
+    } else {
+      return null;
+    }
+  }
+
+  getOccurrenceMetadataByFieldId(occ: OccurrenceModel, fieldId: string): string {
+    if (occ == null) { return null; }
+    const _meta = occ.extendedFieldOccurrences;
+    if (_meta !== null && _meta.length > 0) {
+      const v = _.find(_meta, m => m.extendedField.fieldId === fieldId);
+      return v.value.toString();
     } else {
       return null;
     }
