@@ -25,22 +25,22 @@ COPY . /client
 #CMD ng serve
 CMD ng serve --host 0.0.0.0 --port 4200
 
-# "build" stage
-# depends on the "development" stage above
-FROM veglab_client_dev AS veglab_client_prod
-
-# ARG REACT_APP_API_ENTRYPOINT
-
-RUN set -eux; \
-	yarn build
-
-
-# "nginx" stage
-# depends on the "build" stage above
-FROM nginx:${NGINX_VERSION}-alpine AS client_nginx
-
-COPY docker/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
-
-WORKDIR /usr/src/client/build
-
-COPY --from=veglab_client_prod /usr/src/client/build ./
+## "build" stage
+## depends on the "development" stage above
+#FROM veglab_client_dev AS veglab_client_prod
+#
+## ARG REACT_APP_API_ENTRYPOINT
+#
+#RUN set -eux; \
+#	yarn build
+#
+#
+## "nginx" stage
+## depends on the "build" stage above
+#FROM nginx:${NGINX_VERSION}-alpine AS client_nginx
+#
+#COPY docker/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
+#
+#WORKDIR /usr/src/client/build
+#
+#COPY --from=veglab_client_prod /usr/src/client/build ./
