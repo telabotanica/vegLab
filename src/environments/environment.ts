@@ -4,21 +4,21 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'http://localhost',
-  apiBaseUrl: 'https://localhost:8443/api',
-  esBaseUrl: 'http://localhost:9200',
-  esBaseflorTraitsApi: 'http://localhost:9200/baseflor',
+  baseUrl: 'http://${HOST}',
+  apiBaseUrl: 'https://${HOST}:8443/api',
+  esBaseUrl: 'http://${HOST}:9200',
+  esBaseflorTraitsApi: 'http://${HOST}:9200/baseflor',
   app : {
     title:           'VegLab',
     unsetTokenValue: 'unset',
     absoluteBaseUrl: '',
   },
   sso: {
-    baseUrl:          'http://localhost:8081/service:annuaire:auth',               // https://beta.tela-botanica.org/service:annuaire:auth
-    loginEndpoint:    'http://localhost:8081/service:annuaire:auth/connexion',
-    logoutEndpoint:   'http://localhost:8081/service:annuaire:auth/deconnexion',
-    identiteEndpoint: 'http://localhost:8081/service:annuaire:auth/identite',
-    refreshEndpoint:  'http://localhost:8081/service:annuaire:auth/rafraichir',
+    baseUrl:          'http://${HOST}:8081/service:annuaire:auth',               // https://beta.tela-botanica.org/service:annuaire:auth
+    loginEndpoint:    'http://${HOST}:8081/service:annuaire:auth/connexion',
+    logoutEndpoint:   'http://${HOST}:8081/service:annuaire:auth/deconnexion',
+    identiteEndpoint: 'http://${HOST}:8081/service:annuaire:auth/identite',
+    refreshEndpoint:  'http://${HOST}:8081/service:annuaire:auth/rafraichir',
     refreshInterval:  600000
   },
   tbRepositoriesConfigVegetation: [
