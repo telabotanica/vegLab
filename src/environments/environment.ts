@@ -21,6 +21,7 @@ export const environment = {
     refreshEndpoint:  'http://${HOST}:8081/service:annuaire:auth/rafraichir',
     refreshInterval:  600000
   },
+  mapQuestApiKey: 'ApIFfQWsb8jW6bkYDD2i0Sq5BD9moJ3l',
   tbRepositoriesConfigVegetation: [
     {
       id: 'baseveg',

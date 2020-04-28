@@ -1383,7 +1383,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
         // and INSEE DATA
         if (location.latitude && location.longitude) {
           location.isLoading = true;
-          this.geocodingService.reverseUsingOSM(Number(location.latitude), Number(location.longitude)).pipe(
+          this.locationService.reverseUsingMapQuest(environment.mapQuestApiKey, Number(location.latitude), Number(location.longitude)).pipe(
             flatMap(result => {
               const readableAddress = this.geocodingService.getReadbleAddress(result, 'osm');
               location.suggeredLocations.push({nominatimLocation: result, readableAddress});
@@ -1432,7 +1432,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
           const city = location.city ? location.city : undefined;
           const place = location.place ? location.place : undefined;
           const limit = 1;
-          this.geocodingService.geocodeSpecific(country, county, city, place, limit).subscribe(
+          this.locationService.geocodeSpecificUsingMapQuest('ApIFfQWsb8jW6bkYDD2i0Sq5BD9moJ3l', country, county, city, place, limit).subscribe(
             results => {
               location.isLoading = false;
               if (results && results.length === 1) {
