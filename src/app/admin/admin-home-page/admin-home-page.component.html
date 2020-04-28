@@ -1,6 +1,61 @@
 <div class="admin-container">
-  <div class="sidenav-menu">
+  <mat-toolbar class="sidenav-menu" fxLayout="column">
+    <mat-toolbar-row>
+      
+      <button mat-button>
+        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example user verified icon">dashboard</mat-icon>
+        <span>Accueil</span>
+      </button>
+    </mat-toolbar-row>
+
+    <mat-toolbar-row>
+      <button mat-button>
+        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example user verified icon">storage</mat-icon>
+        <span>Sources de données</span>
+      </button>
+    </mat-toolbar-row>
+  
+    <mat-toolbar-row>
+      <button mat-button disabled>
+        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example user verified icon">account_circle</mat-icon>
+        <span>Utilisateurs</span>
+      </button>
+    </mat-toolbar-row>
+  
+    <mat-toolbar-row>
+      <button mat-button [matMenuTriggerFor]="menuMeta">
+        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">local_offer</mat-icon>
+        <span>Métadonnées</span>
+      </button>
+      <mat-menu #menuMeta="matMenu">
+        <button mat-menu-item (click)="router.navigate(['/admin/metadata-test'])">Aperçu</button>
+        <button mat-menu-item (click)="router.navigate(['/admin/metadata-manager'])">Gérer</button>
+      </mat-menu>
+    </mat-toolbar-row>
+
+    <mat-toolbar-row>
+      <button mat-button [matMenuTriggerFor]="menuSophy">
+        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">settings</mat-icon>
+        <span>SOPHY</span>
+      </button>
+      <mat-menu #menuSophy="matMenu">
+        <button mat-menu-item (click)="router.navigate(['/admin/sophy-consolidate'])">Consolider</button>
+        <button mat-menu-item (click)="router.navigate(['/admin/sophy-import'])">Importer</button>
+      </mat-menu>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  
+  <!--<div class="sidenav-menu" fxLayout="column">
     <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Sources de données
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <button mat-button>Santé</button>
+      </mat-expansion-panel>
+
       <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
@@ -33,7 +88,7 @@
 
 
     </mat-accordion>
-  </div>
+  </div>-->
 
   <div class="admin-content">
     <router-outlet></router-outlet>

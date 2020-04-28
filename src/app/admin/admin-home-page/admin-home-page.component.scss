@@ -2,21 +2,14 @@
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
+  height: calc(100vh - 75px);
+  max-height: calc(100vh - 75px);
 
   .sidenav-menu {
-    max-width: 200px;
-    min-height: 100%;
-  
-    mat-accordion {
-      mat-expansion-panel {
-        margin-top: 0;
-        margin-bottom: 0;
-      }
-    }
+    flex: 0;
   }
 
   .admin-content {
-    margin-left: 20px;
-    width: 100%;
+    margin: 15px;
   }
 }
