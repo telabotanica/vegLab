@@ -62,7 +62,7 @@
     "simplify-js": "^1.2.3",
     "stacktrace-js": "^2.0.0",
     "tb-dropfile-lib": "https://github.com/steph-del/tb-dropfile-lib/releases/download/v0.5.3/tb-dropfile-lib-0.5.3.tgz",
-    "tb-geoloc-lib": "https://github.com/steph-del/tb-geoloc-lib/releases/download/v0.8.2/tb-geoloc-lib-0.8.2.tgz",
+    "tb-geoloc-lib": "https://github.com/steph-del/tb-geoloc-lib/releases/download/v0.8.3/tb-geoloc-lib-0.8.3.tgz",
     "tb-tsb-lib": "https://github.com/steph-del/tb-tsb-lib/releases/download/v0.5.8-vl/tb-tsb-lib-0.5.8-vl.tgz",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.26"

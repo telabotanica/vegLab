@@ -8587,9 +8587,9 @@ tar@^4, tar@^4.4.8:
   dependencies:
     tslib "^1.9.0"
 
-"tb-geoloc-lib@https://github.com/steph-del/tb-geoloc-lib/releases/download/v0.8.2/tb-geoloc-lib-0.8.2.tgz":
-  version "0.8.2"
-  resolved "https://github.com/steph-del/tb-geoloc-lib/releases/download/v0.8.2/tb-geoloc-lib-0.8.2.tgz#c423c667845f3f4ff04681fb028ae67767e1861c"
+"tb-geoloc-lib@https://github.com/steph-del/tb-geoloc-lib/releases/download/v0.8.3/tb-geoloc-lib-0.8.3.tgz":
+  version "0.8.3"
+  resolved "https://github.com/steph-del/tb-geoloc-lib/releases/download/v0.8.3/tb-geoloc-lib-0.8.3.tgz#a21227b45965a3dc4bd0ac32021d87c9e99d960d"
   dependencies:
     tslib "^1.9.0"
 
