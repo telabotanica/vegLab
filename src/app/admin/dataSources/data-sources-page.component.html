@@ -1,0 +1,84 @@
+<div class="inline-title">
+  <h2>Sources de données</h2>
+  <button mat-icon-button (click)="checkHealth()"><mat-icon>refresh</mat-icon></button>
+</div>
+
+
+<mat-list>
+  <mat-list-item>
+    <mat-icon mat-list-icon *ngIf="_annuaireHealth === 'pending'"><mat-spinner diameter="16"></mat-spinner></mat-icon>
+    <mat-icon mat-list-icon *ngIf="_annuaireHealth === 'online'">check</mat-icon>
+    <mat-icon mat-list-icon *ngIf="_annuaireHealth === 'offline'">error</mat-icon>
+    <div mat-line>Annuaire</div>
+  </mat-list-item>
+  
+  <mat-divider></mat-divider>
+
+  <div mat-subheader>API</div>
+  <mat-list-item>
+    <mat-icon mat-list-icon *ngIf="_apiHealth === 'pending'"><mat-spinner diameter="16"></mat-spinner></mat-icon>
+    <mat-icon mat-list-icon *ngIf="_apiHealth === 'online'">check</mat-icon>
+    <mat-icon mat-list-icon *ngIf="_apiHealth === 'offline'">error</mat-icon>
+    <div mat-line>Accessible</div>
+  </mat-list-item>
+  
+  <mat-list-item>
+    <mat-icon mat-list-icon *ngIf="_apiOccurrencesHealth === 'pending'"><mat-spinner diameter="16"></mat-spinner></mat-icon>
+    <mat-icon mat-list-icon *ngIf="_apiOccurrencesHealth === 'online'">check</mat-icon>
+    <mat-icon mat-list-icon *ngIf="_apiOccurrencesHealth === 'offline'">error</mat-icon>
+    <div mat-line>Occurrences</div>
+  </mat-list-item>
+
+  <!--<mat-list-item>
+    <mat-icon mat-list-icon *ngIf="_apiTablesHealth === 'pending'"><mat-spinner diameter="16"></mat-spinner></mat-icon>
+    <mat-icon mat-list-icon *ngIf="_apiTablesHealth === 'online'">check</mat-icon>
+    <mat-icon mat-list-icon *ngIf="_apiTablesHealth === 'offline'">error</mat-icon>
+    <div mat-line>Tables</div>
+  </mat-list-item>-->
+
+  <mat-divider></mat-divider>
+
+  <div mat-subheader>Elastic Search</div>
+  <mat-list-item>
+    <mat-icon mat-list-icon *ngIf="_esHealth === 'pending'"><mat-spinner diameter="16"></mat-spinner></mat-icon>
+    <mat-icon mat-list-icon *ngIf="_esHealth === 'online'">check</mat-icon>
+    <mat-icon mat-list-icon *ngIf="_esHealth === 'offline'">error</mat-icon>
+    <div mat-line>Accessible</div>
+  </mat-list-item>
+
+  <mat-list-item>
+    <mat-icon mat-list-icon *ngIf="_esMapping === 'pending'"><mat-spinner diameter="16"></mat-spinner></mat-icon>
+    <mat-icon mat-list-icon *ngIf="_esMapping === 'notEmpty'">check</mat-icon>
+    <mat-icon mat-list-icon *ngIf="_esMapping === 'empty'">error</mat-icon>
+    <mat-icon mat-list-icon *ngIf="_esMapping === 'error'">error</mat-icon>
+    <div mat-line>Mapping</div>
+  </mat-list-item>
+
+  <mat-list-item>
+    <mat-icon mat-list-icon *ngIf="_esOccurrences === 'pending'"><mat-spinner diameter="16"></mat-spinner></mat-icon>
+    <mat-icon mat-list-icon *ngIf="_esOccurrences === 'online'">check</mat-icon>
+    <mat-icon mat-list-icon *ngIf="_esOccurrences === 'offline'">error</mat-icon>
+    <div mat-line>Occurrences [cel2_occurrences]</div>
+  </mat-list-item>
+
+  <mat-list-item>
+    <mat-icon mat-list-icon *ngIf="_esTables === 'pending'"><mat-spinner diameter="16"></mat-spinner></mat-icon>
+    <mat-icon mat-list-icon *ngIf="_esTables === 'online'">check</mat-icon>
+    <mat-icon mat-list-icon *ngIf="_esTables === 'offline'">error</mat-icon>
+    <div mat-line>Tables [vl_tables]</div>
+  </mat-list-item>
+
+  <mat-list-item>
+    <mat-icon mat-list-icon *ngIf="_esObservers === 'pending'"><mat-spinner diameter="16"></mat-spinner></mat-icon>
+    <mat-icon mat-list-icon *ngIf="_esObservers === 'online'">check</mat-icon>
+    <mat-icon mat-list-icon *ngIf="_esObservers === 'offline'">error</mat-icon>
+    <div mat-line>Observateurs [observers]</div>
+  </mat-list-item>
+
+  <mat-list-item>
+    <mat-icon mat-list-icon *ngIf="_esBiblio === 'pending'"><mat-spinner diameter="16"></mat-spinner></mat-icon>
+    <mat-icon mat-list-icon *ngIf="_esBiblio === 'online'">check</mat-icon>
+    <mat-icon mat-list-icon *ngIf="_esBiblio === 'offline'">error</mat-icon>
+    <div mat-line>Biblio [biblio_phytos]</div>
+  </mat-list-item>
+</mat-list>

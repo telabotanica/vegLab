@@ -9,7 +9,7 @@
     </mat-toolbar-row>
 
     <mat-toolbar-row>
-      <button mat-button>
+      <button mat-button (click)="router.navigate(['/admin/data-sources'])">
         <mat-icon class="example-icon" aria-hidden="false" aria-label="Example user verified icon">storage</mat-icon>
         <span>Sources de données</span>
       </button>
