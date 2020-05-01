@@ -1,57 +1,65 @@
-h1 {
-  font-size: 20px;
-}
-.inline-form {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  .layer {
-    width: 40px;
-    padding-right: 5px;
+.form-wrapper {
+  height: 100%;
+  min-width: 100%;
+  width: 100%;
+  overflow-y: scroll;
+  h1 {
+    font-size: 20px;
   }
-  .taxo-input {
-    flex: 2;
+  .inline-form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    .layer {
+      width: 40px;
+      padding-right: 5px;
+    }
+    .taxo-input {
+      flex: 2;
+    }
+    .coef {
+      width: 40px;
+    }
   }
-  .coef {
-    width: 40px;
-  }
-}
-
-.occurrences-table {
-  margin-top: 20px;
-  table {
-    thead {
-      .taxa {
-        width: 100%;
+  
+  .occurrences-table {
+    margin-top: 20px;
+    table {
+      thead {
+        .taxa {
+          width: 100%;
+        }
+        .layer, .coef, .actions {
+          max-width: 40px;
+        }
       }
-      .layer, .coef, .actions {
-        max-width: 40px;
-      }
+    }
+  }
+  
+  .observer-date-fields {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  
+    mat-form-field {
+      max-width: 160px;
     }
   }
 }
 
-.observer-date-fields {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-
-  mat-form-field {
-    max-width: 160px;
-  }
-}
 
 .bottom-action-bar {
-  position: absolute;
+  position: sticky;
   bottom: 0;
+  min-width: 100%;
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  padding-left: 0;
-  padding-right: 0;
+  flex-direction: row;
+  justify-content: center;
+  align-items: baseline;
 
   .action-buttons {
     margin-top: 10px;
-    display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: center;

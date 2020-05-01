@@ -1,9 +1,9 @@
 .phyto_app_container {
-  height: calc(100vh - 75px);
-  max-height: calc(100vh - 75px);
+  height: calc(100vh - 50px);
+  max-height: calc(100vh - 50px);
   overflow: hidden;
   .layout {
-    height: calc(100vh - 75px);
+    height: calc(100vh - 50px);
     #action_panel {
       #close-button-wrapper {
         text-align: right;
@@ -19,7 +19,6 @@
         background-color: white;
         margin: 0;
         overflow-y: scroll;
-        padding: 15px;
         padding-top: 10px;
         margin-left: 15px;
         overflow-y: hidden;
