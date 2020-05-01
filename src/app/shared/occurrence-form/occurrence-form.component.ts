@@ -124,6 +124,11 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
     this.userSubscription = this.userService.currentUser.subscribe(
       user => {
         this.currentUser = user;
+        if (this.occurrenceForm && this.occurrenceForm.controls.observer) {
+          if (this.currentUser && this.currentUser !== null) {
+            this.occurrenceForm.controls.observer.setValue(this.userService.getUserName(), {emitEvent: false});
+          }
+        }
       },
       error => {
         // @Todo manage error
