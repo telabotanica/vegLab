@@ -1250,9 +1250,11 @@ export class TableImportComponent implements OnInit, OnDestroy {
           biblio.noResultFor = null;
           this.expandedBiblioElement = null;
           biblio.biblioSelected = result;
+          this.stepBiblio.next({currentStatus: 'complete', started: true, message: 'Parfait !', tip: 'Vous pouvez passer à l\'étape suivante'});
           this.checkBiblioStatus();
         }, error => {
           biblio.isAddingBiblio = false;
+          this.stepBiblio.next({currentStatus: 'error', started: true, message: 'Erreur !', tip: 'Nous ne parvenons pas à ajouter la nouvelle référence bibliographique'});
           this.notificationService.error(`Nous ne parvenons pas à ajouter la nouvelle référence bibliographique ${str}.`);
         }
       );
@@ -1269,9 +1271,11 @@ export class TableImportComponent implements OnInit, OnDestroy {
         biblio.noResult = false;
         biblio.noResultFor = null;
         this.expandedBiblioElement = null;
+        this.stepBiblio.next({currentStatus: 'complete', started: true, message: 'Parfait !', tip: 'Vous pouvez passer à l\'étape suivante'});
         biblio.biblioSelected = result;
       }, error => {
         biblio.isAddingBiblio = false;
+        this.stepBiblio.next({currentStatus: 'error', started: true, message: 'Erreur !', tip: 'Nous ne parvenons pas à ajouter la nouvelle référence bibliographique'});
         this.notificationService.error(`Nous ne parvenons pas à ajouter la nouvelle référence bibliographique ${newBiblio}.`);
       }
     );
@@ -1287,9 +1291,9 @@ export class TableImportComponent implements OnInit, OnDestroy {
       }
     }
     if (globalStatus === 'warning') {
-      this.stepBiblio.next({currentStatus: 'warning', started: _stepBiblio.started, message: 'Certaines données biblio. ne sont pas valides', tip: 'Essayez de valider toutes les références. Vous pouvez continuer avec des références manquantes'});
+      this.stepBiblio.next({currentStatus: 'warning', started: true, message: 'Certaines données biblio. ne sont pas valides', tip: 'Essayez de valider toutes les références. Vous pouvez continuer avec des références manquantes'});
     } else {
-      this.stepBiblio.next({currentStatus: 'complete', started: _stepBiblio.started, message: 'Parfait !', tip: 'Vous pouvez passer à l\'étape suivante'});
+      this.stepBiblio.next({currentStatus: 'complete', started: true, message: 'Parfait !', tip: 'Vous pouvez passer à l\'étape suivante'});
     }
   }
 
