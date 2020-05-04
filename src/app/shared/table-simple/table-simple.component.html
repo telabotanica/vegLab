@@ -1,4 +1,4 @@
-<div id="table-simple-wrapper" [class.hide-table]="!currentDataView">
+<div id="table-simple-wrapper" [class.hide-table]="!currentDataView || (currentDataView && currentDataView.length === 0)">
   <table>
     <tr *ngFor="let row of currentDataView">
       <td class="cell header" [class.group]="row.type === 'group'" title="{{ row.displayName }}">{{ row.displayName }}</td>
@@ -9,8 +9,7 @@
   </table>
 </div>
 
-
-<div *ngIf="!currentDataView" class="no-data-table">
+<div *ngIf="!currentDataView || (currentDataView && currentDataView.length === 0)" class="no-data-table">
   <div class="icon"><mat-icon inline="true">table_chart</mat-icon></div>
   <div class="title">Aucun tableau à afficher</div>
   <div class="action-buttons">

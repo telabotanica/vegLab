@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { TableRow } from 'src/app/_models/table-row-definition.model';
 
@@ -19,7 +20,8 @@ export class TableSimpleComponent implements OnInit, OnDestroy {
   // VAR subscribers
   currentTableSubscription: Subscription;
 
-  constructor(private tableService: TableService) { }
+  constructor(private tableService: TableService,
+              public router: Router) { }
 
   ngOnInit() {
     // Subscribe to current table changes
