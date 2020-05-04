@@ -1,6 +1,11 @@
 <div class="occurrence-preview-container">
   <div class="header occurrence">
-    <h3>Relevé n°{{ occurrence.id }}</h3>
+    <div class="title">
+      <h3>Relevé n°{{ occurrence.id }}</h3>
+      <div class="icon-with-border" (click)="closeMe()">
+        <mat-icon>close</mat-icon>
+      </div>
+    </div>
     <p>Informations</p>
   </div>
   <div class="content">

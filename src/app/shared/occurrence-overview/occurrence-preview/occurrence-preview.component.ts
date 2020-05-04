@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { OccurrenceModel as EsOccurrenceModel } from 'src/app/_models/occurrence.model';
 import { GeoJsonObject } from 'geojson';
 
@@ -9,6 +9,8 @@ import { GeoJsonObject } from 'geojson';
 })
 export class OccurrencePreviewComponent implements OnInit {
   @Input() occurrence: EsOccurrenceModel;
+
+  @Output() close = new EventEmitter<boolean>();
 
   constructor() { }
 
@@ -21,6 +23,10 @@ export class OccurrencePreviewComponent implements OnInit {
     } else {
       return [];
     }
+  }
+
+  closeMe() {
+    this.close.next(true);
   }
 
 }

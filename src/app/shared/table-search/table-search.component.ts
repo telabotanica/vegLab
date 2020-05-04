@@ -326,6 +326,13 @@ export class TableSearchComponent implements OnInit, OnDestroy {
     this.resetInfoAndDeleteValues();
   }
 
+  closePreview(close: boolean): void {
+    if (close && close === true) {
+      this.sidenav.close();
+      this.closeSidenav();
+    }
+  }
+
   // ---------------------
   // SET SELECTED TABLE(S)
   // ---------------------

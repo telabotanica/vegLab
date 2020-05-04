@@ -1355,6 +1355,13 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
     this.resetInfoAndDeleteValues();
   }
 
+  closePreview(close: boolean): void {
+    if (close && close === true) {
+      this.sidenav.close();
+      this.closeSidenav();
+    }
+  }
+
   // PAGINATOR
   _occurrencePageChanged(pageEvent: PageEvent): void {
     if (pageEvent == null) { return; }

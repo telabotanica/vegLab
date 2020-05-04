@@ -2,7 +2,7 @@
   <mat-sidenav #sidenav class="sidenav" position="end" (keydown.escape)="closeSidenav()">
     <div class="sidenav-content-wrapper">
       <div *ngIf="tableInfo">
-        <vl-table-preview [table]="tableInfo"></vl-table-preview>
+        <vl-table-preview [table]="tableInfo" (close)="closePreview($event)"></vl-table-preview>
       </div>
     </div>
   </mat-sidenav>

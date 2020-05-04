@@ -10,12 +10,12 @@
         <div class="sidenav-content-wrapper">
           <!-- Table info -->
           <div *ngIf="tableInfo" class="table-infos">
-            <vl-table-preview [table]="tableInfo"></vl-table-preview>
+            <vl-table-preview [table]="tableInfo" (close)="closePreview($event)"></vl-table-preview>
           </div>
 
           <!-- Occurrence info -->
           <div *ngIf="occurrenceInfo" class="occurrence-info">
-              <vl-occurrence-preview [occurrence]="occurrenceInfo"></vl-occurrence-preview>
+              <vl-occurrence-preview [occurrence]="occurrenceInfo" (close)="closePreview($event)"></vl-occurrence-preview>
           </div>
 
           <!-- Delete a table -->

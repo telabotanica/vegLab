@@ -2,7 +2,7 @@
   <mat-sidenav #sidenav class="sidenav" position="end" (keydown.escape)="closeSidenav()">
     <div class="sidenav-content-wrapper">
       <div *ngIf="occurrenceInfo">
-        <vl-occurrence-preview [occurrence]="occurrenceInfo"></vl-occurrence-preview>
+        <vl-occurrence-preview [occurrence]="occurrenceInfo" (close)="closePreview($event)"></vl-occurrence-preview>
       </div>
     </div>
   </mat-sidenav>
