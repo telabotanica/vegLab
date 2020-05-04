@@ -234,6 +234,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
   displayedBiblioColumns = ['customColumn1', 'biblioUserInput', 'customColumn2'];
   expandedBiblioElement: Biblio | null;
 
+  tablePreviewIsSet = false;
 
   constructor(
     private appConfig: AppConfigService,
@@ -354,6 +355,10 @@ export class TableImportComponent implements OnInit, OnDestroy {
     if (this.fileToProcess !== null) {
       this.uploadedFiles([this.fileToProcess]);
     }
+
+    // Table
+    this.tableService.createFreshTable();
+    this.tablePreviewIsSet = false;
 
   }
 
@@ -2447,8 +2452,6 @@ export class TableImportComponent implements OnInit, OnDestroy {
     }
 
     // Bind locations
-    console.log('BINDING LOCATION');
-    console.log(this.locationList);
     for (const location of this.locationList) {
       const relevesToBind = this.getRelevesInTableById(location.id, newTable);
       for (const releveToBind of relevesToBind) {
@@ -2564,6 +2567,9 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
     console.log(this.tableService.toString(newTable));
     console.log(newTable);
+    
+    this.tablePreviewIsSet = true;
+
     this.tableService.setCurrentTable(newTable, forceReloadDataView);
 
     return newTable;

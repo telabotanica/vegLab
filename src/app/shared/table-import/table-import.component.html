@@ -970,8 +970,10 @@
         <div class="preview-table" fxLayout="row" fxLayoutAlign="center center">
           <button mat-button color="primary" (click)="setTable()" [disabled]="!allStepsCompleted()">Afficher le tableau</button>
         </div>
-        <h3>Enregistrer le tableau</h3>
-        <vl-table-form [title]="null"></vl-table-form>
+        <div *ngIf="tablePreviewIsSet">
+          <h3>Enregistrer le tableau</h3>
+          <vl-table-form [title]="null"></vl-table-form>
+        </div>
       </div>
     </mat-step>
   </mat-horizontal-stepper>
