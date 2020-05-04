@@ -15,10 +15,12 @@ export class BiblioService {
   constructor(private http: HttpClient) { }
 
   search(query: string, fuzzy = false): Observable<Array<Biblio>> {
-    const headers = new HttpHeaders('Accept: application/json');
+    const headers = new HttpHeaders('Accept: application/ld+json');
 
     if (!fuzzy) {
-      return this.http.get<Array<Biblio>>(`${environment.apiBaseUrl}/biblio_phytos?title=${query.toLowerCase()}`, {headers});
+      return this.http.get<Array<Biblio>>(`${environment.apiBaseUrl}/biblio_phytos?title=${query.toLowerCase()}`, {headers}).pipe(
+        map(data => data['hydra:member'])
+      );
     } else {
       // make manual request
       const parsedQuery = query.toLowerCase().replace(/\./gm, ''); // lower case and remove dot

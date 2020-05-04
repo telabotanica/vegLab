@@ -122,6 +122,45 @@ export class TableService {
       sye.occurrencesOrder = this.syeService.getOccurrencesOrder(sye);
     }
 
+    // Replace biblio source objects by URI
+    if (table.vlBiblioSource && table.vlBiblioSource && table.vlBiblioSource['@id']) {
+      table.vlBiblioSource = table.vlBiblioSource['@id'] as any;
+    }
+
+    if (table.syntheticColumn && table.syntheticColumn.vlBiblioSource && table.syntheticColumn.vlBiblioSource['@id']) {
+      table.syntheticColumn.vlBiblioSource = table.syntheticColumn.vlBiblioSource['@id'] as any;
+    }
+
+    // @Todo link PDF to biblio
+
+    for (const sye of table.sye) {
+      if (sye.vlBiblioSource && sye.vlBiblioSource && sye.vlBiblioSource['@id']) {
+        sye.vlBiblioSource = sye.vlBiblioSource['@id'] as any;
+      }
+
+      if (sye.syntheticColumn && sye.syntheticColumn.vlBiblioSource && sye.syntheticColumn.vlBiblioSource['@id']) {
+        sye.syntheticColumn.vlBiblioSource = sye.syntheticColumn.vlBiblioSource['@id'] as any;
+      }
+
+      for (const occ of sye.occurrences) {
+        if (occ.level === 'microcenosis') {
+          // 2 depth
+          if (occ.vlBiblioSource && occ.vlBiblioSource && occ.vlBiblioSource['@id']) {
+            occ.vlBiblioSource = occ.vlBiblioSource['@id'] as any;
+          }
+          for (const childOcc of occ.children) {
+            if (childOcc.vlBiblioSource && childOcc.vlBiblioSource && childOcc.vlBiblioSource['@id']) {
+              childOcc.vlBiblioSource = childOcc.vlBiblioSource['@id'] as any;
+            }
+          }
+        } else {
+          if (occ.vlBiblioSource && occ.vlBiblioSource && occ.vlBiblioSource['@id']) {
+            occ.vlBiblioSource = occ.vlBiblioSource['@id'] as any;
+          }
+        }
+      }
+    }
+
     // Post table
     const headers = {'Content-Type': 'application/json'};
     return this.http.post<Table>(`${environment.apiBaseUrl}/tables`, JSON.stringify(table), {headers}).pipe(
