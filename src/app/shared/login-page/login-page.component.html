@@ -17,7 +17,7 @@
         <p>
           <mat-form-field>
             <input matInput placeholder="Mot de passe" name="password" [type]="hidePassword ? 'password' : 'text'" [formControl]="password"  required>
-            <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Masquer le mot de passe'" [attr.aria-pressed]="masquer">
+            <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Masquer le mot de passe'" [attr.aria-pressed]="'masquer'">
             <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
             </button>
           </mat-form-field>

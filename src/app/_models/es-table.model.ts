@@ -5,6 +5,7 @@ export interface EsTableModel {
   isDiagnosis:            boolean;
   hasPdf:                 boolean;
   pdfContentUrl:          string;
+  vlBiblioSource:         string;
   userId:                 number;
   ownedByCurrentUser:     boolean;  // not included in the database ; this field is populated at GET Table (table service)
   createdBy:              number;
@@ -13,6 +14,7 @@ export interface EsTableModel {
   updatedAt:              string;
   occurrencesCount:       number;
   rowsCount:              number;
+  syeCount:               number;
   tableValidation:        string;
   syeValidations:         string;
   validations:            string;

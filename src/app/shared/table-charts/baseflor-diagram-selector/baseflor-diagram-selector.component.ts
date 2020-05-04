@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./baseflor-diagram-selector.component.scss']
 })
 export class BaseflorDiagramSelectorComponent implements OnInit, OnDestroy {
-  selecedValue: string = null;
+  selectedValue: string = null;
   chartType: 'horizontalBar' | 'pie' = 'horizontalBar';
 
   tableSubscriber: Subscription;

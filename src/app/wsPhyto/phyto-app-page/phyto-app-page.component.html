@@ -1,7 +1,7 @@
 <div class="phyto_app_container">
   <div class="row layout">
     <!--   SPLIT Action -- Table + Info   -->
-    <as-split #actionTablePanels unit="percent" direction="horizontal" (dragEnd)="actionPanelDragEnd($event)">
+    <as-split #actionTablePanels unit="percent" direction="horizontal" (dragEnd)="actionPanelDragEnd()">
       <!-- ACTION PANEL -->
       <as-split-area size="40" [order]="0" *ngIf="wsPhytoService.isActionPanelOpened()" fxLayout>
         <div id="action_panel" fxLayout="column" fxFlexFill>
@@ -15,7 +15,7 @@
       </as-split-area>
       <as-split-area size="60" [order]="1" id="content" [class.horizontal]="wsPhytoService.getInfoPanelSplitDirection() === 'horizontal'">
         <!--   SPLIT Table -- Info   -->
-        <as-split #tableInfoPanels unit="percent" [direction]="wsPhytoService.getInfoPanelSplitDirection()" (dragEnd)="infoPanelDragEnd($event)">
+        <as-split #tableInfoPanels unit="percent" [direction]="wsPhytoService.getInfoPanelSplitDirection()" (dragEnd)="infoPanelDragEnd()">
           <!-- TABLE PANEL -->
           <as-split-area size="67" [order]="0" id="table-panel">
             <div class="progress-bar-container" *ngIf="tableService.isLoadingData | async">

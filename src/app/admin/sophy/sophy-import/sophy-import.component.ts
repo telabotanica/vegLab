@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { FileData } from 'tb-dropfile-lib/lib/_models/fileData';
+import { RejectedFileData } from 'tb-dropfile-lib/lib/_models/rejectedFileData';
 
 import { TableService } from 'src/app/_services/table.service';
 
@@ -73,11 +74,11 @@ export class SophyImportComponent implements OnInit {
     this.processNextFile();
   }
 
-  rejectedFiles(): void {
+  rejectedFiles(data: Array<RejectedFileData>): void {
 
   }
 
-  deletedFiles(): void {
+  deletedFiles(data: Array<FileData>): void {
     this.resetComponent();
   }
 

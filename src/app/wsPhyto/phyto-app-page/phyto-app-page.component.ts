@@ -43,7 +43,7 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
               private menuService: MenuService,
               public tableService: TableService,
               private wsService: WorkspaceService,
-              private wsPhytoService: WsPhytoService,
+              public wsPhytoService: WsPhytoService,
               private notificationService: NotificationService,
               public router: Router,
               public dialogService: DialogService) { }
@@ -79,12 +79,12 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
     if (this.infoPanelDisabledSubscription) { this.infoPanelDisabledSubscription.unsubscribe(); }
   }
 
-  actionPanelDragEnd(gutterNum: number, sizes: Array<number>): void {
+  actionPanelDragEnd(/*gutterNum: number, sizes: Array<number>*/): void {
     this.panelsSizeOrPositionHaveBeenUpdated();
     this.tableAreaChanged();
   }
 
-  infoPanelDragEnd(gutterNum: number, sizes: Array<number>): void {
+  infoPanelDragEnd(/*gutterNum: number, sizes: Array<number>*/): void {
     this.panelsSizeOrPositionHaveBeenUpdated();
     this.tableAreaChanged();
   }
