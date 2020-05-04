@@ -2607,7 +2607,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
       releveToBind.osmCountry = location.tbLocation.osmCountry;
       releveToBind.osmCountryCode = location.tbLocation.osmCountryCode;
       releveToBind.osmId = location.tbLocation.osmId.toString();
-      releveToBind.osmPlaceId = location.tbLocation.osmPlaceId;
+      releveToBind.osmPlaceId = +location.tbLocation.osmPlaceId;
     } else if (location.selectedLocation) {
       if (location.isLatLngInitialSetByUser) {
         releveToBind.geometry = { type: 'Point', coordinates: [Number(location.longitude), Number(location.latitude)] };
@@ -2644,7 +2644,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
       releveToBind.osmCountry = location.selectedLocation.nominatimLocation.address.country;
       releveToBind.osmCountryCode = location.selectedLocation.nominatimLocation.address.country_code;
       releveToBind.osmId = location.selectedLocation.nominatimLocation.osm_id.toString();
-      releveToBind.osmPlaceId = location.selectedLocation.nominatimLocation.place_id;
+      releveToBind.osmPlaceId = +location.selectedLocation.nominatimLocation.place_id;
     } else {
       // No location
     }
