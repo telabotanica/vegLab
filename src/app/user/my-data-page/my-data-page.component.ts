@@ -40,6 +40,7 @@ export class MyDataPageComponent implements OnInit, OnDestroy {
   myTablesPaginatorSize = 5;
   tableInfo: EsTableModel = null;     // table to preview
   tableToDelete: EsTableModel = null; // table to be deleted
+  removingTable = false;
 
   // My occurrences var
   myOccurrencesLoading = false;
@@ -53,6 +54,8 @@ export class MyDataPageComponent implements OnInit, OnDestroy {
   occurrenceInfo: OccurrenceModel = null;     // occurrence to preview
   occurrenceToDelete: OccurrenceModel = null; // occurrence to be deleted
   occurrencesDisplayedColumns = ['id', 'level', 'layer', 'custom_col_validation', 'dateObserved', 'locality', 'vlLocationAccuracy', 'custom_col_actions'];
+
+  waitingForReload = false; // We wait before reloading tables / occ after removing one of them because ES propagation takes some time
 
   constructor(private userService: UserService,
               private notificationService: NotificationService,
@@ -86,6 +89,13 @@ export class MyDataPageComponent implements OnInit, OnDestroy {
     if (this.currentUserSubscription) { this.currentUserSubscription.unsubscribe(); }
   }
 
+  resetOccurrencesAndTables(): void {
+    this.myOccurrences = _.clone([]);
+    this.myTables = _.clone([]);
+    this.getMyTables();
+    this.getMyOccurrences();
+  }
+
   getMyTables(from: number = 0, size: number = this.myTablesPaginatorSize): void {
     if (this.currentUser == null) {
       this.loggedOut = true;
@@ -94,6 +104,7 @@ export class MyDataPageComponent implements OnInit, OnDestroy {
     this.myTablesLoading = true;
     this.tableService.getEsTablesForCurrentUser(from, size).subscribe(
       userTables => {
+        console.log('GET ES TABLES FOR CU');
         this.myTablesLoading = false;
         this.myTablesSet = true;
         this.myTablesRaw = userTables;
@@ -178,6 +189,28 @@ export class MyDataPageComponent implements OnInit, OnDestroy {
   cancelTableDelete(): void {
     this.sidenav.close();
     this.close();
+  }
+
+  deleteTable(tableToDelete): void {
+    this.removingTable = true;
+    this.tableService.deleteTable(tableToDelete).subscribe(
+      response => {
+        console.log(response);
+        this.removingTable = false;
+        this.waitingForReload = true;
+        setTimeout(() => {
+          this.resetOccurrencesAndTables();
+          this.waitingForReload = false;
+        }, 1000);
+        this.sidenav.close();
+        this.notificationService.notify('Le tableau a été supprimé');
+      },
+      error => {
+        console.log(error);
+        this.removingTable = false;
+        this.notificationService.error('Nous ne parvenons pas à supprimer le tableau');
+      }
+    );
   }
 
   previewOccurrenceAction(occurrence: OccurrenceModel): void {

@@ -208,10 +208,14 @@ export class TableService {
       console.log('The current table doesn\'t exists in DB, could not PATCH pdf files for it');
       return;
     }
-    const linkHttpHeaders = {'Content-Type': 'application/ld+json'};
+    const linkHttpHeaders = {'Content-Type': 'application/vnd.api+json'};
     return this.http.patch<Table>(`${environment.apiBaseUrl}/tables/${table.id}`, {pdf: pdfFileIri}, {headers: linkHttpHeaders}).pipe(
       map(t => this.parseGeometryAndIntegerifyElevation(t))
     );
+  }
+
+  deleteTable(tableToDelete): Observable<any> {
+    return this.http.delete(`${environment.apiBaseUrl}/tables/${tableToDelete.id}`);
   }
 
 

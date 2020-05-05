@@ -28,12 +28,20 @@
               <vl-table-basic-infos-preview [table]="tableToDelete"></vl-table-basic-infos-preview>
               <hr />
               <div class="confirm-delete">
-                <p>Lorsque vous supprimez un tableau, les relevés qui le compose ne sont par supprimés.</p>
+                <!--<p>Lorsque vous supprimez un tableau, les relevés qui le compose ne sont par supprimés.</p>-->
+                <p>Lorsque vous supprimez un tableau, les relevés qui le compose sont également supprimés.</p>
                 <br />
                 <p><b>La suppression de ce tableau est irreversible.</b></p>
                 <div class="action-buttons">
-                  <button mat-flat-button color="warn">Confirmer la suppression</button>
-                  <button mat-flat-button color="primary" (click)="cancelTableDelete()">Annuler</button>
+                  <button mat-flat-button color="warn"
+                    (click)="deleteTable(tableToDelete)"
+                    [disabled]="removingTable"
+                    [class.spinner]="removingTable">Confirmer la suppression</button>
+
+                  <button mat-flat-button color="primary" 
+                    (click)="cancelTableDelete()"
+                    [disabled]="removingTable"
+                    [class.spinner]="removingTable">Annuler</button>
                 </div>
               </div>
             </div>
@@ -51,7 +59,7 @@
               <div class="confirm-delete">
                 <p><b>La suppression de ce relevé est irreversible.</b></p>
                 <div class="action-buttons">
-                  <button mat-flat-button color="warn">Confirmer la suppression</button>
+                  <button mat-flat-button color="warn" disabled>Confirmer la suppression</button>
                   <button mat-flat-button color="primary" (click)="cancelOccurrenceDelete()">Annuler</button>
                 </div>
               </div>
@@ -68,6 +76,9 @@
           <div fxLayout="column" fxLayoutAlign="center start" fxLayoutGap="40px" class="content">
             <!-- main content -->
             <div class="section">
+              <div *ngIf="waitingForReload">
+                <mat-card class="wait-for-update">Les données vont être mises à jour...</mat-card>
+              </div>
               <!-- TABLES -->
               <h3 class="title" matBadge="{{ myTablesCount }}" matBadgeOverlap="false" matBadgeSize="medium">Mes tableaux</h3>
 
@@ -80,6 +91,7 @@
                                       [size]="myTablesPaginatorSize"
                                       [pageIndex]="myTablesPageIndex"
                                       [tables]="myTables"
+                                      [deleteOption]="true"
                                       [isLoading]="myTablesLoading"
                                       (pageChange)="_tablePageChanged($event)"
                                       (previewTable)="previewTableAction($event)"
