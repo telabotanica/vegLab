@@ -188,10 +188,14 @@ export class TableFormComponent implements OnInit, OnDestroy {
       prePostedTable.validations = prePostedTableValidations;
     }
 
+    if (this.pdfFileIrisToLink.length > 0) {
+      prePostedTable.pdf = this.pdfFileIrisToLink[0] as any;
+    }
+
     // POST table
     this.tableService.postTable(prePostedTable).subscribe(
       postedTable => {
-        // Should we link pdf file ?
+        /*// Should we link pdf file ?
         if (this.pdfFileIrisToLink.length > 0) {
           this.tableService.linkTableToPdfFile(postedTable, this.pdfFileIrisToLink[0]).subscribe(
             linkedTable => {
@@ -205,7 +209,9 @@ export class TableFormComponent implements OnInit, OnDestroy {
         } else {
           // no pdf file to link
           this.tableService.setCurrentTable(postedTable, true);
-        }
+        }*/
+        this.pdfFileIrisToLink = [];
+        this.tableService.setCurrentTable(postedTable, true);
       }, errorPostedTable => {
         console.log(errorPostedTable);
       }
@@ -267,7 +273,7 @@ export class TableFormComponent implements OnInit, OnDestroy {
       patchedTable => {
         // Should we link pdf file ?
         if (this.pdfFileIrisToLink.length > 0) {
-          this.tableService.linkTableToPdfFile(patchedTable, this.pdfFileIrisToLink[0]).subscribe(
+          /*this.tableService.linkTableToPdfFile(patchedTable, this.pdfFileIrisToLink[0]).subscribe(
             linkedTable => {
               // CURRENT TABLE = LINKED TABLE
               this.tableService.setCurrentTable(linkedTable, true);
@@ -277,7 +283,7 @@ export class TableFormComponent implements OnInit, OnDestroy {
               this.notificationService.warn('Nous ne parvenons pas à lier le tableau au fichier PDF');
               this.tableService.setCurrentTable(patchedTable, true);
             }
-          );
+          );*/
         } else {
           // no pdf file to link
           // pdf file to unlink ?
