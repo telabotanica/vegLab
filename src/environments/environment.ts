@@ -8,6 +8,7 @@ export const environment = {
   apiBaseUrl: 'https://${HOST}:8443/api',
   esBaseUrl: 'http://${HOST}:9200',
   esBaseflorTraitsApi: 'http://${HOST}:9200/baseflor',
+  pdfBaseUrl: 'https://${HOST}:8443/media/veglab/pdf/',
   app : {
     title:           'VegLab',
     unsetTokenValue: 'unset',
