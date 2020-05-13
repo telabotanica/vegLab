@@ -1,18 +1,21 @@
-<div *ngIf="table && table.pdf && !errorLoadingFile" class="pdf-view">
-  <div class="title">
+<div *ngIf="table && table.pdf && sanitizedUrl !== null" class="pdf-view" style="width: 100%; height: 100%">
+  <!--<div class="title">
     {{ getPdfBiblioSource() }}
-  </div>
-  <div class="content">
-    <pdf-viewer
+  </div>-->
+  <div class="content" style="width: 100%; height: 100%">
+    <object [data]="sanitizedUrl" type="application/pdf" width="100%" height="100%">
+      <!--<p>Chargement du fichier. Si le document ne s'affiche pas, <a [href]="getContentUrl()">téléchargez le fichier</a>.</p>-->
+    </object>
+    <!--<pdf-viewer
       [src]="table.pdf.url"
       [render-text]="true"
       (on-progress)="loadingFile($event)"
-      style="display: block;"></pdf-viewer>  
+      style="display: block;"></pdf-viewer>-->
   </div>
 </div>
-<div *ngIf="table && table.pdf && errorLoadingFile" class="error-loading-file">
+<!--<div *ngIf="table && table.pdf && errorLoadingFile" class="error-loading-file">
   Nous ne parvenons pas à télécharger le fichier PDF
-</div>
+</div>-->
 <div *ngIf="!table || !table.pdf" class="no-pdf">
   Aucun fichier PDF
 </div>

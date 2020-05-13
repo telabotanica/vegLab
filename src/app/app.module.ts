@@ -94,7 +94,6 @@ import { AngularSplitModule } from 'angular-split';
 import { ObserverSearchComponent } from './shared/observer-search/observer-search.component';
 import { BiblioSearchComponent } from './shared/biblio-search/biblio-search.component';
 import { OccurrencesInlineComponent } from './shared/occurrences-inline/occurrences-inline.component';
-import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { TableOverviewMapComponent } from './shared/map/table-overview-map/table-overview-map/table-overview-map.component';
 import { ValidationComponent } from './wsPhyto/info-components/validation/validation/validation.component';
 import { TableSelectedElementComponent } from './wsPhyto/info-components/table-selected-element/table-selected-element.component';
@@ -124,7 +123,6 @@ import { WsLabelPipe } from './_pipes/ws-label.pipe';
 import { SophyImportComponent } from './admin/sophy/sophy-import/sophy-import.component';
 import { DataSourcesPageComponent } from './admin/dataSources/data-sources-page.component';
 
-/*
 import * as Sentry from '@sentry/browser';
 Sentry.init({
   dsn: 'https://3cd3bcc6591d450d9f0808b78675a4b0@sentry.io/1542725'
@@ -138,7 +136,6 @@ export class SentryErrorHandler implements ErrorHandler {
     Sentry.showReportDialog({ eventId });
   }
 }
-*/
 
 @NgModule({
   declarations: [
@@ -182,7 +179,6 @@ export class SentryErrorHandler implements ErrorHandler {
     HotTableModule.forRoot(),
     NgbPopoverModule,
     AngularSplitModule.forRoot(),
-    PdfViewerModule,
     NgxChartsModule,
     SimpleNotificationsModule.forRoot()
   ],

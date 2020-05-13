@@ -1,8 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+
 import { TableService } from 'src/app/_services/table.service';
 import { Table } from 'src/app/_models/table.model';
 import { Subscription } from 'rxjs';
-import { PDFProgressData, PDFDocumentProxy } from 'pdfjs-dist';
+// import { PDFProgressData, PDFDocumentProxy } from 'pdfjs-dist';
+
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'vl-pdf-viewer',
@@ -13,20 +17,26 @@ import { PDFProgressData, PDFDocumentProxy } from 'pdfjs-dist';
 export class PdfViewerComponent implements OnInit, OnDestroy {
   tableSubscriber: Subscription;
   table: Table;
-  isLoadingFile = false;
-  errorLoadingFile = false;
+  // isLoadingFile = false;
+  // errorLoadingFile = false;
 
-  constructor(private tableService: TableService) { }
+  sanitizedUrl: SafeResourceUrl | null;
+
+  constructor(private tableService: TableService, public sanitizer: DomSanitizer) { }
 
   ngOnInit() {
     // Check current table at startup
     const currentTable = this.tableService.getCurrentTable();
-    if (currentTable) { this.table = currentTable; }
+    if (currentTable) {
+      this.table = currentTable;
+      this.sanitizedUrl = this.table.pdf && this.table.pdf.contentUrl ? this.sanitizer.bypassSecurityTrustResourceUrl(environment.pdfBaseUrl + this.table.pdf.contentUrl) : null;
+    }
 
     // Subscribe to table change
     this.tableSubscriber = this.tableService.currentTableChanged.subscribe(value => {
       if (value === true) {
         this.table = this.tableService.getCurrentTable();
+        this.sanitizedUrl = this.table.pdf && this.table.pdf.contentUrl ? this.sanitizer.bypassSecurityTrustResourceUrl(environment.pdfBaseUrl + this.table.pdf.contentUrl) : null;
       }
     });
   }
@@ -35,7 +45,7 @@ export class PdfViewerComponent implements OnInit, OnDestroy {
     if (this.tableSubscriber) { this.tableSubscriber.unsubscribe(); }
   }
 
-  getPdfBiblioSource(): string {
+  /*getPdfBiblioSource(): string {
     if (this.table && this.table.pdf && this.table.pdf.vlBiblioSource) {
       return this.table.pdf.vlBiblioSource.title;
     } else {
@@ -49,9 +59,15 @@ export class PdfViewerComponent implements OnInit, OnDestroy {
     } else {
       this.isLoadingFile = true;
     }
-  }
+  }*/
 
-  onError(error: any) {
+  /*getContentUrl() {
+    if (this.table && this.table.pdf && this.table.pdf.contentUrl) {
+      return `https://localhost:8443/media/veglab/pdf/${this.table.pdf.contentUrl}`;
+    }
+  }*/
+
+  /*onError(error: any) {
     this.errorLoadingFile = true;
- }
+  }*/
 }
