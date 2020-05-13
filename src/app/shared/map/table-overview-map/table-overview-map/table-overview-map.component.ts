@@ -5,7 +5,8 @@ import { OccurrenceModel } from 'src/app/_models/occurrence.model';
 import { Subscription } from 'rxjs';
 
 import * as L from 'leaflet';
-import { Point, GeoJsonObject } from 'geojson';
+// import { Point, GeoJsonObject } from 'geojson/index';
+import * as G from 'geojson';
 
 import * as _ from 'lodash';
 
@@ -23,7 +24,7 @@ export class TableOverviewMapComponent implements OnInit, OnDestroy {
   tableSubscriber: Subscription;
   table: Table;
 
-  uniqCentroids: Array<{occurrencesIds: Array<number>, point: Point}> = [];
+  uniqCentroids: Array<{occurrencesIds: Array<number>, point: G.Point}> = [];
 
   private map: L.Map;
   public mapOptions: any;
@@ -76,7 +77,7 @@ export class TableOverviewMapComponent implements OnInit, OnDestroy {
 
   setCentroidsToMap(): void {
     // clear centroids
-    const centroids: Array<{occurrenceId: number, point: Point}> = [];
+    const centroids: Array<{occurrenceId: number, point: G.Point}> = [];
     this.uniqCentroids = [];
     this.occurrencesCentroidsLayer.clearLayers();
 
@@ -85,7 +86,7 @@ export class TableOverviewMapComponent implements OnInit, OnDestroy {
       const releves: Array<OccurrenceModel> = this.tableService.getReleves();
       for (const releve of releves) {
         if (releve.centroid) {
-          const point = { type: 'Point', coordinates: [releve.centroid.coordinates[0], releve.centroid.coordinates[1]] } as Point;
+          const point = { type: 'Point', coordinates: [releve.centroid.coordinates[0], releve.centroid.coordinates[1]] } as G.Point;
           centroids.push({occurrenceId: releve.id, point});
         }
       }
