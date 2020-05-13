@@ -35,7 +35,8 @@ RUN envsubst < ./src/environments/environment.prod.ts > /client/src/environments
 #RUN ng e2e --port 4202
 
 # generate build
-RUN ng build --prod --output-path=dist
+RUN set NODE_OPTIONS=--max_old_space_size=14336 && \
+    ng build --prod --output-path=dist
 
 ############
 ### prod ###
