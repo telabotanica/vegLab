@@ -21,8 +21,11 @@ COPY package.json /client/package.json
 RUN npm install
 RUN npm install -g @angular/cli@7.3.9
 
-# get HOST env var
+# get env var
 ARG HOST
+ARG API_PORT
+ARG ES_PORT
+ARG SSO_PORT
 
 # add app
 COPY . /client
@@ -46,7 +49,7 @@ RUN set NODE_OPTIONS=--max_old_space_size=14336 && \
 FROM nginx:1.16.0-alpine
 
 # copy artifact build from the 'build environment'
-COPY --from=build /client/dist /usr/share/nginx/html
+COPY --from=api_platform_php /srv/api/public ./
 
 # expose port 80
 EXPOSE 80

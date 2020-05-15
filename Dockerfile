@@ -18,8 +18,11 @@ COPY package.json /client/package.json
 RUN npm install
 RUN npm install -g @angular/cli@7.3.4
 
-# get HOST env var
+# get env var
 ARG HOST
+ARG API_PORT
+ARG ES_PORT
+ARG SSO_PORT
 
 # add app
 COPY . /client
@@ -29,4 +32,4 @@ RUN envsubst < ./src/environments/environment.ts > /client/src/environments/envi
 
 # start app
 #CMD ng serve
-CMD ng serve --host 0.0.0.0 --port 4200
+CMD ng serve --host 0.0.0.0 --port 4200 --disableHostCheck
