@@ -2665,12 +2665,13 @@ export class TableImportComponent implements OnInit, OnDestroy {
    * Be careful : you must provide VALID models and values. This function does not perform any verification.
    */
   bindMetadataToReleve(releveToBind: OccurrenceModel, metadataModel: ExtendedFieldModel, value: any): void {
+    const extFieldIri = `/api/extended_fields/${metadataModel.id}` as any;  // IRI workaround
     if (!releveToBind.extendedFieldOccurrences || releveToBind.extendedFieldOccurrences.length === 0) {
       releveToBind.extendedFieldOccurrences = [];
     }
     releveToBind.extendedFieldOccurrences.push({
       occurrence: null, // automaticaly set on backend, no need to play with json recursion
-      extendedField: metadataModel,
+      extendedField: extFieldIri, // IRI workaround
       value: metadataModel.dataType === FieldDataType.DATE ? moment(value).format('DD/MM/YYYY') : value.toString()
     });
   }
