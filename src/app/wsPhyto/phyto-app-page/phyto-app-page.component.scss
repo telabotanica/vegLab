@@ -1,3 +1,5 @@
+@import '../../_styles/colors.scss';
+
 .phyto_app_container {
   height: calc(100vh - 50px);
   max-height: calc(100vh - 50px);
@@ -10,6 +12,7 @@
         margin-top: 0;
         margin-bottom: -40px;
         #close-action-panel {
+          z-index: 10;
           padding-right: 0;
         }
       }
@@ -98,7 +101,7 @@
         align-items: center;
         justify-content: center;
         font-size: 1.2em;
-        color: lightgrey;
+        color: $vl-text-grey;
         padding-left: 60px;
         .icon {
           height: 100px;
@@ -164,7 +167,7 @@
         align-items: center;
         justify-content: center;
         font-size: 1.2em;
-        color: lightgrey;
+        color: $vl-text-grey;
         .icon {
           height: 100px;
           width: 100px;

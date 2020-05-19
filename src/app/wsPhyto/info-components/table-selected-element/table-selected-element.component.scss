@@ -1,3 +1,22 @@
+@import '../../../_styles/colors.scss';
+
+.no-selection {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: $vl-text-grey;
+  font-weight: bold;
+  font-size: 1.2em;
+  text-align: center;
+  padding: 20px;
+  .min {
+    font-size: .8em;
+  }
+}
+
 .column-container {
   .content {
     .row-item {

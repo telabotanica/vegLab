@@ -1,3 +1,5 @@
+@import '../../_styles/colors.scss';
+
 .idiotaxon-images {
   .galery {
     .top-bar {
@@ -56,7 +58,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: lightgrey;
+  color: $vl-text-grey;
   font-weight: bold;
   font-size: 1.2em;
   text-align: center;

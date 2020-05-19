@@ -1,10 +1,12 @@
+@import '../../../../_styles/colors.scss';
+
 .no-table {
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: lightgrey;
+  color: $vl-text-grey;
   font-weight: bold;
   font-size: 1.2em;
 }

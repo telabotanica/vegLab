@@ -1,3 +1,5 @@
+@import '../../../_styles/colors.scss';
+
 .bf-diag-selector-wrapper {
   width: 100%;
   height: calc(100% - 52px);
@@ -15,7 +17,7 @@
     align-items: center;
 
     &.no-table {
-      color: lightgrey;
+      color: $vl-text-grey;
       font-weight: bold;
       font-size: 1.2em;
     }
