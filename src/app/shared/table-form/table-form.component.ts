@@ -44,6 +44,9 @@ export class TableFormComponent implements OnInit, OnDestroy {
   currentTablePdfFiles: Array<PdfFile> = [];
   // pdfFileIrisToUnlink: Array<string> = [];
 
+  uploadingPdf = false;
+  postingOrPutingTable = false;
+
   constructor(
     private userService: UserService,
     public tableService: TableService,
@@ -89,6 +92,17 @@ export class TableFormComponent implements OnInit, OnDestroy {
     if (!this.tableService.isTableEmpty(ct) && ct.pdf) {
       this.currentTablePdfFiles.push(ct.pdf);
     }
+
+    setTimeout(() => {
+      this.uploadingPdf = true;
+      setTimeout(() => {
+        this.uploadingPdf = false;
+        this.postingOrPutingTable = true;
+        setTimeout(() => {
+          this.postingOrPutingTable = false;
+        }, 2000);
+      }, 3000);
+    }, 2000);
   }
 
   ngOnDestroy() {
@@ -97,11 +111,11 @@ export class TableFormComponent implements OnInit, OnDestroy {
 
   syntaxonChange(validation: RepositoryItemModel): void {
     if (this.relatedSyntaxon.length > 0) {
-      this.notificationService.notify('Un tableau ne peut contenir qu\'une seule validation');
+      this.notificationService.warn('Un tableau ne peut contenir qu\'une seule validation');
     } else {
       const alreadyExist = _.find(this.relatedSyntaxon, rs => _.isEqual(rs, validation));
       if (alreadyExist) {
-        this.notificationService.notify('Vous ne pouvez pas ajouter deux fois la même référence');
+        this.notificationService.warn('Vous ne pouvez pas ajouter deux fois la même référence');
       } else {
         this.relatedSyntaxon.push(validation);
       }
@@ -152,14 +166,16 @@ export class TableFormComponent implements OnInit, OnDestroy {
    */
   postPdfFiles(callback: 'POST' | 'PUT') {
     if (this.pdfFilesToSend.length > 0) {
+      this.uploadingPdf = true;
       this.pdfFileService.createPdfFile(this.pdfFilesToSend[0]).subscribe(
         pdfFile => {
+          this.uploadingPdf = false;
+          this.postingOrPutingTable = true;
           this.pdfFileIrisToLink.push(pdfFile['@id']);
-          this.notificationService.notify('Fichier ' + pdfFile.originalName + ' uploadé !');
           if (callback === 'POST') { this.postTable(); }
           if (callback === 'PUT') { this.putTable(); }
         }, errorPdfFile => {
-          this.notificationService.warn('Erreur lors de l\'upload du fichier  PDF ' + this.pdfFilesToSend[0].get('file').toString());
+          this.notificationService.error('Erreur lors de l\'upload du fichier  PDF ' + this.pdfFilesToSend[0].get('file').toString());
         }
       );
     }
@@ -195,24 +211,13 @@ export class TableFormComponent implements OnInit, OnDestroy {
     // POST table
     this.tableService.postTable(prePostedTable).subscribe(
       postedTable => {
-        /*// Should we link pdf file ?
-        if (this.pdfFileIrisToLink.length > 0) {
-          this.tableService.linkTableToPdfFile(postedTable, this.pdfFileIrisToLink[0]).subscribe(
-            linkedTable => {
-              // CURRENT TABLE = LINKED TABLE
-              this.tableService.setCurrentTable(linkedTable, true);
-              this.pdfFileIrisToLink = [];
-            }, errorLinkedTable => {
-              console.log(errorLinkedTable);
-            }
-          );
-        } else {
-          // no pdf file to link
-          this.tableService.setCurrentTable(postedTable, true);
-        }*/
         this.pdfFileIrisToLink = [];
         this.tableService.setCurrentTable(postedTable, true);
+        this.postingOrPutingTable = false;
+        this.notificationService.notify('Le tableau a été enregistré');
       }, errorPostedTable => {
+        this.postingOrPutingTable = false;
+        this.notificationService.error('Nous ne parvenons pas à enregistrer le tableau');
         console.log(errorPostedTable);
       }
     );
@@ -271,42 +276,30 @@ export class TableFormComponent implements OnInit, OnDestroy {
 
     this.tableService.putTable(prePatchedTable).subscribe(
       patchedTable => {
-        // Should we link pdf file ?
-        if (this.pdfFileIrisToLink.length > 0) {
-          /*this.tableService.linkTableToPdfFile(patchedTable, this.pdfFileIrisToLink[0]).subscribe(
-            linkedTable => {
-              // CURRENT TABLE = LINKED TABLE
-              this.tableService.setCurrentTable(linkedTable, true);
-              this.pdfFileIrisToLink = [];
-            }, errorLinkedTable => {
-              console.log(errorLinkedTable);
-              this.notificationService.warn('Nous ne parvenons pas à lier le tableau au fichier PDF');
+        // pdf file to unlink ?
+        if (deleteLinkedPdfFile) {
+          this.pdfFileService.removePdfFile(patchedTable.pdf.id).subscribe(
+            removedPdfFile => {
+              console.log(removedPdfFile);
+              patchedTable.pdf = null;
+              this.tableService.setCurrentTable(patchedTable, true);
+              this.postingOrPutingTable = false;
+              this.notificationService.notify('Le tableau a été modifié');
+            }, errorRemovedPdfFile => {
+              console.log(errorRemovedPdfFile);
+              this.postingOrPutingTable = false;
+              this.notificationService.warn('Nous ne parvenons pas à supprimer le fichier PDF lié au tableau');
               this.tableService.setCurrentTable(patchedTable, true);
             }
-          );*/
+          );
         } else {
-          // no pdf file to link
-          // pdf file to unlink ?
-          if (deleteLinkedPdfFile) {
-            this.pdfFileService.removePdfFile(patchedTable.pdf.id).subscribe(
-              removedPdfFile => {
-                console.log(removedPdfFile);
-                patchedTable.pdf = null;
-                this.tableService.setCurrentTable(patchedTable, true);
-                this.notificationService.notify('Le tableau a été modifié');
-              }, errorRemovedPdfFile => {
-                console.log(errorRemovedPdfFile);
-                this.notificationService.warn('Nous ne parvenons pas à supprimer le fichier PDF lié au tableau');
-                this.tableService.setCurrentTable(patchedTable, true);
-              }
-            );
-          } else {
-            this.tableService.setCurrentTable(patchedTable, true);
-          }
+          this.tableService.setCurrentTable(patchedTable, true);
+          this.postingOrPutingTable = false;
+          this.notificationService.notify('Le tableau a été modifié');
         }
       }, errorPatchedTable => {
         console.log(errorPatchedTable);
-        this.notificationService.warn('Nous ne parvenons pas à enregistrer le tableau');
+        this.notificationService.error('Nous ne parvenons pas à enregistrer le tableau');
       }
     );
   }

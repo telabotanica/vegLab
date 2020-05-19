@@ -98,9 +98,10 @@
   </div>
 
   <div class="saveCurrentTable" *ngIf="!tableService.isSavingCurrentTable">
-    <button mat-button color="primary" (click)="saveTable()">Enregistrer le tableau</button>
+    <button mat-raised-button color="primary" (click)="saveTable()" [disabled]="uploadingPdf || postingOrPutingTable" [class.spinner]="uploadingPdf || postingOrPutingTable">Enregistrer le tableau</button>
   </div>
   <div class="saveCurrentTable">
-    <p>{{ tableService.savingCurrentTableMessage }}</p>
+    <p *ngIf="uploadingPdf">Enregistrement du fichier PDF en cours...</p>
+    <p *ngIf="postingOrPutingTable">Enregistrement du tableau en cours. Cela peut prendre du temps...</p>
   </div>
 </form>
