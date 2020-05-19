@@ -92,17 +92,6 @@ export class TableFormComponent implements OnInit, OnDestroy {
     if (!this.tableService.isTableEmpty(ct) && ct.pdf) {
       this.currentTablePdfFiles.push(ct.pdf);
     }
-
-    setTimeout(() => {
-      this.uploadingPdf = true;
-      setTimeout(() => {
-        this.uploadingPdf = false;
-        this.postingOrPutingTable = true;
-        setTimeout(() => {
-          this.postingOrPutingTable = false;
-        }, 2000);
-      }, 3000);
-    }, 2000);
   }
 
   ngOnDestroy() {
