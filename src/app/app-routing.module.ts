@@ -45,7 +45,10 @@ const routes: Routes = [
   { path: 'my-data', component: MyDataPageComponent, canActivate: [AuthGuard]},
   { path: 'error', component: FatalErrorPageComponent },
   // { path: 'admin', component: AdminHomePageComponent, canActivate: [AdminGuard], canActivateChild: [AdminGuard], children: [
-  { path: 'admin', component: AdminHomePageComponent, children: [
+  { path: 'admin', component: AdminHomePageComponent,
+    canActivate: [AdminGuard],
+    canActivateChild: [AdminGuard],
+    children: [
     { path: 'metadata-manager', component: AdminMetadataPageComponent },
     { path: 'metadata-test', component: AdminTestMetadataComponent},
     { path: 'sophy-consolidate', component: SophyImportAndSplitCsvComponent },

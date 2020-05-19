@@ -85,7 +85,17 @@ export class UserService {
     }
   }
 
+  /**
+   * Is current user an admin ?
+   * @TODO important : set up a role based authentification
+   * E-mail check is for testing only
+   */
   isAdmin(): boolean {
-    return false;
+    const currentUser = this.currentUser.getValue();
+    if (currentUser !== null && currentUser.sub === 'stephane@phytoscopa.fr') {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

@@ -19,6 +19,7 @@ export class AuthComponent implements OnInit, OnDestroy {
 
   userSubscriber: Subscription;
   currentUser: UserModel = null;
+  isAdmin: boolean;
 
   constructor(private userService: UserService,
               private ssoService: SsoService,
@@ -28,6 +29,7 @@ export class AuthComponent implements OnInit, OnDestroy {
     this.userSubscriber = this.userService.currentUser.subscribe(
       user => {
         this.currentUser = user;
+        this.isAdmin = this.userService.isAdmin();
       }, error => {
         // @Todo manage error
         // Should logout ?
@@ -38,10 +40,6 @@ export class AuthComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.userSubscriber) { this.userSubscriber.unsubscribe(); }
-  }
-
-  isAdmin(): boolean {
-    return this.userService.isAdmin();
   }
 
   getUserName(): string {
