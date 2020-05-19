@@ -175,7 +175,9 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
    */
   tableAreaChanged(): void {
     console.log(`width: ${this.tableAreaDomElement.nativeElement.offsetWidth}  /  height: ${this.tableAreaDomElement.nativeElement.offsetHeight}`);
-    this.tableService.tableAreaDimensions.next({width: this.tableAreaDomElement.nativeElement.offsetWidth, height: this.tableAreaDomElement.nativeElement.offsetHeight});
+    setTimeout(() => {
+      this.tableService.tableAreaDimensions.next({width: this.tableAreaDomElement.nativeElement.offsetWidth, height: this.tableAreaDomElement.nativeElement.offsetHeight});
+    }, 100);
   }
 
   /**
