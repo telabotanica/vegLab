@@ -396,7 +396,10 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
    */
   search(from?: number) {
     // At less one of the filters (occurrence, geolocation, ...) must be applied
-    if (this.noFilterApplied()) { return; }
+    if (this.noFilterApplied()) {
+      this.resultCount = 0;
+      return;
+    }
 
     // Get the query
     const esQuery = this.esQueryAssembler(from);
@@ -491,13 +494,26 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
         this.filteredAuthors.length === 0 &&
         this.filteredBiblios.length === 0 &&
         this.dateFilterOn === false &&
-        this.metadataFilterValues.length === 0) {
+        !this.isMetadataFilterApplied()) {
           this.searchedOccurrences = [];
           this.orderedSearchedOccurrences = [];
           this.geoSearchedOccurrences = [];
           return true;
         }
     return false;
+  }
+
+  /**
+   * Is there at less one Metadata filter applied and enabled ?
+   */
+  isMetadataFilterApplied(): boolean {
+    const countMetaFilters = this.metadataFilterValues.length;
+    if (countMetaFilters === 0) {
+      return false;
+    } else {
+      const metaFilterStatus = _.map(this.metadataFilterValues, mfv => mfv.item.disabled);
+      return metaFilterStatus.indexOf(false) !== -1 ? true : false;
+    }
   }
 
   // --------------
