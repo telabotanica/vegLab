@@ -56,7 +56,11 @@ export class MetadataService {
     const _meta = occ.extendedFieldOccurrences;
     if (_meta !== null && _meta.length > 0) {
       const v = _.find(_meta, m => m.extendedField.fieldId === fieldId);
-      return v.value.toString();
+      if (v && v.value) {
+        return v.value.toString();
+      } else {
+        return null;
+      }
     } else {
       return null;
     }
