@@ -145,7 +145,7 @@ export class SophyImportComponent implements OnInit {
       }, error => {
         this.fq[this.fileToProcessIndex].isSaving = false;
         this.fq[this.fileToProcessIndex].saveFinish = true;
-        this.fq[this.fileToProcessIndex].saveError = false;
+        this.fq[this.fileToProcessIndex].saveError = true;
 
         this.fileToProcess = null;
 

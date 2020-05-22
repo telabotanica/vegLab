@@ -66,8 +66,8 @@
         <td mat-cell *matCellDef="let element">
           <span class="ts" *ngIf="!element.isSaving && !element.saveFinish && ! element.saveError"> - </span>
           <span class="ts saving" *ngIf="element.isSaving"> En cours </span>
-          <span class="ts complete" *ngIf="!element.isSaving && element.saveFinish"> Ok </span>
-          <span class="ts error" *ngIf="!element.isSaving && element.saveError"> Erreur </span>
+          <span class="ts complete" *ngIf="!element.isSaving && !element.saveError && element.saveFinish"> Ok </span>
+          <span class="ts error" *ngIf="!element.isSaving && element.saveError && element.saveFinish"> Erreur </span>
         </td>
       </ng-container>
     
