@@ -2443,7 +2443,9 @@ export class TableImportComponent implements OnInit, OnDestroy {
                 validName:         releve.validation.consolidedValidation.name
               } : null;
               for (const releveToBind of relevesToBind) {
-                releveToBind.validations = [releveValidation];
+                if (releveValidation !== null) {
+                  releveToBind.validations = [releveValidation];
+                }
               }
             }
           }
