@@ -88,12 +88,35 @@ export class SimpleGeojsonMapComponent implements OnInit {
       // @Note Leaflet is not supporting multi polygond (not by this way at less)
       //       but adding multipoint here avoid function crach
       if (item.type.toLowerCase() === 'polygon' || item.type.toLowerCase() === 'multipolygon') {
-        const coords: any = [];
-        for (const c of item.coordinates[0]) {
-          coords.push(new L.LatLng(c[1], c[0]));
+        if (item.type.toLowerCase() === 'multipolygon') {
+          console.log('MULTI POLYGON');
+          console.log(item);
+
+          let coords: any = [];
+
+          const coordinates = item.coordinates as any;
+          const c: Array<Array<Array<Array<number[]>>>> = Array<Array<Array<Array<number[]>>>>(coordinates);
+          for (const polygonsWrapper of c) {
+            for (const polygons of polygonsWrapper) {
+              for (const p of polygons) {
+                coords = [];
+                for (const _coordinates of p) {
+                  coords.push(new L.LatLng(_coordinates[1], _coordinates[0]));
+                }
+                const m = new L.Polygon(coords);
+                m.addTo(this.drawnLayer);
+              }
+            }
+          }
+
+        } else {
+          const coords: any = [];
+          for (const c of item.coordinates[0]) {
+            coords.push(new L.LatLng(c[1], c[0]));
+          }
+          const m = new L.Polygon(coords);
+          m.addTo(this.drawnLayer);
         }
-        const m = new L.Polygon(coords);
-        m.addTo(this.drawnLayer);
       }
     }
     this.flyToDrawnItems();
