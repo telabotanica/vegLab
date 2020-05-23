@@ -31,11 +31,17 @@ export class LocationService {
     } else { return ''; }
   }
 
+  /**
+   * Takes a GeoJSON object and returns a simplified version using turf.js. Internally uses simplify-js to perform simplification using the Ramer-Douglas-Peucker algorithm.
+   * @param geoJson : the GeoJson object
+   * @param tolerance : simplification tolerance
+   * @param highQuality : whether or not to spend more time to create a higher-quality simplification with a different algorithm
+   */
   simplifyPolygon(geoJson: any, tolerance = 0.0015, highQuality = true): any {
-    if (geoJson.type === 'Polygon') {
-      const simplePolygon = turf.simplify(geoJson, { tolerance, highQuality });
-      return simplePolygon;
-    } else {
+    try {
+      const simplifiedGeometry = turf.simplify(geoJson, { tolerance, highQuality });
+      return simplifiedGeometry;
+    } catch (error) {
       return geoJson;
     }
   }
