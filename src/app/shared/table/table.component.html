@@ -57,23 +57,17 @@
     <div class="button first"><button mat-button (click)="router.navigate(['/phyto/app/create-table'])" [disabled]="isSavingTable || !currentTableOwnedByCurrentUser"><mat-spinner *ngIf="isSavingTable" diameter="16"></mat-spinner> Enregistrer sous</button></div>
     -->
   </div>
-  <table>
+  <!--<table>
     <tbody>
       <tr id="table-sub-header">
         <td class="spacer" [style.width.px]="tableSpacerPx"></td>
-        <!--<td *ngFor="let sye of currentSyes"
-          (mouseenter)="mouseOverSye=sye.syeId" (mouseleave)="mouseOverSye=null"
-          [style.width]="getSyeVisibleWidth(sye.syeId)"
-          [style.maxWidth]="getSyeVisibleWidth(sye.syeId)"
-          [style.maxWidth]="hover ? 'fit-content' : getSyeVisibleWidth(sye.syeId)"
-          [class]="getSubHeaderClassname(sye.syeId)">[{{ sye.syeId }}] Nom du syntaxon ({{ sye.occurrencesCount }})</td>-->
         <td *ngFor="let sye of currentSyes"
           [style.width]="getSyeVisibleWidth(sye.syeId)"
           [style.maxWidth]="getSyeVisibleWidth(sye.syeId)"
           [class]="getSubHeaderClassname(sye.syeId)">[{{ sye.syeId }}] Nom du syntaxon ({{ sye.occurrencesCount }})</td>
       </tr>
     </tbody>
-  </table>
+  </table>-->
 
   <div class="handsontable-container">
     <hot-table
