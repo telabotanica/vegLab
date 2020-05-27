@@ -7,7 +7,7 @@ export const environment = {
   baseUrl: 'http://${HOST}',
   apiBaseUrl: 'http://${HOST}:${API_PORT}/api',
   esBaseUrl: 'http://${HOST}:${ES_PORT}',
-  esBaseflorTraitsApi: 'http://${HOST}:${ES_PORT}/baseflor',
+  esBaseflorTraitsApi: 'http://51.38.37.216:9200/baseflor',
   pdfBaseUrl: 'http://${HOST}:${API_PORT}/media/veglab/pdf/',
   app : {
     title:           'VegLab',
