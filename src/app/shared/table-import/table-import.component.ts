@@ -869,23 +869,45 @@ export class TableImportComponent implements OnInit, OnDestroy {
           map (r => r[0] as RepositoryItemModel) // Ensure type
         ).subscribe(
           result => {
-            currentContent.validation = {
-              validatedBy: 1,
-              validatedAt: now,
-              repository: useRepo,
-              repositoryIdNomen: Number(t[this.NOMEN_COL_POS.position]),
-              repositoryIdTaxo: result.idTaxo.toString(),
-              inputName: t[this.HEADERS_LABELS_COL_POS.position],
-              validatedName: result.name + (result.author !== '' ? ' ' + result.author : ''),
-              validName: result.name + (result.author !== '' ? ' ' + result.author : '')
-            };
-            currentContent.rim = {
-              repository: useRepo,
-              idNomen: Number(t[this.NOMEN_COL_POS.position]),
-              idTaxo: result.idTaxo,
-              name: result.name,
-              author: result.author
-            };
+            if (result === undefined) { // @Todo : duplicate code (see error catching below)
+              const randomInteger = _.random(-1, -1000000, false);
+              currentContent.validation = {
+                validatedBy: 1,
+                validatedAt: now,
+                repository: 'otherunknown',
+                repositoryIdNomen: randomInteger,
+                repositoryIdTaxo: randomInteger.toString(),
+                inputName: t[this.HEADERS_LABELS_COL_POS.position],
+                validatedName: null,
+                validName: null
+              };
+              currentContent.rim = {
+                repository: 'otherunknown',
+                idNomen: randomInteger,
+                idTaxo: randomInteger.toString(),
+                name: t[this.HEADERS_LABELS_COL_POS.position],
+                author: ''
+              };
+            } else {
+              currentContent.validation = {
+                validatedBy: 1,
+                validatedAt: now,
+                repository: useRepo,
+                repositoryIdNomen: Number(t[this.NOMEN_COL_POS.position]),
+                repositoryIdTaxo: result.idTaxo.toString(),
+                inputName: t[this.HEADERS_LABELS_COL_POS.position],
+                validatedName: result.name + (result.author !== '' ? ' ' + result.author : ''),
+                validName: result.name + (result.author !== '' ? ' ' + result.author : '')
+              };
+              currentContent.rim = {
+                repository: useRepo,
+                idNomen: Number(t[this.NOMEN_COL_POS.position]),
+                idTaxo: result.idTaxo,
+                name: result.name,
+                author: result.author
+              };
+            }
+
             countRow++;
             // this.isLoadingTaxonomicList = (countRow === rowNb) ? false : true;
             if (countRow === rowNb) {
