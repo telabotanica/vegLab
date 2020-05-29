@@ -198,6 +198,7 @@ export class TableFormComponent implements OnInit, OnDestroy {
     }
 
     // POST table
+    this.postingOrPutingTable = true;
     this.tableService.postTable(prePostedTable).subscribe(
       postedTable => {
         this.pdfFileIrisToLink = [];
