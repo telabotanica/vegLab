@@ -160,8 +160,8 @@
   <mat-toolbar class="bottom-action-bar">
     <mat-progress-bar *ngIf="isSendingOccurrence" mode="indeterminate"></mat-progress-bar>
     <div class="action-buttons">
-      <button mat-flat-button color="primary" [disabled]="!isFormValid()" (click)="bindOccurrenceToSend()">Enregistrer</button>
-      <button mat-stroked-button color="primary" [disabled]="!isFormValid()">Enregistrer et ajouter au tableau</button>
+      <button mat-flat-button color="primary" [disabled]="!isFormValid() || isSendingOccurrence" (click)="bindOccurrenceToSend()" [class.spinner]="isSendingOccurrence">Enregistrer</button>
+      <!--<button mat-stroked-button color="primary" [disabled]="!isFormValid() || isSendingOccurrence" [class.spinner]="isSendingOccurrence">Enregistrer et ajouter au tableau</button>-->
     </div>
   </mat-toolbar>
   

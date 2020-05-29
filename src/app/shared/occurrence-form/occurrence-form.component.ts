@@ -397,6 +397,7 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
         occ => {
           // @TODO Link photos to occurrence (photoService)
           this.isSendingOccurrence = false;
+          this.notificationService.notify('Votre relevé à bien été enregistré');
           console.log(occ);
         },
         error => {
