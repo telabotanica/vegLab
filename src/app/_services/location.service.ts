@@ -39,13 +39,17 @@ export class LocationService {
    */
   simplifyPolygon(geoJson: any, tolerance = 0.0015, highQuality = false, mutate = true): any {
     const geoType: string = geoJson.type;
-    if (geoType.toLowerCase() === 'polygon' || geoType.toLowerCase() === 'multipolygon') {
+    if (geoType == null) {
+      return geoJson;
+    } else if (geoType.toLowerCase() === 'polygon' || geoType.toLowerCase() === 'multipolygon') {
       try {
         const simplifiedGeometry = turf.simplify(geoJson, { tolerance, highQuality, mutate });
         return simplifiedGeometry;
       } catch (error) {
         return geoJson;
       }
+    } else {
+      return geoJson;
     }
   }
 
