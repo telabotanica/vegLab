@@ -1573,8 +1573,18 @@ export class TableImportComponent implements OnInit, OnDestroy {
     const vlAccuracy = this.locationService.getAccuracyByNominatimObject(nominatimLocation);
     locationToBind.vlAccuracy = vlAccuracy;
 
-    // simplify polygon
-    locationToBind.selectedLocation.nominatimLocation.geojson = this.locationService.simplifyPolygon(locationToBind.selectedLocation.nominatimLocation.geojson);
+    // Simplify polygon
+    // Note if Accuracy is DEPARTEMENT, REGION OR COUNRTY, we use the bounding box
+    // Using (turf) simplification for large and complex polygons could lead to a self-intersection
+    //    and although a polygon with self-intersection is a valid geoJson, ElasticSearch will fail parsing it
+    //    (see https://discuss.elastic.co/t/6-4-to-6-7-1-multipolygon-cannot-be-indexed-anymore-using-new-geo-shape-field/177480/2)
+    //
+    // @Todo improve geometry management
+    if (vlAccuracy === VlAccuracyEnum.DEPARTEMENT || vlAccuracy === VlAccuracyEnum.REGION || vlAccuracy === VlAccuracyEnum.COUNTRY) {
+      locationToBind.selectedLocation.nominatimLocation.geojson = this.locationService.bboxToPolygon(locationToBind.selectedLocation.nominatimLocation.boundingbox);
+    } else {
+      locationToBind.selectedLocation.nominatimLocation.geojson = this.locationService.simplifyPolygon(locationToBind.selectedLocation.nominatimLocation.geojson);
+    }
 
     locationToBind.suggeredLocations = [];
 

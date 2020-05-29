@@ -37,15 +37,41 @@ export class LocationService {
    * @param tolerance : simplification tolerance
    * @param highQuality : whether or not to spend more time to create a higher-quality simplification with a different algorithm
    */
-  simplifyPolygon(geoJson: any, tolerance = 0.0015, highQuality = true): any {
-    try {
-      const simplifiedGeometry = turf.simplify(geoJson, { tolerance, highQuality });
-      return simplifiedGeometry;
-    } catch (error) {
-      return geoJson;
+  simplifyPolygon(geoJson: any, tolerance = 0.0015, highQuality = false, mutate = true): any {
+    const geoType: string = geoJson.type;
+    if (geoType.toLowerCase() === 'polygon' || geoType.toLowerCase() === 'multipolygon') {
+      try {
+        const simplifiedGeometry = turf.simplify(geoJson, { tolerance, highQuality, mutate });
+        return simplifiedGeometry;
+      } catch (error) {
+        return geoJson;
+      }
     }
   }
 
+  /**
+   * Return a valid geoJson Polygon from bounding box coordinates
+   */
+  bboxToPolygon(bbox: Array<number>): {type: string, coordinates: Array<any>} {
+   return {
+     type: 'Polygon',
+     coordinates: [[
+       [ Number(bbox[2]), Number(bbox[0]) ],
+       [ Number(bbox[3]), Number(bbox[0]) ],
+       [ Number(bbox[3]), Number(bbox[1]) ],
+       [ Number(bbox[2]), Number(bbox[1]) ],
+       [ Number(bbox[2]), Number(bbox[0]) ]
+     ]]
+   };
+  }
+
+  /*
+  [
+    [
+      [-1.9301331043,48.5854795599],[0.4429137707,48.5854795599],[0.4429137707,49.742023816],[-1.9301331043,49.742023816],[-1.9301331043,48.5854795599]
+    ]
+  ]
+  */
   getCentroid(geoJson: {type: string, coordinates: Array<Array<number>>}): Feature<Point> {
     return turf.centroid(geoJson);
   }
