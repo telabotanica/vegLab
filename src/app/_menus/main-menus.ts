@@ -18,3 +18,5 @@ export const adminMenu = [
     { label: 'Les métadonnées', path: '/admin/metadata-manager'}
   ]}
 ];
+
+export const loginMenu = [];

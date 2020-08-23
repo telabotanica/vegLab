@@ -6,6 +6,9 @@ import { environment } from '../../../environments/environment';
 import { SsoService } from 'src/app/_services/sso.service';
 import { NotificationService } from 'src/app/_services/notification.service';
 import { WorkspaceService } from 'src/app/_services/workspace.service';
+import { MenuService } from 'src/app/_services/menu.service';
+
+import { loginMenu } from '../../_menus/main-menus';
 
 @Component({
   selector: 'vl-login-page',
@@ -28,11 +31,13 @@ export class LoginPageComponent implements OnInit {
               private routerService: Router,
               private route: ActivatedRoute,
               private notificationService: NotificationService,
-              private wsService: WorkspaceService) { }
+              private wsService: WorkspaceService,
+              private menuService: MenuService) { }
 
   ngOnInit() {
     this.redirectUrl = this.route.snapshot.queryParams['redirectUrl'] || '/';
     this.wsService.currentWS.next('none');
+    this.menuService.setMenu(loginMenu);
   }
 
   getErrorMessage(): string {
