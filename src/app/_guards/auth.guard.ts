@@ -60,7 +60,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
           return of(false);
         })
       );
-    } else if (token) {
+    } else if (token !== null) {
       // We've got a token which should always be fresh so return true (grant access)
       return true;
     }
@@ -95,7 +95,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
           return of(false);
         })
       );
-    } else if (token) {
+    } else if (token !== null) {
       // We've got a token which should always be fresh so return true (grant access)
       return true;
     }
