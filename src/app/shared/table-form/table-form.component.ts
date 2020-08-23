@@ -18,6 +18,7 @@ import { FileData } from 'tb-dropfile-lib/lib/_models/fileData';
 import * as _ from 'lodash';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'vl-table-form',
@@ -51,7 +52,8 @@ export class TableFormComponent implements OnInit, OnDestroy {
     private userService: UserService,
     public tableService: TableService,
     private pdfFileService: PdfFileService,
-    private notificationService: NotificationService) { }
+    private notificationService: NotificationService,
+    private router: Router) { }
 
   ngOnInit() {
     // Get current user
@@ -205,6 +207,10 @@ export class TableFormComponent implements OnInit, OnDestroy {
         this.tableService.setCurrentTable(postedTable, true);
         this.postingOrPutingTable = false;
         this.notificationService.notify('Le tableau a été enregistré');
+
+        // 'Close' action panel
+        this.router.navigate(['/phyto/app']);
+
       }, errorPostedTable => {
         this.postingOrPutingTable = false;
         this.notificationService.error('Nous ne parvenons pas à enregistrer le tableau');
@@ -279,7 +285,11 @@ export class TableFormComponent implements OnInit, OnDestroy {
               patchedTable.pdf = null;
               this.tableService.setCurrentTable(patchedTable, true);
               this.postingOrPutingTable = false;
-              this.notificationService.notify('Le tableau a été modifié');
+              this.notificationService.notify('Le tableau a été enregistré');
+
+              // 'Close' action panel
+              this.router.navigate(['/phyto/app']);
+
             }, errorRemovedPdfFile => {
               console.log(errorRemovedPdfFile);
               this.postingOrPutingTable = false;
@@ -290,7 +300,11 @@ export class TableFormComponent implements OnInit, OnDestroy {
         } else {
           this.tableService.setCurrentTable(patchedTable, true);
           this.postingOrPutingTable = false;
-          this.notificationService.notify('Le tableau a été modifié');
+          this.notificationService.notify('Le tableau a été enregistré');
+
+          // 'Close' action panel
+          this.router.navigate(['/phyto/app']);
+
         }
       }, errorPatchedTable => {
         console.log(errorPatchedTable);
