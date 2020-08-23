@@ -262,8 +262,13 @@ export class TableFormComponent implements OnInit, OnDestroy {
     } else if (prePatchedTable.pdf && this.currentTablePdfFiles.length === 0) {
       // remove linked pdf files
       deleteLinkedPdfFile = true;
+    } else if (prePatchedTable.pdf == null && this.pdfFileIrisToLink.length > 0) {
+      // Create a new pdf file linked to the table
+      prePatchedTable.pdf = this.pdfFileIrisToLink[0] as any;
     }
 
+    // PUT table
+    this.postingOrPutingTable = true;
     this.tableService.putTable(prePatchedTable).subscribe(
       patchedTable => {
         // pdf file to unlink ?
