@@ -1064,9 +1064,12 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       this.tableService.putTable(this._currentTable).subscribe(
         savedTable => {
           this.isSavingTable = false;
+          this.notificationService.notify('Votre tableau a bien été sauvegardé');
+          this.cdr.detectChanges();
         }, error => {
           this.isSavingTable = false;
           this.notificationService.error('Nous ne parvenons pas à sauvegarder votre tableau');
+          this.cdr.detectChanges();
         }
       );
     }
