@@ -162,7 +162,7 @@ export class TableService {
     }
 
     // Post table
-    const headers = {'Content-Type': 'application/json'};
+    const headers = {'Content-Type': 'application/ld+json'};
     return this.http.post<Table>(`${environment.apiBaseUrl}/tables`, JSON.stringify(table), {headers}).pipe(
       map(t => this.parseGeometryAndIntegerifyElevation(t)),
       map(t => this.orderSyeOccurrences(t))
@@ -177,12 +177,12 @@ export class TableService {
     // PUT (replace) current table
     if (!table.id) {
       // throw throwError('The current table doesn\'t exists in DB, could not PATCH it');
-      console.log('The current table doesn\'t exists in DB, could not PATCH it');
+      console.log('The current table doesn\'t exists in DB, could not PUT it');
       // @Todo log error
       return of(null);
     }
 
-    // Stringify geometry before POST
+    // Stringify geometry before PUT
     this.stringifyGeometryAndIntegerifyElevation(table);
 
     // Set syes order
@@ -193,11 +193,12 @@ export class TableService {
       sye.occurrencesOrder = this.syeService.getOccurrencesOrder(sye);
     }
 
-    // Remove empty fields before PATCH
+    // Remove empty fields before PUT
     this.removeEmpty(table);
 
-    // Post table
-    return this.http.put<Table>(`${environment.apiBaseUrl}/tables/${table.id}`, table).pipe(
+    // Put table
+    const headers = {'Content-Type': 'application/ld+json'};
+    return this.http.put<Table>(`${environment.apiBaseUrl}/tables/${table.id}`, table, {headers}).pipe(
       map(t => this.parseGeometryAndIntegerifyElevation(t)),
       map(t => this.orderSyeOccurrences(t))
     );
