@@ -114,7 +114,7 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
   infoPanelToggleButtonLabel(): string | null {
     if (this._infoPanelDisabled) {
       return 'Le panneau d\'informations n\'est pas accessible';
-    } else if (this.infoPanelActive){
+    } else if (this.infoPanelActive) {
       return 'Masquer le panneau d\'informations';
     } else if (!this.infoAreaActive) {
       return 'Afficher le panneau d\'informations';
