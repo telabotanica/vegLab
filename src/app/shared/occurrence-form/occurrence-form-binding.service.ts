@@ -16,6 +16,7 @@ import { InputSource } from '../../_enums/input-source-enum';
 import * as _ from 'lodash';
 import { FieldDataType } from 'src/app/_enums/field-data-type-enum';
 import { DateAdapter } from '@angular/material';
+import { LocationAccuracy } from 'src/app/_enums/location-accuracy-enum';
 
 @Injectable({
   providedIn: 'root'
@@ -186,6 +187,7 @@ export class OccurrenceFormBindingService {
 
   private bindLocationData(occ: OccurrenceModel, location: LocationModel): void {
     occ.vlLocationInputSource = location.inputLocation !== null ? location.inputLocation : null;
+    occ.vlLocationAccuracy = location.vlLocationAccuracy ? location.vlLocationAccuracy : null;
     occ.elevation = location.elevation;
     // occ.geodatum = location.geodatum;
     occ.geometry = JSON.stringify(location.geometry);
