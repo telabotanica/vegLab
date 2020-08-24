@@ -36,7 +36,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_data',
     projectName:       'veglab:*',
     dataType:          FieldDataType.BOOL,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -54,7 +54,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_data_complete',
     projectName:       'veglab:*',
     dataType:          FieldDataType.BOOL,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -72,7 +72,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_code_identifiant_releve',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -90,7 +90,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_numero_publication',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -108,7 +108,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_publication',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -126,7 +126,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_auteur',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -144,7 +144,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_annee',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -162,7 +162,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_numero_tableau',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -180,7 +180,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_numero_releve',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -198,7 +198,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_nom_station',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -216,7 +216,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_code_insee',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -234,7 +234,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_code_insee_calcule',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -252,7 +252,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_altitude',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -270,7 +270,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_ss_latitude_wgs',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -288,7 +288,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_ss_longitude_wgs',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -306,7 +306,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_ss_utm_easting',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -324,7 +324,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_ss_utm_northing',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -342,7 +342,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_ss_utm_zone',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
@@ -360,7 +360,7 @@ export const MetadataInitialSet: Array<ExtendedFieldModel> = [
     fieldId:           'sophy_import_ss_ce_precision_geographique',
     projectName:       'veglab:*',
     dataType:          FieldDataType.TEXT,
-    isVisible:         true,
+    isVisible:         false,
     isEditable:        false,          // nullable
     isMandatory:       true,
     extendedFieldTranslations: [{
