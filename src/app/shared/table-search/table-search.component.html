@@ -71,6 +71,16 @@
                     ></vl-biblio-search>
                 </div>
               </div>
+
+              <!-- search my tables -->
+              <div class="tab-section">
+                <div class="section-title">
+                  Filtrer par utilisateur
+                </div>
+                <div class="section-body">
+                    <mat-slide-toggle color="primary" (change)="tableMustBeMineChange($event)">Mes tableaux</mat-slide-toggle>
+                </div>
+              </div>
             </div>
           </mat-tab>
 

@@ -45,6 +45,7 @@ export class TableSearchComponent implements OnInit, OnDestroy {
   tableValidation: RepositoryItemModel = null;
   tableMustBeADiagnosis = false;
   tableMustHaveAPdf = false;
+  tableMustBeMine = false;
 
   // VAR Col Occurrence filters
   mustContainColOccurrences: Array<RepositoryItemModel> = [];
@@ -253,6 +254,7 @@ export class TableSearchComponent implements OnInit, OnDestroy {
   noFilterApplied(): boolean {
     if (this.tableValidation === null &&
       this.tableMustBeADiagnosis === false && // @Todo user should filter on NO diagnosis
+      this.tableMustBeMine === false &&
       this.mustContainColOccurrences.length === 0 &&
       this.mustNotContainColOccurrences.length === 0 &&
       this.mustContainRowOccurrences.length === 0 &&
@@ -270,6 +272,11 @@ export class TableSearchComponent implements OnInit, OnDestroy {
 
   tableMustHaveAPdfisChange(event: any): void {
     this.tableMustHaveAPdf = event.checked;
+    this.search();
+  }
+
+  tableMustBeMineChange(event: any): void {
+    this.tableMustBeMine = event.checked;
     this.search();
   }
 
@@ -515,10 +522,11 @@ export class TableSearchComponent implements OnInit, OnDestroy {
     const tableValidation: Array<string> = this.esMustTableValidationQueryPart();
     const tableMustBeADiagnosis: Array<string> = this.esMustTableBeDiagnosisPart();
     const tableMustHaveAPdf: Array<string> = this.esMustTableHaveAPdfPart();
+    const tableMustBeMine: Array<string> = this.esTableMustBeMineQueryPart();
     const rowOcc: Array<string> = this.esRowOccurrencesMustQueryPart(this.mustContainRowOccurrences);
     const colOcc: Array<string> = this.esColOccurrencesMustQueryPart(this.mustContainColOccurrences);
 
-    const parts = [].concat(...tableValidation, ...tableMustBeADiagnosis, ...tableMustHaveAPdf, ...colOcc, ...rowOcc);
+    const parts = [].concat(...tableValidation, ...tableMustBeADiagnosis, ...tableMustHaveAPdf, ...tableMustBeMine, ...colOcc, ...rowOcc);
 
     let stringParts = '';
     let i = 0;
@@ -654,6 +662,21 @@ export class TableSearchComponent implements OnInit, OnDestroy {
     const parts: Array<string> = [];
     if (this.tableMustBeADiagnosis && this.tableMustHaveAPdf) {
       const matchPhrase = `{ "term": { "hasPdf": true } }`;
+      parts.push(matchPhrase);
+    }
+    return parts;
+  }
+
+  esTableMustBeMineQueryPart(): Array<string> {
+    const cu = this.currentUser;
+
+    if (cu == null || (cu !== null && cu.id == null)) {
+      return [];
+    }
+
+    const parts: Array<string> = [];
+    if (this.tableMustBeMine) {
+      const matchPhrase = `{ "term": { "userId": ${Number(cu.id)} } }`;
       parts.push(matchPhrase);
     }
     return parts;
