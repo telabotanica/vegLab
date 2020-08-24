@@ -15,7 +15,7 @@ export class ObserverService {
   constructor(private http: HttpClient) { }
 
   search(query: string, fuzzy = false): Observable<Array<Observer>> {
-    const headers = new HttpHeaders('Accept: application/json');
+    const headers = new HttpHeaders('Accept: application/ld+json');
 
     if (!fuzzy) {
       return this.http.get<Array<Observer>>(`${environment.apiBaseUrl}/observers?name=${query.toLowerCase()}`, {headers});
@@ -62,7 +62,16 @@ export class ObserverService {
 
       headers.append('Content-Type', 'application/json');
       return this.http.post<Array<Observer>>(`${environment.esBaseUrl}/vl_observers/_search`, JSON.parse(esQuery), {headers}).pipe(
-        map(result => _.map(result['hits']['hits'], hit => hit['_source']))
+        map(result => _.map(result['hits']['hits'], hit => hit['_source'])),
+        map(results => {
+          results.forEach(result => {
+            result['@id'] = `/api/observers/${result.id.toString()}`;  // Mimic ld+json @id property (API Platform would duplicate an existing observer that has no @id property)
+            result['@context'] = '/api/contexts/Observer';
+            result['@type'] = 'Observer';
+            console.log(result);
+          });
+          return results;
+        })
       );
     }
   }
