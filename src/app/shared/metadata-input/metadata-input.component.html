@@ -38,6 +38,14 @@
   <span matSuffix *ngIf="metadataContext.metadata.unit">{{metadataContext.metadata.unit}}</span>
 </mat-form-field>
 
+<!-- String without regexp -->
+<mat-form-field *ngIf="metadataContext.metadata.dataType == 'Texte' && !metadataContext.metadata.regexp" [hidden]="!metadataContext.metadata.isVisible">
+  <input matInput type="text" [formControl]="metadataContext.control" placeholder="{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? 'none' : '' }}" autocomplete="off">
+  <mat-hint></mat-hint>
+  <mat-error *ngIf="metadataContext.control.invalid && metadataTranslation != null && metadataTranslation.errorMessage">{{ metadataTranslation.errorMessage }}</mat-error>
+  <span matSuffix *ngIf="metadataContext.metadata.unit">{{metadataContext.metadata.unit}}</span>
+</mat-form-field>
+
 <!-- Date -->
 <mat-form-field *ngIf="metadataContext.metadata.dataType == 'Date'" [hidden]="!metadataContext.metadata.isVisible">
   <input matInput [matDatepicker]="picker" [formControl]="metadataContext.control" placeholder="{{metadataTranslation != null ? metadataTranslation.label : metadataContext.metadata.fieldId}}{{ metadataContext.metadata.isMandatory ? 'none' : '' }}">
