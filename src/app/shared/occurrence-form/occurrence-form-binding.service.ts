@@ -66,7 +66,7 @@ export class OccurrenceFormBindingService {
         yOcc.parentLevel = this.xOccurrence.level;
         let yIdTaxo = null;
         if (occ.taxa.idTaxo !== null) { yIdTaxo = occ.taxa.idTaxo.toString(); }
-        if (yIdTaxo === null && occ.taxa.validOccurence.idNomen !== null) { yIdTaxo =  occ.taxa.validOccurence.idNomen.toString(); }
+        if (yIdTaxo === null && occ.taxa.validOccurence !== null && occ.taxa.validOccurence.idNomen !== null) { yIdTaxo =  occ.taxa.validOccurence.idNomen.toString(); }
         yOcc.validations = [{
           validatedBy: Number(user.id),
           validatedAt: new Date(),
@@ -74,8 +74,8 @@ export class OccurrenceFormBindingService {
           repositoryIdNomen: +occ.taxa.idNomen,
           repositoryIdTaxo: yIdTaxo,
           inputName: occ.taxa.name + ' ' + occ.taxa.author,
-          validName: occ.taxa.validOccurence.name + ' ' + occ.taxa.validOccurence.author,
-          validatedName: occ.taxa.validOccurence.name + ' ' + occ.taxa.validOccurence.author
+          validName: occ.taxa.validOccurence ? occ.taxa.validOccurence.name + ' ' + occ.taxa.validOccurence.author : null,
+          validatedName: occ.taxa.validOccurence ? occ.taxa.validOccurence.name + ' ' + occ.taxa.validOccurence.author : null
         }];
         yOcc.coef = occ.coef;
         this.bindSharedData(yOcc, form, user, location, metadatas);
@@ -138,7 +138,7 @@ export class OccurrenceFormBindingService {
           zOcc.parentLevel = yOcc.level;
           let zIdTaxo = null;
           if (z.taxa.idTaxo !== null) { zIdTaxo = z.taxa.idTaxo.toString(); }
-          if (zIdTaxo === null && z.taxa.validOccurence.idNomen !== null) { zIdTaxo =  z.taxa.validOccurence.idNomen.toString(); }
+          if (zIdTaxo === null && z.taxa.validOccurence !== null && z.taxa.validOccurence.idNomen !== null) { zIdTaxo =  z.taxa.validOccurence.idNomen.toString(); }
           zOcc.validations = [{
             validatedBy: Number(user.id),
             validatedAt: new Date(),
@@ -146,8 +146,8 @@ export class OccurrenceFormBindingService {
             repositoryIdNomen: +z.taxa.idNomen,
             repositoryIdTaxo: zIdTaxo,
             inputName: z.taxa.name + ' ' + z.taxa.author,
-            validName: z.taxa.validOccurence.name + ' ' + z.taxa.validOccurence.author,
-            validatedName: z.taxa.validOccurence.name + ' ' + z.taxa.validOccurence.author
+            validName: z.taxa.validOccurence ? z.taxa.validOccurence.name + ' ' + z.taxa.validOccurence.author : null,
+            validatedName: z.taxa.validOccurence ? z.taxa.validOccurence.name + ' ' + z.taxa.validOccurence.author : null
           }];
           this.bindSharedData(zOcc, form, user, location, metadatas);
 
