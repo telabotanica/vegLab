@@ -12,6 +12,7 @@ import { environment } from '../../environments/environment';
 
 import * as moment from 'moment';
 import * as _ from 'lodash';
+import { map } from 'rxjs/internal/operators/map';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,11 @@ export class MetadataService {
 
   refreshMetadataList(): void {
     this.isLoadingMetadataList = true;
-    this.http.get(`${environment.apiBaseUrl}/extended_fields.json?projectName=veglab`).subscribe(
+
+    const headers = {'Content-Type': 'application/ld+json'};
+    this.http.get(`${environment.apiBaseUrl}/extended_fields?projectName=veglab`, {headers}).pipe(
+      map(metadataResponse => metadataResponse['hydra:member']) // For a filtered query, API Platform returns a response with metadata values nesting the core response ('hydra:member')
+    ).subscribe(
       result => {
         this.isLoadingMetadataList = false;
         this.setMetadataList(result as Array<ExtendedFieldModel>);
