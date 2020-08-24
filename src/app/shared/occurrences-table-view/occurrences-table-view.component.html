@@ -6,7 +6,7 @@
     <table mat-table [dataSource]="_occurrences">
   
       <ng-container matColumnDef="custom_col_selectable" sticky>
-        <th mat-header-cell *matHeaderCellDef><mat-checkbox (change)="occurrencesAllSelectedChange($event)"></mat-checkbox></th>
+        <th mat-header-cell *matHeaderCellDef style="width: 50px;"><mat-checkbox (change)="occurrencesAllSelectedChange($event)"></mat-checkbox></th>
         <td mat-cell *matCellDef="let element" [class.is-child]="element.isChildrenOf">
           <mat-checkbox
             [(ngModel)]="element.selected"
@@ -17,7 +17,7 @@
       </ng-container>
 
       <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef> id </th>
+        <th mat-header-cell *matHeaderCellDef style="width: 90px;"> id </th>
         <td mat-cell *matCellDef="let element"> {{ element.id }} </td>
       </ng-container>
   

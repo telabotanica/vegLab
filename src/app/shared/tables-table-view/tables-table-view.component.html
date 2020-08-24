@@ -1,4 +1,4 @@
-<div class="table-view-container">
+<div class="table-view-container" #TableViewContainer>
   <mat-progress-bar *ngIf="isLoading" class="progress-bar-top" mode="indeterminate"></mat-progress-bar>
   <div *ngIf="isLoading" class="loading-shade"></div>
 
@@ -6,7 +6,7 @@
     <table mat-table [dataSource]="_tables">
   
       <ng-container matColumnDef="custom_col_selectable" sticky>
-        <th mat-header-cell *matHeaderCellDef><mat-checkbox (change)="tablesAllSelectedChange($event)"></mat-checkbox></th>
+        <th mat-header-cell *matHeaderCellDef style="width: 50px;"><mat-checkbox (change)="tablesAllSelectedChange($event)"></mat-checkbox></th>
         <td mat-cell *matCellDef="let element">
           <mat-checkbox
             [(ngModel)]="element.selected"
@@ -17,17 +17,22 @@
       </ng-container>
 
       <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef> id </th>
+        <th mat-header-cell *matHeaderCellDef style="width: 90px;"> id </th>
         <td mat-cell *matCellDef="let element"> {{ element.id }} </td>
       </ng-container>
       
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef> Titre </th>
+        <td mat-cell class="inline-text-cell" *matCellDef="let element" title="{{element.title || '-'}}"> {{ element.title || '-' }}</td>
+      </ng-container>
+
       <ng-container matColumnDef="custom_col_validation">
         <th mat-header-cell *matHeaderCellDef> Identification </th>
-        <td mat-cell *matCellDef="let element"> {{ element.tableName || '-' }} </td>
+        <td mat-cell class="inline-text-cell" *matCellDef="let element" title="{{ element.tableName || '-' }}"> {{ element.tableName || '-' }} </td>
       </ng-container>
       
       <ng-container matColumnDef="dateCreated">
-        <th mat-header-cell *matHeaderCellDef> Date de création </th>
+        <th mat-header-cell *matHeaderCellDef style="width: 100px;"> Date de création </th>
         <td mat-cell *matCellDef="let element">
           <span>{{ element.createdAt | momentLocalDate }}</span>
         </td>

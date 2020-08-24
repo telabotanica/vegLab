@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Output, EventEmitter, OnDestroy, ElementRef } from '@angular/core';
 
 import { TableService } from 'src/app/_services/table.service';
 
@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 })
 export class TablesTableViewComponent implements OnInit, OnDestroy {
   @ViewChild('TablesPaginator') paginator: MatPaginator;
+  @ViewChild('TableViewContainer') tableViewContainerDomElement: ElementRef;
 
   @Input()  count: number;
   @Input()  size: number;
@@ -28,9 +29,9 @@ export class TablesTableViewComponent implements OnInit, OnDestroy {
     }
   }
   @Input()  isLoading: boolean;
-  @Input()  selectable: boolean;
+  @Input()  selectable = false;
   @Input()  deleteOption = false;
-  @Input()  displayedColumns: Array<string> = ['custom_col_selectable', 'id', 'custom_col_validation', 'dateCreated', 'custom_col_actions'];
+  @Input()  displayedColumns: Array<string> = ['id', 'title', 'dateCreated', 'custom_col_actions'];
   @Output() pageChange: EventEmitter<PageEvent> = new EventEmitter<PageEvent>();
   @Output() previewTable: EventEmitter<EsTableModel> = new EventEmitter<EsTableModel>();
   @Output() deleteTable: EventEmitter<EsTableModel> = new EventEmitter<EsTableModel>();
@@ -39,7 +40,13 @@ export class TablesTableViewComponent implements OnInit, OnDestroy {
   _tables: Array<EsTableModel> = [];
   _selectedTables: Array<number> = [];
   currentTableChangeSubscription: Subscription;
+  tableAreaChangeSubscription: Subscription;
   _tablesIdsInCurrentTable: Array<number> = [];
+
+  moduleWidth: number;
+
+  simpleColumns = ['id', 'title', 'dateCreated', 'custom_col_actions'];
+  fullColumns = ['id', 'title', 'custom_col_validation', 'dateCreated', 'custom_col_actions'];
 
   constructor(private tableService: TableService) { }
 
@@ -64,10 +71,24 @@ export class TablesTableViewComponent implements OnInit, OnDestroy {
       },
       error => { /* @TODO manage error */ }
     );
+
+    // Table (DOM element) size subscription
+    // On panel resize : check disaplyer columns
+    this.tableAreaChangeSubscription = this.tableService.tableAreaDimensions.subscribe(
+      tableAreaSize => {
+        this.displayColumns();
+      }, error => {
+        console.log(error);
+        // @Todo manage error
+      }
+    );
+
+    this.displayColumns();
   }
 
   ngOnDestroy() {
     if (this.currentTableChangeSubscription) { this.currentTableChangeSubscription.unsubscribe(); }
+    if (this.tableAreaChangeSubscription) { this.tableAreaChangeSubscription.unsubscribe(); }
   }
 
   getLocality(table: EsTableModel): string {
@@ -157,6 +178,24 @@ export class TablesTableViewComponent implements OnInit, OnDestroy {
       const tableThatShouldBeSelected = _.find(this._tables, tab => tab.id && tab.id === st);
       if (tableThatShouldBeSelected) { tableThatShouldBeSelected.selected = true; }
     });
+  }
+
+  /**
+   * Display table columns regarding module width
+   */
+  displayColumns(): void {
+    // Get module width to show / hide columns
+    this.moduleWidth = this.tableViewContainerDomElement.nativeElement.offsetWidth;
+    if (this.moduleWidth !== null && this.moduleWidth > 700) {
+      this.displayedColumns = this.fullColumns;
+    } else {
+      this.displayedColumns = this.simpleColumns;
+    }
+
+    // Are rows selectable ?
+    if (this.selectable && this.displayedColumns[0] !== 'custom_col_selectable') {
+      this.displayedColumns = ['custom_col_selectable'].concat(...this.displayedColumns);
+    }
   }
 
 }
