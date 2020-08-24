@@ -31,6 +31,7 @@
             [layersToAdd]="mapLayers"
             elevationProvider="mapQuest"
             mapQuestApiKey="ApIFfQWsb8jW6bkYDD2i0Sq5BD9moJ3l"
+            [placeMarkerWhenReverseGeocoding]="false"
             (location)="addLocation($event)">
           </tb-geoloc-map>
           <div *ngIf="currentLocation" class="vl-location-accuracy">
