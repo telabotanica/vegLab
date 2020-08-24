@@ -81,4 +81,31 @@ export class SyeService {
     }
 
   }
+
+  /**
+   * Remove the Sye ids ('id' and '@id' plus other ld+json values if exists)
+   */
+  removeIds(sye: Sye): Sye {
+    const _sye = _.clone(sye);
+
+    if (_sye == null) {
+      throw new Error('Can\'t remove sye ids for a non existing sye !');
+    }
+
+    if (_sye !== null && _sye.id !== null) {
+      // Remove sye id
+      _sye.id = null;
+    }
+
+    // Remove '@id' property (ld+json support)
+    if (_sye['@id'] !== null) {
+      delete _sye['@id'];
+
+      // Remove other ld+json fields
+      if (_sye['@context'] !== null) { delete _sye['@context']; }
+      if (_sye['@type'] !== null) { delete _sye['@type']; }
+    }
+
+    return _sye;
+  }
 }

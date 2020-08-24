@@ -6,6 +6,8 @@ import { Sye } from '../_models/sye.model';
 import { Table } from '../_models/table.model';
 import { OccurrenceModel } from '../_models/occurrence.model';
 
+import * as _ from 'lodash';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -63,6 +65,33 @@ export class ValidationService {
     } else {
       return '?';
     }
+  }
+
+  /**
+   * Remove the Validation ids ('id' and '@id' plus other ld+json values if exists)
+   */
+  removeIds(validation: OccurrenceValidationModel): OccurrenceValidationModel {
+    const _validation = _.clone(validation);
+
+    if (_validation == null) {
+      throw new Error('Can\'t remove validation ids for a non existing validation !');
+    }
+
+    if (_validation !== null && _validation.id !== null) {
+      // Remove validation id
+      _validation.id = null;
+    }
+
+    // Remove '@id' property (ld+json support)
+    if (_validation['@id'] !== null) {
+      delete _validation['@id'];
+
+      // Remove other ld+json fields
+      if (_validation['@context'] !== null) { delete _validation['@context']; }
+      if (_validation['@type'] !== null) { delete _validation['@type']; }
+    }
+
+    return _validation;
   }
 
 

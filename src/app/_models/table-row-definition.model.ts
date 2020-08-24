@@ -1,4 +1,5 @@
 export interface TableRowDefinition {
+  id:                number;
   rowId:             number;
   type:              'group' | 'data';
   groupId:           number;

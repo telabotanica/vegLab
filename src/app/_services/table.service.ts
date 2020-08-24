@@ -30,7 +30,7 @@ import { TableSelectedElement } from '../_models/table/table-selected-element.mo
 import { UserModel } from '../_models/user.model';
 import { TableAction } from '../_models/table-action.model';
 
-import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { TableRelatedSyntaxon } from '../_models/table-related-syntaxon';
@@ -943,7 +943,7 @@ export class TableService {
       const groupId = group[0].group.id;
       const groupTitle = group[0].group.label;
 
-      const rowGroup: TableRowDefinition = {rowId: null, type: null, groupId: null, groupTitle: null, layer: null, displayName: null, repository: null, repositoryIdNomen: null, repositoryIdTaxo : null};
+      const rowGroup: TableRowDefinition = {id: null, rowId: null, type: null, groupId: null, groupTitle: null, layer: null, displayName: null, repository: null, repositoryIdNomen: null, repositoryIdTaxo : null};
       rowGroup.rowId = i;
       rowGroup.type = 'group';
       rowGroup.groupId = groupId;
@@ -953,7 +953,7 @@ export class TableService {
       i++;
 
       for (const nameItem of group) {
-        const row: TableRowDefinition = {rowId: null, type: null, groupId: null, groupTitle: null, layer: null, displayName: null, repository: null, repositoryIdNomen: null, repositoryIdTaxo : null};
+        const row: TableRowDefinition = {id: null, rowId: null, type: null, groupId: null, groupTitle: null, layer: null, displayName: null, repository: null, repositoryIdNomen: null, repositoryIdTaxo : null};
         row.rowId = i;
         row.type = 'data';
         row.groupId = groupId;
@@ -1008,6 +1008,7 @@ export class TableService {
 
       // row group
       const newGroupRow: TableRowDefinition = {
+        id:                null,
         rowId:             nextRowId,
         type:              'group',
         groupId:           nextGroupId,
@@ -1313,7 +1314,7 @@ export class TableService {
       const newGroupId = nbGroups;
 
       // create a new title row
-      const newTitleRow: TableRowDefinition = {rowId: null, type: null, groupId: null, groupTitle: null, layer: null, displayName: null, repository: null, repositoryIdNomen: null, repositoryIdTaxo : null};
+      const newTitleRow: TableRowDefinition = {id: null, rowId: null, type: null, groupId: null, groupTitle: null, layer: null, displayName: null, repository: null, repositoryIdNomen: null, repositoryIdTaxo : null};
       // newTitleRow.rowId = startRowGroupPositions.endRowPosition + 1;
       newTitleRow.type = 'group';
       newTitleRow.groupId = newGroupId;
@@ -2829,6 +2830,60 @@ export class TableService {
     }
 
     return output;
+  }
+
+  /**
+   * Remove the table ids ('id' and '@id' plus other ld+json values if exists)
+   */
+  removeTableIds(table: Table): Table {
+    const _table = _.clone(table);
+
+    if (_table == null) {
+      throw new Error('Can\'t remove table ids for a non existing table !');
+    }
+
+    if (_table !== null && _table.id !== null) {
+      // Remove table id
+      _table.id = null;
+    }
+
+    // Remove '@id' property (ld+json support)
+    if (_table['@id'] !== null) {
+      delete _table['@id'];
+
+      // Remove other ld+json fields
+      if (_table['@context'] !== null) { delete _table['@context']; }
+      if (_table['@type'] !== null) { delete _table['@type']; }
+    }
+
+    return _table;
+  }
+
+  /**
+   * Remove the table's Rows definition ids ('id' and '@id' plus other ld+json values if exists)
+   */
+  removeRowdefIds(rowDef: TableRowDefinition): TableRowDefinition {
+    const _rowDef = _.clone(rowDef);
+
+    if (_rowDef == null) {
+      throw new Error('Can\'t remove Row definition ids for a non existing Row definition !');
+    }
+
+    if (_rowDef !== null && _rowDef.id !== null) {
+      // Remove Row definition id
+      _rowDef.id = null;
+    }
+
+    // Remove '@id' property (ld+json support)
+    if (_rowDef['@id'] !== null) {
+      delete _rowDef['@id'];
+
+      // Remove other ld+json fields
+      if (_rowDef['@context'] !== null) { delete _rowDef['@context']; }
+      if (_rowDef['@type'] !== null) { delete _rowDef['@type']; }
+    }
+
+    return _rowDef;
   }
 
 }

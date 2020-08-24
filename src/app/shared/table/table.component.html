@@ -26,7 +26,10 @@
 
     <div class="button">
       <button mat-button
-        matTooltip="Dupliquer la tableau courant">
+        (click)="forkCurrentTable()"
+        matTooltip="Dupliquer le tableau courant"
+        [disabled]="isDuplicatingTable"
+        [class.spinner]="isDuplicatingTable">
         <mat-icon>file_copy</mat-icon>
         <span> Dupliquer</span>
       </button>
