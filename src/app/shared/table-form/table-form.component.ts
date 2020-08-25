@@ -282,7 +282,6 @@ export class TableFormComponent implements OnInit, OnDestroy {
         if (deleteLinkedPdfFile) {
           this.pdfFileService.removePdfFile(patchedTable.pdf.id).subscribe(
             removedPdfFile => {
-              console.log(removedPdfFile);
               patchedTable.pdf = null;
               this.tableService.setCurrentTable(patchedTable, true);
               this.tableService.isTableDirty.next(false);
