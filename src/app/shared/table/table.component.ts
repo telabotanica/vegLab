@@ -549,7 +549,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.t0colMove = 0;
     this.t1colMove = 0;
 
-    if (!this.manuallyMoveColumnsAt == null) {
+    if (this.manuallyMoveColumnsAt !== null) {
       this.tableInstance.selectColumns(this.manuallyMoveColumnsAt.movedColumnsStart, this.manuallyMoveColumnsAt.movedColumnsEnd);
       this.manuallyMoveColumnsAt = null;
     }
@@ -729,7 +729,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     // Get current table
     const _ct = this.tableService.getCurrentTable();
-    if (_ct && (!_ct == null)) {
+    if (_ct && _ct !== null) {
       this._currentTable = _.clone(_ct);
       this.currentTableOwnedByCurrentUser = this.tableService.isTableOwnedByCurrentUser(this._currentTable);
     }
@@ -768,8 +768,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     // but some actions don't need to redrawn (render) the table
     // so we have to manually filter thoses actions and perform a change detection manually
     this.currentTableActionsSubscription = this.tableService.currentActions.subscribe(actions => {
-      const lastAction = (!actions == null) && actions.length > 0 ? actions[0] : null;
-      if ((!lastAction == null) && lastAction.type === TableActionEnum.groupRename) {
+      const lastAction = actions !== null && actions.length > 0 ? actions[0] : null;
+      if (lastAction !== null && lastAction.type === TableActionEnum.groupRename) {
         this.tableActions = actions;
         this.cdr.detectChanges();
       }
@@ -963,7 +963,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     if (createNewRowsGroup.success) {
       // rows group successfully created
       // Manually select moved range rows
-      if (!createNewRowsGroup.newGroupId == null) {
+      if (createNewRowsGroup.newGroupId !== null) {
         const newTableRowsGroupPositions = _.find(this.tableService.groupsPositions, rDef => rDef.groupId === createNewRowsGroup.newGroupId);
         this.tableInstance.selectRows(newTableRowsGroupPositions.startRowPosition, newTableRowsGroupPositions.endRowPosition);
       }
@@ -1014,7 +1014,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     if (createNewSye.success) {
       // sye successfully created
       // Manually select moved range columns
-      if (!createNewSye.newSyeId == null) {
+      if (createNewSye.newSyeId !== null) {
         const newTableSyePositions = _.find(this.tableService.columnsPositions, columnPositions => columnPositions.id === createNewSye.newSyeId);
         this.tableInstance.selectColumns(newTableSyePositions.startColumnPosition, newTableSyePositions.endColumnPosition);
       }
@@ -1110,18 +1110,18 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     // 3. remove synthetic columns ids + Synthetic items ids
-    if (!tableToDuplicate.syntheticColumn == null) {
+    if (tableToDuplicate.syntheticColumn !== null) {
       tableToDuplicate.syntheticColumn = this.syntheticColumnService.removeIds(tableToDuplicate.syntheticColumn);
     }
     for (let j = 0; j < tableToDuplicate.sye.length; j++) {
-      if (!tableToDuplicate.sye[j].syntheticColumn == null) {
+      if (tableToDuplicate.sye[j].syntheticColumn !== null) {
         tableToDuplicate.sye[j].syntheticColumn = this.syntheticColumnService.removeIds(tableToDuplicate.sye[j].syntheticColumn);
       }
     }
 
     // 4. remove validations
     // table validations
-    if (!tableToDuplicate.validations == null) {
+    if (tableToDuplicate.validations !== null) {
       for (let k = 0; k < tableToDuplicate.validations.length; k++) {
         tableToDuplicate.validations[k] = this.validationService.removeIds(tableToDuplicate.validations[k]);
       }
@@ -1129,21 +1129,21 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     // sye validations
     for (let l = 0; l < tableToDuplicate.sye.length; l++) {
       const sye = tableToDuplicate.sye[l];
-      if (!sye.validations == null) {
+      if (sye.validations !== null) {
         for (let m = 0; m < sye.validations.length; m++) {
           sye.validations[m] = this.validationService.removeIds(sye.validations[m]);
         }
       }
       // sye synthetic column validations
-      if (!sye.syntheticColumn == null) {
+      if (sye.syntheticColumn !== null) {
         for (let l2 = 0; l2 < sye.syntheticColumn.validations.length; l2++) {
           sye.syntheticColumn.validations[l2] = this.validationService.removeIds(sye.syntheticColumn.validations[l2]);
         }
       }
     }
     // table synthetic column validations
-    if (!tableToDuplicate.syntheticColumn == null) {
-      if (!tableToDuplicate.syntheticColumn.validations == null) {
+    if (tableToDuplicate.syntheticColumn !== null) {
+      if (tableToDuplicate.syntheticColumn.validations !== null) {
         for (let l3 = 0; l3 < tableToDuplicate.syntheticColumn.validations.length; l3++) {
           tableToDuplicate.syntheticColumn.validations[l3] = this.validationService.removeIds(tableToDuplicate.syntheticColumn.validations[l3]);
         }
@@ -1168,7 +1168,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Manage diagnosis
     // We can't duplicate a diagnosis to avoid confusion
-    if ((!tableToDuplicate.isDiagnosis == null) && tableToDuplicate.isDiagnosis === true) {
+    if (tableToDuplicate.isDiagnosis !== null && tableToDuplicate.isDiagnosis === true) {
       tableToDuplicate.isDiagnosis = false;
     }
 
