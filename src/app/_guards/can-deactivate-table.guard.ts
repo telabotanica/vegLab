@@ -14,14 +14,9 @@ export class CanDeactivateTableGuard implements CanDeactivate<PhytoAppPageCompon
     nextState?: RouterStateSnapshot
   ): Observable<boolean> | boolean {
 
-    const actions = component.tableService.currentActions.getValue();
+    const isTableDirty = component.tableService.isTableDirty.getValue();
 
-    console.log('CAN DEACTIVATE TABLE ? ', actions, route, state, nextState);
-    console.log('regexp matches ? ', nextState.url.match(/\/phyto\/app(\/)(.*)?/));
-
-    return true;
-
-    if (nextState && nextState.url && !nextState.url.match(/\/phyto\/app(\/)(.*)?/) === null && actions == null || actions.length === 0) {
+    if (isTableDirty === false) {
       return true;
     } else {
       return component.dialogService.confirmTableRouteDeactivate('La tableau courant n\'est pas sauvegardé. Voulez-vous quitter la page ?');

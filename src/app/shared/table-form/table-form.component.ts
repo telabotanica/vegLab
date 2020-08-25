@@ -205,6 +205,7 @@ export class TableFormComponent implements OnInit, OnDestroy {
       postedTable => {
         this.pdfFileIrisToLink = [];
         this.tableService.setCurrentTable(postedTable, true);
+        this.tableService.isTableDirty.next(false);
         this.postingOrPutingTable = false;
         this.notificationService.notify('Le tableau a été enregistré');
 
@@ -284,6 +285,7 @@ export class TableFormComponent implements OnInit, OnDestroy {
               console.log(removedPdfFile);
               patchedTable.pdf = null;
               this.tableService.setCurrentTable(patchedTable, true);
+              this.tableService.isTableDirty.next(false);
               this.postingOrPutingTable = false;
               this.notificationService.notify('Le tableau a été enregistré');
 

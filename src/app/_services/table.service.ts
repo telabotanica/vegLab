@@ -53,6 +53,7 @@ export class TableService {
   public tableSelectionElement: BehaviorSubject<TableSelectedElement> = new BehaviorSubject<TableSelectedElement>(null);
 
   public currentActions: BehaviorSubject<Array<TableAction>> = new BehaviorSubject<Array<TableAction>>([]);
+  public isTableDirty: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false); // Dirty = table has actions that are not yet persisted in DB
 
   constructor(
     private userService: UserService,
@@ -2626,6 +2627,7 @@ export class TableService {
 
     const _mergedActions: Array<TableAction> = _.concat(_currentActions, _action);
 
+    this.isTableDirty.next(true);
     this.currentActions.next(_mergedActions);
   }
 

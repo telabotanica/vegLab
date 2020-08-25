@@ -1072,6 +1072,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       this.tableService.putTable(this._currentTable).subscribe(
         savedTable => {
           this.isSavingTable = false;
+          this.tableService.isTableDirty.next(false);
           this.notificationService.notify('Votre tableau a bien été sauvegardé');
           this.cdr.detectChanges();
         }, error => {
@@ -1199,6 +1200,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         duplicatedTable => {
           this.isDuplicatingTable = false;
           this.tableService.setCurrentTable(duplicatedTable, true);
+          this.tableService.isTableDirty.next(false);
           this.notificationService.notify('Le tableau a bien été dupliqué');
           // Don't force change detection here (this.cdr.detectChange()) because setCurrentTable(X, true) already did it
         }, error => {
