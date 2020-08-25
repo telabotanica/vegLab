@@ -29,7 +29,7 @@
               <hr />
               <div class="confirm-delete">
                 <!--<p>Lorsque vous supprimez un tableau, les relevés qui le compose ne sont par supprimés.</p>-->
-                <p>Lorsque vous supprimez un tableau, les relevés qui le compose sont également supprimés.</p>
+                <p>Lorsque vous supprimez un tableau, les relevés qui le compose <b>ne sont pas</b> supprimés.</p>
                 <br />
                 <p><b>La suppression de ce tableau est irreversible.</b></p>
                 <div class="action-buttons">
@@ -59,7 +59,7 @@
               <div class="confirm-delete">
                 <p><b>La suppression de ce relevé est irreversible.</b></p>
                 <div class="action-buttons">
-                  <button mat-flat-button color="warn" disabled>Confirmer la suppression</button>
+                  <button mat-flat-button color="warn" (click)="deleteOccurrence(occurrenceToDelete)">Confirmer la suppression</button>
                   <button mat-flat-button color="primary" (click)="cancelOccurrenceDelete()">Annuler</button>
                 </div>
               </div>

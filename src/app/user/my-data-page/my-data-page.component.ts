@@ -230,6 +230,10 @@ export class MyDataPageComponent implements OnInit, OnDestroy {
     this.close();
   }
 
+  deleteOccurrence(occurrenceToDelete: OccurrenceModel): void {
+    this.notificationService.notify('Cette fonctionnalité n\'est pas encore disponible');
+  }
+
   resetInfoAndDeleteValues(): void {
     this.tableInfo = null;
     this.occurrenceInfo = null;
