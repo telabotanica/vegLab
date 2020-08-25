@@ -1110,18 +1110,18 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     // 3. remove synthetic columns ids + Synthetic items ids
-    if (tableToDuplicate.syntheticColumn !== null) {
+    if (tableToDuplicate.syntheticColumn !== null && tableToDuplicate.syntheticColumn !== undefined) {
       tableToDuplicate.syntheticColumn = this.syntheticColumnService.removeIds(tableToDuplicate.syntheticColumn);
     }
     for (let j = 0; j < tableToDuplicate.sye.length; j++) {
-      if (tableToDuplicate.sye[j].syntheticColumn !== null) {
+      if (tableToDuplicate.sye[j].syntheticColumn !== null && tableToDuplicate.sye[j].syntheticColumn !== undefined) {
         tableToDuplicate.sye[j].syntheticColumn = this.syntheticColumnService.removeIds(tableToDuplicate.sye[j].syntheticColumn);
       }
     }
 
     // 4. remove validations
     // table validations
-    if (tableToDuplicate.validations !== null) {
+    if (tableToDuplicate.validations !== null && tableToDuplicate.validations !== undefined) {
       for (let k = 0; k < tableToDuplicate.validations.length; k++) {
         tableToDuplicate.validations[k] = this.validationService.removeIds(tableToDuplicate.validations[k]);
       }
@@ -1129,21 +1129,21 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     // sye validations
     for (let l = 0; l < tableToDuplicate.sye.length; l++) {
       const sye = tableToDuplicate.sye[l];
-      if (sye.validations !== null) {
+      if (sye.validations !== null && sye.validations !== undefined) {
         for (let m = 0; m < sye.validations.length; m++) {
           sye.validations[m] = this.validationService.removeIds(sye.validations[m]);
         }
       }
       // sye synthetic column validations
-      if (sye.syntheticColumn !== null) {
+      if (sye.syntheticColumn !== null && sye.syntheticColumn !== undefined) {
         for (let l2 = 0; l2 < sye.syntheticColumn.validations.length; l2++) {
           sye.syntheticColumn.validations[l2] = this.validationService.removeIds(sye.syntheticColumn.validations[l2]);
         }
       }
     }
     // table synthetic column validations
-    if (tableToDuplicate.syntheticColumn !== null) {
-      if (tableToDuplicate.syntheticColumn.validations !== null) {
+    if (tableToDuplicate.syntheticColumn !== null && tableToDuplicate.syntheticColumn !== undefined) {
+      if (tableToDuplicate.syntheticColumn.validations !== null && tableToDuplicate.syntheticColumn.validations !== undefined) {
         for (let l3 = 0; l3 < tableToDuplicate.syntheticColumn.validations.length; l3++) {
           tableToDuplicate.syntheticColumn.validations[l3] = this.validationService.removeIds(tableToDuplicate.syntheticColumn.validations[l3]);
         }
@@ -1168,7 +1168,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Manage diagnosis
     // We can't duplicate a diagnosis to avoid confusion
-    if (tableToDuplicate.isDiagnosis !== null && tableToDuplicate.isDiagnosis === true) {
+    if (tableToDuplicate.isDiagnosis !== null && tableToDuplicate.isDiagnosis !== undefined && tableToDuplicate.isDiagnosis === true) {
       tableToDuplicate.isDiagnosis = false;
     }
 
@@ -1188,22 +1188,30 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     try {
       duplicatedTableToPost = this.duplicateCurrentTable();
     } catch (error) {
+      console.log(error);
+      this.notificationService.error('Impossible de dupliquer le tableau');
       this.isDuplicatingTable = false;
     }
 
     // POST the duplicated table
-    this.tableService.postTable(duplicatedTableToPost).subscribe(
-      duplicatedTable => {
-        this.tableService.setCurrentTable(duplicatedTable, true);
-        this.notificationService.notify('Le tableau a bien été dupliqué');
+    if (duplicatedTableToPost !== null && duplicatedTableToPost !== undefined) {
+      this.tableService.postTable(duplicatedTableToPost).subscribe(
+        duplicatedTable => {
+          this.isDuplicatingTable = false;
+          this.tableService.setCurrentTable(duplicatedTable, true);
+          this.notificationService.notify('Le tableau a bien été dupliqué');
+          // Don't force change detection here (this.cdr.detectChange()) because setCurrentTable(X, true) already did it
+        }, error => {
+          this.notificationService.error('Impossible de dupliquer le tableau');
+          this.isDuplicatingTable = false;
+          this.cdr.detectChanges();
+        }
+      );
+    } else {
+        this.notificationService.error('Impossible de dupliquer le tableau');
         this.isDuplicatingTable = false;
         this.cdr.detectChanges();
-      }, error => {
-        this.notificationService.error('Impossible de duplisuer le tableau');
-        this.isDuplicatingTable = false;
-        this.cdr.detectChanges();
-      }
-    );
+    }
   }
 
   // ---------
