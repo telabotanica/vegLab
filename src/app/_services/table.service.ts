@@ -1311,7 +1311,7 @@ export class TableService {
       let nbGroups = 0;
       const groupsIds = _.map(_.uniqBy(this.currentTable.rowsDefinition, rDef => rDef.groupId), row => row.rowId);
       nbGroups = groupsIds.length;
-      const newGroupId = nbGroups;
+      const newGroupId = _.max(_.map(this.currentTable.rowsDefinition, rd => rd.groupId)) + 1;
 
       // create a new title row
       const newTitleRow: TableRowDefinition = {id: null, rowId: null, type: null, groupId: null, groupTitle: null, layer: null, displayName: null, repository: null, repositoryIdNomen: null, repositoryIdTaxo : null};
