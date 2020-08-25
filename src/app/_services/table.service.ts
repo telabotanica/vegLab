@@ -1715,7 +1715,11 @@ export class TableService {
     // 2. Columns are moved into the same sye
     if (sourceSyeColumnsDef === destinationSyeColumnsDef) {
       // move occurrences
-      this.currentTable.sye[sourceSyeColumnsDef.id].occurrences.splice(targetIndex, 0, ...this.currentTable.sye[sourceSyeColumnsDef.id].occurrences.splice(sourceIndex, nbColumnsToMove));
+      if (movingDirection === 'rtl') {
+        this.currentTable.sye[sourceSyeColumnsDef.id].occurrences.splice(targetIndex, 0, ...this.currentTable.sye[sourceSyeColumnsDef.id].occurrences.splice(sourceIndex, nbColumnsToMove));
+      } else {
+        this.currentTable.sye[sourceSyeColumnsDef.id].occurrences.splice(targetIndex - nbColumnsToMove, 0, ...this.currentTable.sye[sourceSyeColumnsDef.id].occurrences.splice(sourceIndex, nbColumnsToMove));
+      }
 
       // update sye occurrences count
       this.updateSyeCount(this.currentTable);

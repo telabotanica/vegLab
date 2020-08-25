@@ -539,7 +539,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     } else if (typeof(moved) === 'object') {
       // select moved columns
       this.manuallyMoveColumnsAt = moved;
-      return false;
+      this.onAfterColumnMove();                 // As we return false (next line), the hook chain is broken. Handsontable will not move columns (we already moved
+      return false;                             // columns manually with tableService). We have to manually call onAfterColumnMove();
     }
   }
 
