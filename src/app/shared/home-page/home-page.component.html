@@ -1,29 +1,89 @@
-<div id="homepage-container">
+<div id="homepage-container" fxLayout="column" fxLayoutAlign="start none">
   <div class="header">
     <h1>VegLab</h1>
     <h2>Saisie, traitement et analyse de données<br />pour les végétations et les habitats</h2>
   </div>
 
-  <div class="tiles">
-    <mat-grid-list cols="3" rowHeight="200px">
-      <mat-grid-tile class="tile" id="wsPhyto" [routerLink]="['/phyto']">
+  <div class="content-wrapper">
+
+    <div class="content" fxFlex fxLayout="column" fxLayoutAlign="center none">
+      <div class="section main-description" fxLayout="column" fxLayoutAlign="center center">
+        <h2>Présentation</h2>
+        <p class="text-description">VegLab est un projet porté par <a href="https://www.tela-botanica.org" target="_blank">Tela Botanica</a> visant à faciliter l'accès et le partage de données de végétations et d'habitats naturels. Il s'agit d'une plateforme (application et base de données) libre d'utilisation vous permettant de gérer vos données depuis leur saisie jusqu'à leur analyse. Le projet est actuellement en cours de développement et toutes les fonctionnalités ne sont pas encore accessibles.</p>
+      </div>
+
+      <div class="section" fxLayout="column" fxLayoutAlign="center center">
+        <h2>Espaces de travail</h2>
+        <p class="text-description">Un espace de travail vous donne accès à toutes les fonctionnalités de base de l'application. Vous disposez d'une interface adaptée, de modules spécifiques à votre activité ainsi que de l'accès aux données qui vous sont les plus utiles.</p>
+        <p class="text-description"><b>Pour commencer, choisissez un espace de travail.</b></p>
+        <div class="ws-tiles">
+          <div class="tile" id="wsPhyto" [routerLink]="['/phyto']">
+            <div class="content">
+              <div class="title">Phytosociologie</div>
+            </div>
+          </div>
+
+          <div class="tile" id="wsForest">
+            <div class="content">
+              <div class="title">Foresterie</div>
+            </div>
+          </div>
+
+          <div class="tile" id="wsAgro">
+            <div class="content">
+              <div class="title">Agronomie</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section help" fxLayout="column" fxLayoutAlign="center center">
+        <h2>Guide d'utilisation</h2>
+        <p class="text-description">Avant de commencer à utiliser l'application, nous vous conseillons de parcourir la documentation et de regarder les vidéos introductives.</p>
+        <p>
+          <a href="https://www.tela-botanica.org/wikini/AideVegLab/wakka.php?wiki=PresentationVegLab&Authorization=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvd3d3LnRlbGEtYm90YW5pY2Eub3JnIiwidG9rZW5faWQiOiJ0Yl9hdXRoIiwic3ViIjoic3RlcGguZGVsQHJpc2V1cC5uZXQiLCJpYXQiOjE1ODg2Njg0NjksImV4cCI6MTU5ODM0NjYyNiwic2NvcGVzIjpbInRlbGEtYm90YW5pY2Eub3JnIl0sImlkIjoiMTAwMDQiLCJwcmVub20iOiJTdFx1MDBlOXBoYW5lIiwibm9tIjoiRGVscGxhbnF1ZSIsInBzZXVkbyI6IlN0XHUwMGU5cGhhbmUgRGVscGxhbnF1ZSIsInBzZXVkb1V0aWxpc2UiOnRydWUsImludGl0dWxlIjoiU3RcdTAwZTlwaGFuZSBEZWxwbGFucXVlIiwiYXZhdGFyIjoiXC9cL3d3dy5ncmF2YXRhci5jb21cL2F2YXRhclwvZjM4NjhhOGQ5YjQ0MTI1YTM3YmY0ODBlMDdlNTQyMDE_cz01MCZyPWcmZD1tbSIsImdyb3VwZXMiOnsicHJvamV0OjciOiIiLCJwcm9qZXQ6OCI6IiIsInByb2pldDo5IjoiIiwicHJvamV0OjEwIjoiIiwicHJvamV0OjE4IjoiIiwicHJvamV0OjU1IjoiIiwicHJvamV0OjE0NiI6IiJ9LCJwZXJtaXNzaW9ucyI6WyJjb250cmlidXRvciJdLCJub21XaWtpIjoiU3RlcGhhbmVEZWxwbGFucXVlIiwiZGF0ZURlcm5pZXJlTW9kaWYiOjE0OTUyMDYzNzZ9.9AFMcK0KmXYuPaPcWh_ILimIuZJHILD_fTILcoiNoXw"
+             target="_blank"><button mat-stroked-button>Accéder à la documentation</button></a>
+        </p>
+      </div>
+
+      <div class="section videos">
+        <div class="3-cols-videos">
+          <div class="tuto">
+            <div class="title">Prise en main</div>
+            <div class="video"><img src="./assets/shared/img/play-content.png"></div>
+            <div class="describe">...</div>
+          </div>
+          <div class="tuto">
+            <div class="title">Rechercher un relevé</div>
+            <div class="video"><img src="./assets/shared/img/play-content.png"></div>
+            <div class="describe">...</div>
+          </div>
+          <div class="tuto">
+            <div class="title">Rechercher un tableau</div>
+            <div class="video"><img src="./assets/shared/img/play-content.png"></div>
+            <div class="describe">...</div>
+          </div>
+        </div>
         
-        <div class="content">
-          <div class="title">Phytosociologie</div>
+        <div class="3-cols-videos">
+          <div class="tuto">
+            <div class="title">Construire et manipuler un tableau</div>
+            <div class="video"><img src="./assets/shared/img/play-content.png"></div>
+            <div class="describe">...</div>
+          </div>
+          <div class="tuto">
+            <div class="title">Importer un tableau</div>
+            <div class="video"><img src="./assets/shared/img/play-content.png"></div>
+            <div class="describe">...</div>
+          </div>
         </div>
-      </mat-grid-tile>
+        
+      </div>
+        
+    </div>
+    
 
-      <mat-grid-tile class="tile" id="wsForest">
-        <div class="content">
-          <div class="title">Foresterie</div>
-        </div>
-      </mat-grid-tile>
-
-      <mat-grid-tile class="tile" id="wsAgro">
-        <div class="content">
-          <div class="title">Agronomie</div>
-        </div>
-      </mat-grid-tile>
-    </mat-grid-list>
   </div>
+
+  
 </div>

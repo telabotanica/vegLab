@@ -28,50 +28,89 @@
     }
   }
 
-  .tiles {
-    padding: 20px;
-
-    .tile {
-      background-size: cover;
-      cursor: pointer;
-
-      .content {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        width: 100%;
-        position: relative;
-        justify-content: center;
+  .content-wrapper {
+    display: block !important;
+    .content {
+      .section {
+        margin-top: 30px;
+        margin-left: 20px;
+        margin-right: 20px;
         text-align: center;
-        color: white;
-        text-shadow: 0px 0px 4px black;
 
-        .title {
-          font-size: 1.8em;
-          font-weight: bold;
-          padding: 20px;
-          background-color: #c0c0c080;
-        }
-        .description {
+        p.text-description {
           font-size: 1.2em;
-          padding: 20px;
+          max-width: 500px;
+          text-align: justify;
+        }
+
+        .ws-tiles {
+          padding: 0 20px 20px 20px;
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: center;
+
+          .tile {
+            background-size: cover;
+            cursor: pointer;
+            min-height: 200px;
+            max-height: 200px;
+            min-width: 300px;
+            max-width: 300px;
+            margin: 20px;
+
+            .content {
+              display: flex;
+              flex-direction: column;
+              height: 100%;
+              width: 100%;
+              position: relative;
+              justify-content: center;
+              text-align: center;
+              color: white;
+              text-shadow: 0px 0px 4px black;
+
+              .title {
+                font-size: 1.8em;
+                font-weight: bold;
+                padding: 20px;
+                background-color: #c0c0c080;
+              }
+              .description {
+                font-size: 1.2em;
+                padding: 20px;
+              }
+            }
+          }
+
+          #wsPhyto {
+            background-color: lightblue;
+            background-image: url('../../../assets/wsPhyto/img/phytosocio.png');
+          }
+
+          #wsForest {
+            background-color: lightgreen;
+            background-image: url('../../../assets/wsForest/img/forest.jpg');
+          }
+
+          #wsAgro {
+            background-color: lightyellow;
+            background-image: url('../../../assets/wsAgro/img/agro.png');
+          }
+        }
+
+        &.videos {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: center;
+          .tuto {
+            margin: 10px;
+          }
         }
       }
     }
-
-    #wsPhyto {
-      background-color: lightblue;
-      background-image: url('../../../assets/wsPhyto/img/phytosocio.png');
-    }
-
-    #wsForest {
-      background-color: lightgreen;
-      background-image: url('../../../assets/wsForest/img/forest.jpg');
-    }
-
-    #wsAgro {
-      background-color: lightyellow;
-      background-image: url('../../../assets/wsAgro/img/agro.png');
-    }
   }
+
+  
 }
