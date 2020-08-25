@@ -189,8 +189,8 @@ export class SentryErrorHandler implements ErrorHandler {
               {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}},
               {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
               {provide: MatPaginatorIntl, useClass: MatPaginatorIntlService},
-              MomentLocalDatePipe
-              /*{provide: ErrorHandler, useClass: SentryErrorHandler}*/
+              MomentLocalDatePipe,
+              {provide: ErrorHandler, useClass: SentryErrorHandler}
             ],
   bootstrap: [AppComponent]
 })

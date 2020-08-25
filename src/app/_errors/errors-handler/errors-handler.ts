@@ -31,12 +31,12 @@ export class ErrorsHandler implements ErrorHandler {
       }
     } else {
       // Handle client error
-      errorService.log(error).subscribe(errorWithContextInfo => {
+      /*errorService.log(error).subscribe(errorWithContextInfo => {
         ngZone.run(() => {
           router.navigate(['/error'], { queryParams: errorWithContextInfo });
         }
         );
-      });
+      });*/
     }
   }
 
