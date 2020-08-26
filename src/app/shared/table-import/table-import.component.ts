@@ -419,7 +419,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
             this.importFileStatus.next('error');
             this.importFileMessagesPush('Le fichier importé n\'est pas conforme');
           } else {
-            this.parsedCsvFile = results.data;
+            this.parsedCsvFile = results.data as any;
             console.log(this.parsedCsvFile);
             this.splitCsvFile();
             this.checkImportedFile(); // chekcs CSV errors and change this.importFile status and messages
@@ -2772,6 +2772,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
     let rowId = 0;
     for (const groupItems of sorteredTaxoListByGroups) {
       result.push({
+        id: null,
         rowId,
         type: 'group',
         groupId: groupItems[0].groupPosition,
@@ -2785,6 +2786,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
       rowId++;
       for (const item of groupItems) {
         result.push({
+          id: null,
           rowId,
           type: 'data',
           groupId: item.groupPosition,

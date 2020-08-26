@@ -171,7 +171,7 @@ export class SophyImportAndSplitCsvComponent implements OnInit {
             // Csv file has some errors, log to user and abort
             this.notificationService.error(results.errors.toString());
           } else {
-            this.parsedCsvFile = results.data;
+            this.parsedCsvFile = results.data as any;
             if (this.checkCsvFile()) {
               this.splitCsvFile();
               if (this.checkSophyMetaHeadersExists()) {
