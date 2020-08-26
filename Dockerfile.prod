@@ -3,7 +3,7 @@
 #############
 
 # base image
-FROM node:12.2.0 as build
+FROM node:12.13.0 as build
 
 # install chrome for protractor tests
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
@@ -38,8 +38,9 @@ RUN envsubst < ./src/environments/environment.prod.ts > /client/src/environments
 #RUN ng e2e --port 4202
 
 # generate build
-RUN set NODE_OPTIONS=--max_old_space_size=14336 && \
-    ng build --prod --output-path=dist
+RUN node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --prod --output-path=dist
+#RUN set NODE_OPTIONS=--max-old-space-size=14336 && \
+#    ng build --prod --output-path=dist
 
 ############
 ### prod ###
@@ -49,7 +50,7 @@ RUN set NODE_OPTIONS=--max_old_space_size=14336 && \
 FROM nginx:1.16.0-alpine
 
 # copy artifact build from the 'build environment'
-COPY --from=api_platform_php /srv/api/public ./
+COPY --from=build /client/dist /usr/share/nginx/html
 
 # expose port 80
 EXPOSE 80
