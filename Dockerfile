@@ -1,5 +1,5 @@
 # base image
-FROM node:12.2.0 AS veglab_client_dev
+FROM node:12.13.0 AS veglab_client_dev
 
 # install chrome for protractor tests
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
