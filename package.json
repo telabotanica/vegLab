@@ -27,7 +27,7 @@
     "@asymmetrik/ngx-leaflet-draw": "^4.0.0",
     "@handsontable/angular": "^4.0.0",
     "@ng-bootstrap/ng-bootstrap": "^4.0.0",
-    "@sentry/browser": "^5.6.2",
+    "@sentry/browser": "^4.6.6",
     "@swimlane/ngx-charts": "^12.1.0",
     "@turf/simplify": "^5.1.5",
     "@turf/turf": "^5.1.6",
