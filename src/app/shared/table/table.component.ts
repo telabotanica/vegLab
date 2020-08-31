@@ -1084,96 +1084,19 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  // ---------------
-  // DUPLICATE TABLE
-  // To duplicate a table, we remove all id properties (from Table, Syes, Synthetic columns, Row def, Validation and Pdf files)
-  // ---------------
+  // ---------------------------------
+  // Duplicate current table
+  // See tableService.duplicateTable()
+  // ---------------------------------
   duplicateCurrentTable(): Table {
-    if (this.currentUser == null || (this.currentUser && this.currentUser.id == null)) {
-      throwError({error: 'Can\'t duplicate the Table because user or user.id is null'});
-    }
-
     this.isDuplicatingTable = true;
-    this.cdr.detectChanges();
-
-    let tableToDuplicate = _.cloneDeep(this._currentTable);
-
-    // 1. remove table ID
-    tableToDuplicate = this.tableService.removeTableIds(tableToDuplicate);
-
-    // 2. remove sye IDs
-    for (let sye of tableToDuplicate.sye) {
-      sye = this.syeService.removeIds(sye);
+    try {
+      this.cdr.detectChanges();
+      return this.tableService.duplicateTable(_.cloneDeep(this._currentTable));
+    } catch (error) {
+      this.notificationService.error('Impossible de dupliquer le tableau courant');
+      throw new Error('Impossible de dupliquer le tableau courant');
     }
-
-    for (let i = 0; i < tableToDuplicate.sye.length; i++) {
-      tableToDuplicate.sye[i] = this.syeService.removeIds(tableToDuplicate.sye[i]);
-    }
-
-    // 3. remove synthetic columns ids + Synthetic items ids
-    if (tableToDuplicate.syntheticColumn !== null && tableToDuplicate.syntheticColumn !== undefined) {
-      tableToDuplicate.syntheticColumn = this.syntheticColumnService.removeIds(tableToDuplicate.syntheticColumn);
-    }
-    for (let j = 0; j < tableToDuplicate.sye.length; j++) {
-      if (tableToDuplicate.sye[j].syntheticColumn !== null && tableToDuplicate.sye[j].syntheticColumn !== undefined) {
-        tableToDuplicate.sye[j].syntheticColumn = this.syntheticColumnService.removeIds(tableToDuplicate.sye[j].syntheticColumn);
-      }
-    }
-
-    // 4. remove validations
-    // table validations
-    if (tableToDuplicate.validations !== null && tableToDuplicate.validations !== undefined) {
-      for (let k = 0; k < tableToDuplicate.validations.length; k++) {
-        tableToDuplicate.validations[k] = this.validationService.removeIds(tableToDuplicate.validations[k]);
-      }
-    }
-    // sye validations
-    for (let l = 0; l < tableToDuplicate.sye.length; l++) {
-      const sye = tableToDuplicate.sye[l];
-      if (sye.validations !== null && sye.validations !== undefined) {
-        for (let m = 0; m < sye.validations.length; m++) {
-          sye.validations[m] = this.validationService.removeIds(sye.validations[m]);
-        }
-      }
-      // sye synthetic column validations
-      if (sye.syntheticColumn !== null && sye.syntheticColumn !== undefined) {
-        for (let l2 = 0; l2 < sye.syntheticColumn.validations.length; l2++) {
-          sye.syntheticColumn.validations[l2] = this.validationService.removeIds(sye.syntheticColumn.validations[l2]);
-        }
-      }
-    }
-    // table synthetic column validations
-    if (tableToDuplicate.syntheticColumn !== null && tableToDuplicate.syntheticColumn !== undefined) {
-      if (tableToDuplicate.syntheticColumn.validations !== null && tableToDuplicate.syntheticColumn.validations !== undefined) {
-        for (let l3 = 0; l3 < tableToDuplicate.syntheticColumn.validations.length; l3++) {
-          tableToDuplicate.syntheticColumn.validations[l3] = this.validationService.removeIds(tableToDuplicate.syntheticColumn.validations[l3]);
-        }
-      }
-    }
-
-    // 5. remove row definitions
-    for (let n = 0; n < tableToDuplicate.rowsDefinition.length; n++) {
-      tableToDuplicate.rowsDefinition[n] = this.tableService.removeRowdefIds(tableToDuplicate.rowsDefinition[n]);
-    }
-
-    // Set createdAt date and user
-    tableToDuplicate.createdAt = new Date(Date.now());
-    tableToDuplicate.createdBy = Number(this.currentUser.id);
-
-    // Manage pdf
-    if (tableToDuplicate.pdf == null) {
-      delete tableToDuplicate['pdf']; // Avoid sending 'null' pdf field
-    } else {
-      delete tableToDuplicate.pdf;
-    }
-
-    // Manage diagnosis
-    // We can't duplicate a diagnosis to avoid confusion
-    if (tableToDuplicate.isDiagnosis !== null && tableToDuplicate.isDiagnosis !== undefined && tableToDuplicate.isDiagnosis === true) {
-      tableToDuplicate.isDiagnosis = false;
-    }
-
-    return tableToDuplicate;
   }
 
   // ------------------
@@ -1193,6 +1116,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       this.notificationService.error('Impossible de dupliquer le tableau');
       this.isDuplicatingTable = false;
     }
+
+    // this.tableService.setCurrentTable(duplicatedTableToPost, true);
 
     // POST the duplicated table
     if (duplicatedTableToPost !== null && duplicatedTableToPost !== undefined) {

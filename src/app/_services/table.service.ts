@@ -602,6 +602,96 @@ export class TableService {
     }
   }
 
+  // ---------------
+  // DUPLICATE TABLE
+  // To duplicate a table, we remove all id properties (from Table, Syes, Synthetic columns, Row def, Validation and Pdf files)
+  // ---------------
+  duplicateTable(table: Table): Table {
+    const cu = this.userService.currentUser.getValue();
+    if (cu == null || (cu && cu.id == null)) {
+      throw new Error('Can\'t duplicate the Table because user or user.id is null');
+    }
+
+    let tableToDuplicate = _.cloneDeep(table);
+
+    // 1. remove table ID
+    tableToDuplicate = this.removeTableIds(tableToDuplicate);
+
+    // 2. remove sye IDs
+    for (let sye of tableToDuplicate.sye) {
+      sye = this.syeService.removeIds(sye);
+    }
+
+    for (let i = 0; i < tableToDuplicate.sye.length; i++) {
+      tableToDuplicate.sye[i] = this.syeService.removeIds(tableToDuplicate.sye[i]);
+    }
+
+    // 3. remove synthetic columns ids + Synthetic items ids
+    if (tableToDuplicate.syntheticColumn !== null && tableToDuplicate.syntheticColumn !== undefined) {
+      tableToDuplicate.syntheticColumn = this.syntheticColumnService.removeIds(tableToDuplicate.syntheticColumn);
+    }
+    for (let j = 0; j < tableToDuplicate.sye.length; j++) {
+      if (tableToDuplicate.sye[j].syntheticColumn !== null && tableToDuplicate.sye[j].syntheticColumn !== undefined) {
+        tableToDuplicate.sye[j].syntheticColumn = this.syntheticColumnService.removeIds(tableToDuplicate.sye[j].syntheticColumn);
+      }
+    }
+
+    // 4. remove validations
+    // table validations
+    if (tableToDuplicate.validations !== null && tableToDuplicate.validations !== undefined) {
+      for (let k = 0; k < tableToDuplicate.validations.length; k++) {
+        tableToDuplicate.validations[k] = this.validationService.removeIds(tableToDuplicate.validations[k]);
+      }
+    }
+    // sye validations
+    for (let l = 0; l < tableToDuplicate.sye.length; l++) {
+      const sye = tableToDuplicate.sye[l];
+      if (sye.validations !== null && sye.validations !== undefined) {
+        for (let m = 0; m < sye.validations.length; m++) {
+          sye.validations[m] = this.validationService.removeIds(sye.validations[m]);
+        }
+      }
+      // sye synthetic column validations
+      if (sye.syntheticColumn !== null && sye.syntheticColumn !== undefined) {
+        for (let l2 = 0; l2 < sye.syntheticColumn.validations.length; l2++) {
+          sye.syntheticColumn.validations[l2] = this.validationService.removeIds(sye.syntheticColumn.validations[l2]);
+        }
+      }
+    }
+    // table synthetic column validations
+    if (tableToDuplicate.syntheticColumn !== null && tableToDuplicate.syntheticColumn !== undefined) {
+      if (tableToDuplicate.syntheticColumn.validations !== null && tableToDuplicate.syntheticColumn.validations !== undefined) {
+        for (let l3 = 0; l3 < tableToDuplicate.syntheticColumn.validations.length; l3++) {
+          tableToDuplicate.syntheticColumn.validations[l3] = this.validationService.removeIds(tableToDuplicate.syntheticColumn.validations[l3]);
+        }
+      }
+    }
+
+    // 5. remove row definitions
+    for (let n = 0; n < tableToDuplicate.rowsDefinition.length; n++) {
+      tableToDuplicate.rowsDefinition[n] = this.removeRowdefIds(tableToDuplicate.rowsDefinition[n]);
+    }
+
+    // Set createdAt date and user
+    tableToDuplicate.createdAt = new Date(Date.now());
+    tableToDuplicate.createdBy = Number(cu.id);
+
+    // Manage pdf
+    if (tableToDuplicate.pdf == null) {
+      delete tableToDuplicate['pdf']; // Avoid sending 'null' pdf field
+    } else {
+      delete tableToDuplicate.pdf;
+    }
+
+    // Manage diagnosis
+    // We can't duplicate a diagnosis to avoid confusion
+    if (tableToDuplicate.isDiagnosis !== null && tableToDuplicate.isDiagnosis !== undefined && tableToDuplicate.isDiagnosis === true) {
+      tableToDuplicate.isDiagnosis = false;
+    }
+
+    return tableToDuplicate;
+  }
+
   // -----------------------
   // ADD / REMOVE OCCURRENCE
   // -----------------------
