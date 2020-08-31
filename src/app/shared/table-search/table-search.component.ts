@@ -7,6 +7,8 @@ import { AppConfigService } from 'src/app/_config/app-config.service';
 import { TableService } from 'src/app/_services/table.service';
 import { NotificationService } from 'src/app/_services/notification.service';
 import { UserService } from 'src/app/_services/user.service';
+import { SyeService } from 'src/app/_services/sye.service';
+import { SyntheticColumnService } from 'src/app/_services/synthetic-column.service';
 
 import { RepositoryItemModel } from 'tb-tsb-lib';
 import { EsTableModel } from 'src/app/_models/es-table.model';
@@ -392,7 +394,9 @@ export class TableSearchComponent implements OnInit, OnDestroy {
           const ct = this.tableService.createTable(); // a new Table with an unique empty sye
           if (setSye === true) {
             // keep syes
-            const newTable = this.tableService.setSyesToTable(syes, ct, this.currentUser);
+            // + duplicate table (remove sye synthetic column and validations ids to avoid them to be moved between entities)
+            let newTable = this.tableService.setSyesToTable(syes, ct, this.currentUser);
+            newTable = this.tableService.duplicateTable(newTable);
             this.tableService.setCurrentTable(newTable, true);
             this.tableService.isLoadingData.next(false);
           } else {
@@ -452,7 +456,9 @@ export class TableSearchComponent implements OnInit, OnDestroy {
         // 4. Set currentTable Syes OR Set occurrences
         if (setSye === true) {
           // keep syes
-          const newTable = this.tableService.mergeSyesToTable(syes, ct, this.currentUser);
+          // + duplicate table (remove sye synthetic column and validations ids to avoid them to be moved between entities)
+          let newTable = this.tableService.mergeSyesToTable(syes, ct, this.currentUser);
+          newTable = this.tableService.duplicateTable(newTable);
           this.tableService.setCurrentTable(newTable, true);
 
           // @Action
