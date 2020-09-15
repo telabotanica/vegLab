@@ -191,6 +191,7 @@ export class OccurrenceFormBindingService {
     occ.elevation = location.elevation;
     // occ.geodatum = location.geodatum;
     occ.geometry = JSON.stringify(location.geometry);
+    occ.centroid = location.centroid ? JSON.stringify(location.centroid) : null;
     occ.locality = location.locality;
     occ.localityConsistency = location.localityConsistency;
     // occ.locationAccuracy = 1;
