@@ -52,7 +52,7 @@ export class DataSourcesPageComponent implements OnInit {
     this.annuaireIsOnline().subscribe(online => { online === true ? this._annuaireHealth = 'online' : this._annuaireHealth = 'offline'; }, error => { this._annuaireHealth = 'offline'; });
 
     this.apiIsOnline().subscribe(online => { online === true ? this._apiHealth = 'online' : this._apiHealth = 'offline'; }, error => { this._apiHealth = 'offline'; });
-    this.apiTableHealth('occurrences').subscribe(online => { online === true ? this._apiOccurrencesHealth = 'online' : this._apiOccurrencesHealth = 'offline'; }, error => { this._apiOccurrencesHealth = 'offline'; });
+    // this.apiRessourceHealth('occurrences').subscribe(online => { online === true ? this._apiOccurrencesHealth = 'online' : this._apiOccurrencesHealth = 'offline'; }, error => { this._apiOccurrencesHealth = 'offline'; });
     // this.apiTableHealth('tables').subscribe(online => { online === true ? this._apiTablesHealth = 'online' : this._apiTablesHealth = 'offline'; }, error => { this._apiTablesHealth = 'offline'; });
 
     this.esIsOnline().subscribe(online => { online === true ? this._esHealth = 'online' : this._esHealth = 'offline'; }, error => { this._esHealth = 'offline'; });
@@ -95,8 +95,8 @@ export class DataSourcesPageComponent implements OnInit {
     );
   }
 
-  apiTableHealth(table: string): Observable<boolean> {
-    return this.http.get(`${environment.apiBaseUrl}/${table}`, {observe: 'response'}).pipe(
+  apiRessourceHealth(ressource: string): Observable<boolean> {
+    return this.http.get(`${environment.apiBaseUrl}/${ressource}`, {observe: 'response'}).pipe(
       map(data => {
         if (data && data !== null && data.status) {
           if (data.status === 200) {
