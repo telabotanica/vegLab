@@ -33,11 +33,11 @@ export class PhytoHomePageComponent implements OnInit {
   }
 
   setCounters(): void {
-    this.tableService.countTables(['phyto', 'none']).subscribe(result => this.countTables = result.count);
-    this.occurrenceService.countReleves(['phyto', 'none'], [], this.countTopLevelsReleves).subscribe(result => this.countReleves = result.count);
-    this.occurrenceService.countReleves(['phyto', 'none'], ['microcenosis'], this.countTopLevelsReleves).subscribe(result => this.countRelevesMicrocenosis = result.count);
-    this.occurrenceService.countReleves(['phyto', 'none'], ['synusy'], this.countTopLevelsReleves).subscribe(result => this.countRelevesSynusies = result.count);
-    this.occurrenceService.countIdiotaxons(['phyto', 'none']).subscribe(result => this.countIdiotaxons = result.count);
+    this.tableService.countTables(['phyto', 'none']).subscribe(result => this.countTables = result.count, error => { this.countTables = 0; console.log(error); });
+    this.occurrenceService.countReleves(['phyto', 'none'], [], this.countTopLevelsReleves).subscribe(result => this.countReleves = result.count, error => { this.countReleves = 0; console.log(error); });
+    this.occurrenceService.countReleves(['phyto', 'none'], ['microcenosis'], this.countTopLevelsReleves).subscribe(result => this.countRelevesMicrocenosis = result.count, error => { this.countRelevesMicrocenosis = 0; console.log(error); });
+    this.occurrenceService.countReleves(['phyto', 'none'], ['synusy'], this.countTopLevelsReleves).subscribe(result => this.countRelevesSynusies = result.count, error => { this.countRelevesSynusies = 0; console.log(error); });
+    this.occurrenceService.countIdiotaxons(['phyto', 'none']).subscribe(result => this.countIdiotaxons = result.count, error => { this.countIdiotaxons = 0; console.log(error); });
   }
 
 }
