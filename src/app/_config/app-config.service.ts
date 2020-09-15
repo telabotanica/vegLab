@@ -9,6 +9,9 @@ export class AppConfigService {
   // Table view : `edit` view is for an editable table (handsontable), `view` only show table as an HTML `<table>`
   tableView = new BehaviorSubject<'edit' | 'view'>('edit');
 
+  // Action Panel
+  showActionPanelCloseButton = new BehaviorSubject<boolean>(true);
+
   // Is Info panel diasabled
   infoPanelDisabled = new BehaviorSubject<boolean>(false);
 

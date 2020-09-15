@@ -37,6 +37,8 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
   validationAreaActive = false;
   panelsSizeChanged = new EventEmitter<boolean>();
   actionPanelOpenCloseSubscription: Subscription;
+  actionPanelCloseButtonVisibleSubscription: Subscription;
+  displayClosePanelButton = true;
 
 
   constructor(private appConfig: AppConfigService,
@@ -71,6 +73,8 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
       this.panelsSizeOrPositionHaveBeenUpdated();
       this.tableAreaChanged();
     });
+
+    this.actionPanelCloseButtonVisibleSubscription = this.appConfig.showActionPanelCloseButton.subscribe(showButton => this.displayClosePanelButton = showButton);
   }
 
   ngOnDestroy() {

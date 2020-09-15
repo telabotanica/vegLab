@@ -6,7 +6,7 @@
       <as-split-area size="40" [order]="0" *ngIf="wsPhytoService.isActionPanelOpened()" fxLayout>
         <div id="action_panel" fxLayout="column" fxFlexFill>
           <div id="close-button-wrapper">
-              <button id="close-action-panel" mat-icon-button (click)="panelsSizeOrPositionHaveBeenUpdated(); router.navigate(['/phyto/app'])" matTooltip="Fermer"><mat-icon>close</mat-icon></button>
+              <button [style.top]="displayClosePanelButton ? '0' : '-1000px'" id="close-action-panel" mat-icon-button (click)="panelsSizeOrPositionHaveBeenUpdated(); router.navigate(['/phyto/app'])" matTooltip="Fermer"><mat-icon>close</mat-icon></button>
           </div>
           <div id="action-panel-router" fxFlexFill>
             <router-outlet></router-outlet>

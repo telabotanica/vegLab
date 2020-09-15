@@ -324,22 +324,23 @@ export class TableSearchComponent implements OnInit, OnDestroy {
   previewTableAction(table: EsTableModel): void {
     this.resetInfoAndDeleteValues();
     this.tableInfo = table;
+    this.appConfig.showActionPanelCloseButton.next(false);
     this.sidenav.open();
-  }
-
-  resetInfoAndDeleteValues(): void {
-    this.tableInfo = null;
-  }
-
-  closeSidenav() {
-    this.resetInfoAndDeleteValues();
   }
 
   closePreview(close: boolean): void {
     if (close && close === true) {
       this.sidenav.close();
       this.closeSidenav();
+      this.appConfig.showActionPanelCloseButton.next(true);
     }
+  }
+  resetInfoAndDeleteValues(): void {
+    this.tableInfo = null;
+  }
+
+  closeSidenav() {
+    this.resetInfoAndDeleteValues();
   }
 
   // ---------------------

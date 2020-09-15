@@ -1354,6 +1354,7 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
   previewOccurrenceAction(occurrence: EsOccurrenceModel): void {
     this.resetInfoAndDeleteValues();
     this.occurrenceInfo = occurrence;
+    this.appConfig.showActionPanelCloseButton.next(false);
     this.sidenav.open();
   }
 
@@ -1375,6 +1376,7 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
     if (close && close === true) {
       this.sidenav.close();
       this.closeSidenav();
+      this.appConfig.showActionPanelCloseButton.next(true);
     }
   }
 
