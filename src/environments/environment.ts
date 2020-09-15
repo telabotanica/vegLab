@@ -6,7 +6,9 @@ export const environment = {
   production: false,
   baseUrl: 'http://${HOST}',
   apiBaseUrl: 'http://${HOST}:${API_PORT}/api',
+  esAuthorizationPassword: '${ELASTIC_PASSWORD}',
   esBaseUrl: 'http://${HOST}:${ES_PORT}',
+  esRepoAuthorizationPassword: '${ES_REPO_PASSWORD}',
   esBaseflorTraitsApi: 'http://51.38.37.216:9200/baseflor',
   pdfBaseUrl: 'http://${HOST}:${API_PORT}/media/veglab/pdf/',
   app : {
