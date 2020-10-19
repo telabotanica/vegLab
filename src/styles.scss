@@ -64,6 +64,27 @@ body {
   td.coef {
     text-align: center;
   }
+  td.selected {
+    font-weight: bold;
+  }
+  td {
+    div.cell-name-layer {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      .name {
+        padding-left: 8px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .layer {
+        padding-right: 8px;
+        color: #848484;
+      }
+    }
+  }
   td.synthetic {
     text-align: center;
     background-color: rgba(0, 0, 0, 0.1);

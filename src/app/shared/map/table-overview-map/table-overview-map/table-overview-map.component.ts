@@ -24,6 +24,8 @@ export class TableOverviewMapComponent implements OnInit, OnDestroy {
   tableSubscriber: Subscription;
   table: Table;
 
+  selectedOccurrencesSubscriber: Subscription;
+
   uniqCentroids: Array<{occurrencesIds: Array<number>, point: G.Point}> = [];
 
   private map: L.Map;
@@ -34,6 +36,11 @@ export class TableOverviewMapComponent implements OnInit, OnDestroy {
   private googleHybridLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', { maxZoom: 20, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'], attribution: 'Google maps' });
   private occurrencesCentroidsLayer = L.geoJSON(null, { pointToLayer: (feature, latLng) => (L.circleMarker(latLng, {radius: 6, fillColor: '#ff7800', color: '#000', weight: 1, opacity: 1, fillOpacity: 0.7 })) });
 
+  private centroidColor = '#FF7800';
+  private centroidBorderColor = '#B05C11';
+  private centroidSelectedColor = '#FFFF00';
+  private centroidSelectedBorderColor = '#B9B900';
+
   constructor(private tableService: TableService) { }
 
   ngOnInit() {
@@ -43,6 +50,11 @@ export class TableOverviewMapComponent implements OnInit, OnDestroy {
         this.table = this.tableService.getCurrentTable();
         this.setCentroidsToMap();
       }
+    });
+
+    // Subscribe to occurrences selection
+    this.selectedOccurrencesSubscriber = this.tableService.selectedOccurrences.subscribe(occIds => {
+      this.highlightSelectedOccurrences(occIds);
     });
 
     // Map options & configuration
@@ -60,6 +72,7 @@ export class TableOverviewMapComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.tableSubscriber) { this.tableSubscriber.unsubscribe(); }
+    if (this.selectedOccurrencesSubscriber) { this.selectedOccurrencesSubscriber.unsubscribe(); }
   }
 
   onMapReady(map: L.Map) {
@@ -103,12 +116,37 @@ export class TableOverviewMapComponent implements OnInit, OnDestroy {
         }
       }
       if (this.uniqCentroids.length > 0) {
+        const minCentroidsValue = _.min(_.map(this.uniqCentroids, uc => uc.occurrencesIds.length));
+        const maxCentroidsValue = _.max(_.map(this.uniqCentroids, uc => uc.occurrencesIds.length));
+        const centroidsStep = maxCentroidsValue - minCentroidsValue ;
+
+        const radiusMin = 20;
+        const radiusMax = 60;
+        const radiusStep = radiusMax - radiusMin;
+
+        const step = radiusStep / centroidsStep;
+
         for (const uc of this.uniqCentroids) {
-          const tooltip = new L.Tooltip({permanent: true, direction: 'center', className: 'text'}).setContent(uc.occurrencesIds.length.toString());
-          const l = new L.CircleMarker(new L.LatLng(uc.point.coordinates[1], uc.point.coordinates[0]), {
-            // circle marker options
-            radius: (uc.occurrencesIds.length * 5), fillColor: '#ff7800', color: '#000', weight: 1, opacity: 1, fillOpacity: 1
-          }).bindTooltip(tooltip).addTo(this.occurrencesCentroidsLayer);
+          const tooltip = new L.Tooltip({permanent: true, direction: 'center', className: 'centroid-tooltip'}).setContent(uc.occurrencesIds.length.toString());
+          // const radius: number = radiusMin + (uc.occurrencesIds.length - 1 * step); // centroid radius size
+          const radius = 10;
+
+          const l = new L.CircleMarker(
+            new L.LatLng(uc.point.coordinates[1], uc.point.coordinates[0]),
+            {
+              // circle marker options
+              radius,
+              fillColor: this.centroidColor,
+              color: this.centroidBorderColor,
+              weight: 2,
+              opacity: 1,
+              fillOpacity: 1
+            }
+          );
+
+          l['occurrencesIds'] = uc.occurrencesIds; // Add an occurrencesIds property (force)
+
+          l.bindTooltip(tooltip).addEventListener('click', (event) => { this.selectedCentroidsChange(uc.occurrencesIds, event); }).addTo(this.occurrencesCentroidsLayer);
         }
 
         this.flyToDrawnItems();
@@ -131,4 +169,32 @@ export class TableOverviewMapComponent implements OnInit, OnDestroy {
     this.map.flyToBounds(bounds, { maxZoom: maxzoom, animate: false });
   }
 
+  /**
+   * A centroid is selected (clicked) by user
+   * @param occurrenceIds : the ids of the centroid's related occurrences
+   */
+  selectedCentroidsChange(occurrenceIds: Array<number>, event: L.LeafletEvent): void {
+    this.tableService.selectedOccurrences.next(occurrenceIds);
+  }
+
+  /**
+   * Highlight selected centroid's related occurrences
+   * Trigerred by this.selectedOccurrencesSubscriber
+   */
+  highlightSelectedOccurrences(selectedOccurrenceIds: Array<number>) {
+    this.occurrencesCentroidsLayer.eachLayer(layer => {
+      if (_.intersection(selectedOccurrenceIds, layer['occurrencesIds']).length > 0) {
+        // @TODO BUG INVESTIGATION
+        // layer.setStyle() will crash at compile time :
+        // error TS2339: Property 'setStyle' does not exist on type 'Layer'
+        layer['setStyle']({fillColor: this.centroidSelectedColor, color: this.centroidSelectedBorderColor});
+        // this.occurrencesCentroidsLayer.setStyle({fillColor: this.centroidSelectedColor, color: this.centroidSelectedBorderColor});
+      } else {
+        // @TODO BUG INVESTIGATION
+        // layer.setStyle() will crash at compile time :
+        // error TS2339: Property 'setStyle' does not exist on type 'Layer'
+        layer['setStyle']({fillColor: this.centroidColor, color: this.centroidBorderColor});
+      }
+    });
+  }
 }

@@ -47,6 +47,10 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   // VAR subscribers
   currentTableDataViewSubscription: Subscription;
   currentTableActionsSubscription: Subscription;
+  selectedOccurrencesSubscriber: Subscription;
+
+  // VAR selected occurrences
+  selectedOccurrencesIds: Array<number> = [];
 
   // VAR Table actions
   tableActions: Array<TableAction> = [];
@@ -69,9 +73,38 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     rowHeaders: true,
     manualRowMove: true,
     manualColumnMove: true,
+    fixedColumnsLeft: 1,
+    manualColumnFreeze: true,
     colWidths: (index) => {
         if (index === this.tablePhytoStartCol) { return this.firstColWidth; }
         if (index >= this.tablePhytoStartCol + 1) { return this.commonColWidth; }
+    },
+    renderer: (instance, td, row, col, prop, value, cellProperties) => {
+      if (cellProperties['_type'] === 'groupName') {
+        const divWrapper = document.createElement('div');
+        const spanName = document.createElement('span');
+        const spanLayer = document.createElement('span');
+        // divWrapper.className = divWrapper.className + ' ';
+
+        spanName.innerHTML = value;
+        spanLayer.innerHTML = cellProperties['_layer'] ? cellProperties['_layer'] : '';
+
+        spanName.className = 'name';
+        spanLayer.className = 'layer';
+        divWrapper.className = 'cell-name-layer';
+
+        divWrapper.appendChild(spanName);
+        divWrapper.appendChild(spanLayer);
+
+        Handsontable.dom.empty(td);
+        td.appendChild(divWrapper);
+
+      } else {
+        td.innerHTML = value;
+        td.className = cellProperties['_className'] ? cellProperties['_className'] : '';
+      }
+
+      return td;
     },
     cells: (row, col) => {
       const cp: any = {};
@@ -382,6 +415,9 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
             this.tableInstance.selectColumns(startColPosition, startColPosition);
           }
 
+          // Emit selected occurrences
+          this.tableService.selectedOccurrences.next(occurrenceIds);
+
           // Emit selection
           if (startRowPosition !== endRowPosition) {
             const iterations = endColPosition - startColPosition + 1;
@@ -411,6 +447,9 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
               occurrenceIds.push(this.tableInstance.getCellMeta(1, startColPosition + index)._occurrenceId);
             }
 
+            // Emit selected occurrences
+            this.tableService.selectedOccurrences.next(occurrenceIds);
+
             this.tableService.tableSelectionElement.next({
               element: 'column',
               occurrenceIds,
@@ -430,6 +469,9 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         const syeId = this.tableInstance.getCellMeta(1, startColPosition)._syeId;
         const rowId = null;
         const groupId = null;
+
+        // Emit selected occurrences
+        this.tableService.selectedOccurrences.next([occurrenceId]);
 
         // Emit selection
         if (startRowPosition !== endRowPosition) {
@@ -774,11 +816,23 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         this.cdr.detectChanges();
       }
     });
+
+    // Subscribe to occurrences selection
+    this.selectedOccurrencesSubscriber = this.tableService.selectedOccurrences.subscribe(occIds => {
+      // Set table style and redraw (render) the table instance
+      // @TODO Improve : too much ressources (render the table X times) for this simple need
+      // this.selectedOccurrencesIds = occIds;
+      // this.setTableMetadataAndStyle();
+      // this.tableInstance.render();
+
+      // this.tableInstance.selectColumns(1, 2);
+    });
   }
 
   ngOnDestroy() {
     if (this.currentTableDataViewSubscription) { this.currentTableDataViewSubscription.unsubscribe(); }
     if (this.currentTableActionsSubscription) { this.currentTableActionsSubscription.unsubscribe(); }
+    if (this.selectedOccurrencesSubscriber) { this.selectedOccurrencesSubscriber.unsubscribe(); }
 
     this.tableService.resetCurrentTable();
   }
@@ -911,10 +965,11 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       if (setSyeId) { this.tableInstance.setCellMeta(rowPosition, this.tablePhytoStartCol, '_syeId', null); }
       if (setRowId) { this.tableInstance.setCellMeta(rowPosition, this.tablePhytoStartCol, '_rowId', row.rowId); }
       if (setGroupId) { this.tableInstance.setCellMeta(rowPosition, this.tablePhytoStartCol, '_groupId', row.groupId); }
+      this.tableInstance.setCellMeta(rowPosition, this.tablePhytoStartCol, '_layer', row.layer);
 
       // Set 1st col classNames
       const className = type === 'groupTitle' ? 'group title' : 'group name';
-      if (setClassName) { this.tableInstance.setCellMeta(rowPosition, this.tablePhytoStartCol, 'className', className); }
+      if (setClassName) { this.tableInstance.setCellMeta(rowPosition, this.tablePhytoStartCol, '_className', className); }
 
       // Set other columns metadata
       let colPosition = this.tablePhytoStartCol + 1;
@@ -925,21 +980,28 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
           if (setSyeId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_syeId', cell.syeId); }
           if (setRowId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_rowId', row.rowId); }
           if (setGroupId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_groupId', row.groupId); }
-          if (setClassName) { this.tableInstance.setCellMeta(rowPosition, colPosition, 'className', `coef sye-${cell.syeId}`); }
+          if (setClassName) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_className', `coef sye-${cell.syeId}`); }
+          /*if (setClassName) {
+            if (_.indexOf(this.selectedOccurrencesIds, cell.occurrenceId) !== -1) {
+              this.tableInstance.setCellMeta(rowPosition, colPosition, 'className', `selected coef sye-${cell.syeId}`);
+            } else {
+              this.tableInstance.setCellMeta(rowPosition, colPosition, 'className', `coef sye-${cell.syeId}`);
+            }
+          }*/
         } else if (cell.type === 'rowValue') {
           if (setType) {  this.tableInstance.setCellMeta(rowPosition, colPosition, '_type', `titleRowValue sye-${cell.syeId}`); }
           if (setOccId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_occurrenceId', cell.occurrenceId); }
           if (setSyeId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_syeId', cell.syeId); }
           if (setRowId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_rowId', row.rowId); }
           if (setGroupId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_groupId', row.groupId); }
-          if (setClassName) { this.tableInstance.setCellMeta(rowPosition, colPosition, 'className', `titleRowValue sye-${cell.syeId}`); }
+          if (setClassName) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_className', `titleRowValue sye-${cell.syeId}`); }
         } else if (cell.type === 'cellSynColValue') {
           if (setType) {  this.tableInstance.setCellMeta(rowPosition, colPosition, '_type', 'syntheticValue'); }
           if (setOccId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_occurrenceId', cell.occurrenceId); }
           if (setSyeId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_syeId', cell.syeId); }
           if (setRowId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_rowId', row.rowId); }
           if (setGroupId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_groupId', row.groupId); }
-          if (setClassName) { this.tableInstance.setCellMeta(rowPosition, colPosition, 'className', `synthetic sye-${cell.syeId}`); }
+          if (setClassName) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_className', `synthetic sye-${cell.syeId}`); }
         }
         colPosition++;
       }

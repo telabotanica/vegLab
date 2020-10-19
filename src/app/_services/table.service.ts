@@ -51,6 +51,7 @@ export class TableService {
   public isLoadingData: EventEmitter<boolean> = new EventEmitter<boolean>();
   public tableAreaDimensions: EventEmitter<{width: number, height: number}> = new EventEmitter();
   public tableSelectionElement: BehaviorSubject<TableSelectedElement> = new BehaviorSubject<TableSelectedElement>(null);
+  public selectedOccurrences: EventEmitter<Array<number>> = new EventEmitter<Array<number>>();    // When user selects (click) occurrences (trough map, table, etc.)
 
   public currentActions: BehaviorSubject<Array<TableAction>> = new BehaviorSubject<Array<TableAction>>([]);
   public isTableDirty: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false); // Dirty = table has actions that are not yet persisted in DB
