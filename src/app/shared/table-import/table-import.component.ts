@@ -195,6 +195,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
   displayedAuthorColumns = ['customColumn1', 'authorUserInput', 'customColumn2'];
   displayedDateColumns = ['customColumn1', 'dateUserInput', 'customColumn2'];
   expandedElement: Observer | null;
+  authorsSeparator: ';';
 
   // Metadata vars
   metadataList: Array<{ id: string, metadata: Array<MetadataItem> }> = [];
@@ -1019,7 +1020,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
     let uniqAuthors: Array<string>;
     if (this.rawHeaders.length > 0) {
       for (let k = 0; k < this.rawHeaders[this.AUTHOR_ROW_POS.groupPosition].length - this.ignoreFirstXCols; k++) {
-        authors.push(...this.rawHeaders[this.AUTHOR_ROW_POS.groupPosition][this.ignoreFirstXCols + k].split(', '));
+        authors.push(...this.rawHeaders[this.AUTHOR_ROW_POS.groupPosition][this.ignoreFirstXCols + k].split(this.authorsSeparator));
       }
       uniqAuthors = _.uniq(authors);
       for (const ua of uniqAuthors) {
@@ -2437,7 +2438,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
             validatedBy:       userId,
             validatedAt:       validationDate,
             repository:        sye.validation.consolidedValidation.repository,
-            repositoryIdNomen: Number(this.validationList.table.validation.consolidedValidation.idNomen),
+            repositoryIdNomen: Number(sye.validation.consolidedValidation.idNomen),
             repositoryIdTaxo:  sye.validation.consolidedValidation.idTaxo.toString(),
             inputName:         sye.validation.consolidedValidation.name,
             validatedName:     sye.validation.consolidedValidation.name,
@@ -2464,11 +2465,11 @@ export class TableImportComponent implements OnInit, OnDestroy {
           if (sye.releves) {
             for (const releve of sye.releves) {
               const relevesToBind = this.getRelevesInTableById(releve.id, newTable, false);
-              const releveValidation: OccurrenceValidationModel = releve.validation.consolidedValidation ? {
+              const releveValidation: OccurrenceValidationModel = releve.validation && releve.validation.consolidedValidation ? {
                 validatedBy:       userId,
                 validatedAt:       validationDate,
                 repository:        releve.validation.consolidedValidation.repository,
-                repositoryIdNomen: Number(this.validationList.table.validation.consolidedValidation.idNomen),
+                repositoryIdNomen: Number(releve.validation.consolidedValidation.idNomen),
                 repositoryIdTaxo:  releve.validation.consolidedValidation.idTaxo.toString(),
                 inputName:         releve.validation.consolidedValidation.name,
                 validatedName:     releve.validation.consolidedValidation.name,
