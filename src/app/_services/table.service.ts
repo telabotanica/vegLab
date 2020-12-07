@@ -104,11 +104,11 @@ export class TableService {
       console.log('Current user is not set. Abort POST table.');
       return of (null);
     } else {
-      if (table.createdBy == null)   { table.createdBy = Number(cu.id); table.createdAt = new Date(Date.now()); }
+      if (table.createdBy == null)   { table.createdBy = cu.id; table.createdAt = new Date(Date.now()); }
       if (table.createdAt == null)   { table.createdAt = new Date(Date.now()); }
-      if (table.userId == null)      { table.userId = Number(cu.id); }
-      if (table.userEmail == null)   { table.userEmail = cu.sub; }
-      if (table.userPseudo == null)  { table.userPseudo = cu.pseudo; }
+      if (table.userId == null)      { table.userId = cu.id; }
+      if (table.userEmail == null)   { table.userEmail = cu.email; }
+      if (table.userPseudo == null)  { table.userPseudo = this.userService.getUserFullName(); }
     }
 
     if (table.isDiagnosis == null) { table.isDiagnosis = false; }
@@ -252,7 +252,7 @@ export class TableService {
         "bool": {
           "must": [{
             "term": {
-              "userId": "${Number(currentUser.id)}"
+              "userId": "${currentUser.id}"
             }
           }]
         }
@@ -504,15 +504,15 @@ export class TableService {
     const table: Table = {
       id: null,
 
-      userId: currentUser ? Number(currentUser.id) : null,
-      userEmail: currentUser ? currentUser.sub : null,
-      userPseudo: currentUser ? currentUser.pseudo : null,
+      userId: currentUser ? currentUser.id : null,
+      userEmail: currentUser ? currentUser.email : null,
+      userPseudo: currentUser ? this.userService.getUserFullName() : null,
       ownedByCurrentUser: currentUser !== null,     // a new table is owned by its creator
 
       isDiagnosis: false,
       validations: [],
 
-      createdBy: currentUser ? Number(currentUser.id) : null,
+      createdBy: currentUser ? currentUser.id : null,
       createdAt: new Date(Date.now()),
       updatedBy: null,
       updatedAt: null,
@@ -555,7 +555,7 @@ export class TableService {
     if (currentUser) {
       if (table !== null &&
           table.createdBy !== null &&
-          Number(table.createdBy) === Number(currentUser.id)) {
+          table.createdBy === currentUser.id) {
         return true;
       } else {
         return false;
@@ -574,7 +574,7 @@ export class TableService {
     if (currentUser) {
       if (esTable !== null &&
           esTable.createdBy !== null &&
-          Number(esTable.createdBy) === Number(currentUser.id)) {
+          esTable.createdBy === currentUser.id) {
         return true;
       } else {
         return false;
@@ -675,7 +675,7 @@ export class TableService {
 
     // Set createdAt date and user
     tableToDuplicate.createdAt = new Date(Date.now());
-    tableToDuplicate.createdBy = Number(cu.id);
+    tableToDuplicate.createdBy = cu.id;
 
     // Manage pdf
     if (tableToDuplicate.pdf == null) {
@@ -2275,9 +2275,9 @@ export class TableService {
       '@id': sye && sye['@id'] ? sye['@id'] : null,
       id: (sye && sye.id && sye.syntheticColumn) ? sye.syntheticColumn.id : null,    // If the sye already has a synthetic column, set id & sye properties
       // sye: (sye && sye.id) ? sye : null,                                          // so the table PATCH operations will also patch sye & synthetic column
-      userId: Number(currentUser.id),
-      userEmail: currentUser.sub,
-      userPseudo: currentUser.pseudo,
+      userId: currentUser.id,
+      userEmail: currentUser.email,
+      userPseudo: currentUser ? this.userService.getUserFullName() : null,
       sye: null,
       validations: [],
       items: [],
@@ -2290,9 +2290,9 @@ export class TableService {
     for (const name of uniquNames) {
       const syntheticItem: SyntheticItem = {
         id: null,
-        userId: Number(currentUser.id),
-        userEmail: currentUser.sub,
-        userPseudo: currentUser.pseudo,
+        userId: currentUser.id,
+        userEmail: currentUser.email,
+        userPseudo: currentUser ? this.userService.getUserFullName() : null,
         layer: null,
         repository: null,
         repositoryIdNomen: null,

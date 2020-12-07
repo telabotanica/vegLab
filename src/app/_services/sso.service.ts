@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponseBase } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponseBase } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, of, BehaviorSubject, interval, Subscription } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
-import { IdentiteResponse } from '../_models/identite-response';
 import { UserModel } from '../_models/user.model';
 
 import * as jwt_decode from 'jwt-decode';
@@ -17,71 +16,59 @@ import * as jwt_decode from 'jwt-decode';
   providedIn: 'root'
 }*/)
 export class SsoService {
+  private readonly ssoClientId: string = environment.sso.clientId;
   private readonly loginEndpoint: string = environment.sso.loginEndpoint;
   private readonly logoutEndpoint: string = environment.sso.logoutEndpoint;
-  private readonly identiteEndpoint: string = environment.sso.identiteEndpoint;
   private readonly refreshEndpoint: string = environment.sso.refreshEndpoint;
-  private readonly refreshInterval: number = environment.sso.refreshInterval;
+  private readonly refreshInterval: number = Number(environment.sso.refreshInterval);
   private readonly localStorageTokenKey: string = 'token';
+  private readonly localStorageRefreshTokenKey: string = 'refreshtoken';
 
   refreshTokenSet = false;
   refreshTokenSubscription: Subscription;
 
   currentToken = new BehaviorSubject<string>(null);
+  currentRefreshToken = new BehaviorSubject<string>(null);
 
   constructor(private http: HttpClient, private router: Router) { }
 
   /**
-   * Refresh token both server and client sides
-   *
-   * Default endpoint : https://beta.tela-botanica.org/service:annuaire:auth/identite
-   * Parameters :
-   *  - token: "jeton JWT (facultatif)"
-   * Description :
-   *  confirme l'authentification et la session;
-   *  rafraîchit le jeton fourni (dans le cookie tb_auth_beta_test, le header Authorization ou en paramètre)
+   * Refresh a token
    */
-  public identity(): void {
+  public refreshToken(refreshToken: string) {
     const headers = new HttpHeaders();
-    // headers.set('Content-Type', 'text/plain').set('Accept', 'text/plain');
-    this.http.get<IdentiteResponse>(this.identiteEndpoint, { headers, withCredentials: false }).subscribe(
-      result => {
-        this.setToken(result.token);
-        // The token expires after 15 minutes. We need to refresh it periodically to always keep it fresh
-        if (!this.refreshTokenSet) {
-          this.refreshTokenSubscription = interval(this.refreshInterval).subscribe((resp) => { this.refreshTokenSet = true; this.refreshToken(); });
-        }
-      }, (error: HttpResponseBase) => {
-        // @Todo manage error | notify user ?
-        if (error.status && error.status === 400) {
-          // Token may be invalid
-        }
-        this.setToken(null);
-      }
+
+    const body = new HttpParams()
+      .set('client_id', encodeURIComponent(this.ssoClientId))
+      .set('grant_type', encodeURIComponent('refresh_token'))
+      .set('refresh_token', encodeURIComponent(refreshToken));
+
+    return this.http.post(this.refreshEndpoint, body, { headers }).pipe(
+      tap(response => console.log(response))
     );
   }
 
   /**
-   * Same as identity() whithout subscription (returns an Observable)
+   * Periodically refresh a token
    */
-  public getIdentity(): Observable<IdentiteResponse> {
-    const headers = new HttpHeaders();
-    headers.set('Content-Type', 'text/plain').set('Accept', 'text/plain');
-    return this.http.get<IdentiteResponse>(this.identiteEndpoint, { headers, withCredentials: false}).pipe(
-      tap(identite => {
-        // The token expires after 15 minutes. We need to refresh it periodically to always keep it fresh
-        if (!this.refreshTokenSet) {
-          this.refreshTokenSubscription = interval(this.refreshInterval).subscribe((resp) => { this.refreshTokenSet = true; this.refreshToken(); });
-        }
-      })
-    );
-  }
-
-  /**
-   * Shortcut to refresh token
-   */
-  public refreshToken(): void {
-    this.identity();
+  public alwaysRefreshToken(): void {
+    const refreshToken = this.getRefreshToken();
+    if (refreshToken !== null && !this.refreshTokenSet) {
+      this.refreshTokenSubscription = interval(this.refreshInterval).subscribe(
+        intervalResponse => {
+          this.refreshTokenSet = true;
+          this.refreshToken(refreshToken).subscribe(
+            tokenResponse => {
+              this.currentToken.next(tokenResponse['access_token']);
+              this.currentRefreshToken.next(tokenResponse['refresh_token']);
+            }, error => {
+              console.log('error ', error);
+            }
+          );
+        }, error => {
+          console.log('error ', error);
+        });
+    }
   }
 
   /**
@@ -108,39 +95,64 @@ export class SsoService {
     this.currentToken.next(token);
   }
 
+  public getRefreshToken(): string {
+    return localStorage.getItem(this.localStorageRefreshTokenKey);
+  }
+
+  public setRefreshToken(refreshToken: string): void {
+    localStorage.setItem(this.localStorageRefreshTokenKey, refreshToken);
+    this.currentRefreshToken.next(refreshToken);
+  }
+
   public removeToken(): void {
     localStorage.removeItem(this.localStorageTokenKey);
+    localStorage.removeItem(this.localStorageRefreshTokenKey);
     this.currentToken.next(null);
+    this.currentRefreshToken.next(null);
+  }
+
+  public removeRefreshToken(): void {
+    localStorage.removeItem(this.localStorageRefreshTokenKey);
+    this.currentRefreshToken.next(null);
   }
 
   public isTokenSet(): boolean {
     return !(this.getToken() === null);
   }
 
+  public isRefreshTokenSet(): boolean {
+    return !(this.getRefreshToken() === null);
+  }
+
   public loginWithEmailAndPassword(email: string, password: string): Observable<any> {
-    // Set Content-Type ans Accept headers to 'text/plain' to avoid sending a pre-flight OPTIONS request (may not be supported by the server)
-    // see https://medium.com/@praveen.beatle/avoiding-pre-flight-options-calls-on-cors-requests-baba9692c21a
-    // The Auth interceptor should prevent adding headers for this request
-    // Note : If the server is well configured with OPTIONS request handling and response headers contains :
-    //          - Access-Control-Allow-Credentials "true"
-    //          - Access-Control-Allow-Headers: "[...], authorization[...]"
-    // Then, preflight request should pass
     const headers = new HttpHeaders();
-    headers.set('Content-Type', 'text/plain').set('Accept', 'text/plain');
+    // headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
     const _email = email ? encodeURIComponent(email) : null;
     const _password = password ? encodeURIComponent(password) : null;
 
-    // The token expires after 15 minutes. We need to refresh it periodically to always keep it fresh
-    if (!this.refreshTokenSet) {
-      this.refreshTokenSubscription = interval(this.refreshInterval).subscribe((resp) => { this.refreshTokenSet = true; this.refreshToken(); });
-    }
+    const body = new HttpParams()
+      .set('username', email)
+      .set('password', password)
+      .set('client_id', this.ssoClientId)
+      .set('grant_type', 'password');
 
-    return this.http.get(`${this.loginEndpoint}?login=${_email}&password=${_password}`, {headers}); // withCredentials: true, responseType: 'text' // observe: 'events' | response | events
+    return this.http.post(this.loginEndpoint, body, {headers}); // withCredentials: true, responseType: 'text' // observe: 'events' | response | events
   }
 
+  /**
+   * Log out from SSO and client App
+   */
   public logout(): void {
-    this.http.get<any>(this.logoutEndpoint).subscribe(
+    const refreshToken = this.getRefreshToken();
+
+    const headers = new HttpHeaders();
+    headers.set('Content-Type', 'application/x-www-form-urlencoded');
+    const body = new HttpParams()
+      .set('client_id', this.ssoClientId)
+      .set('refresh_token', encodeURIComponent(refreshToken));
+
+    this.http.post(this.logoutEndpoint, body, {headers}).subscribe(
       logout => {
         this.removeToken();
         if (this.refreshTokenSubscription) { this.refreshTokenSubscription.unsubscribe(); this.refreshTokenSet = false; }

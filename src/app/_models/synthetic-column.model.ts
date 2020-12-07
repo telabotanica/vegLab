@@ -7,7 +7,7 @@ export interface SyntheticColumn {
   '@id'?:          string;
   id:              number;
 
-  userId:          number;  // not mandatory in backend but we force mandatory in front
+  userId:          string;  // not mandatory in backend but we force mandatory in front
   userEmail:       string;  // mandatory in backend
   userPseudo:      string;  // not mandatory in backend but we force mandatory in front
 

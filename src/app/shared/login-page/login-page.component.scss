@@ -9,7 +9,11 @@
   background-size: cover;
 
   .login-card {
-    max-width: 500px
+    max-width: 500px;
+    .mat-card-header {
+      justify-content: center;
+      margin-bottom: 24px;
+    }
   }
   
   .tela-botanica-header-image {
@@ -34,11 +38,18 @@
   .action-buttons {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
+    padding-top: 8px;
+    padding-bottom: 8px;
     .button {
       display: flex;
       flex-direction: row;
       justify-content: center;
+      align-items: center;
+      &.login {
+        width: 120px;
+        height: 36px;
+      }
     }
   }
 }

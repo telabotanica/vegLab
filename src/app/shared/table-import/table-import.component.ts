@@ -824,7 +824,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
     taxon.validation.repositoryIdNomen = Number(data.idNomen);
     taxon.validation.repositoryIdTaxo = data.idTaxo ? data.idTaxo.toString() : data.validOccurence ? data.validOccurence.idNomen.toString() : null;
     taxon.validation.updatedAt = new Date();
-    taxon.validation.updatedBy = 2;
+    taxon.validation.updatedBy = this.currentUser.id;
     taxon.validation.validName = data.name + (data.author ? ' ' + data.author : '');
     taxon.validation.validatedName = taxon.validation.validName;
     taxon.id = (data.idNomen ? data.idNomen.toString() : 'nc') + '~' + taxon.layer + taxon.validation.validatedName;
@@ -873,7 +873,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
             if (result === undefined) { // @Todo : duplicate code (see error catching below)
               const randomInteger = _.random(-1, -1000000, false);
               currentContent.validation = {
-                validatedBy: 1,
+                validatedBy: this.currentUser.id,
                 validatedAt: now,
                 repository: 'otherunknown',
                 repositoryIdNomen: randomInteger,
@@ -891,7 +891,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
               };
             } else {
               currentContent.validation = {
-                validatedBy: 1,
+                validatedBy: this.currentUser.id,
                 validatedAt: now,
                 repository: useRepo,
                 repositoryIdNomen: Number(t[this.NOMEN_COL_POS.position]),
@@ -921,7 +921,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
           error => {
             const randomInteger = _.random(-1, -1000000, false);
             currentContent.validation = {
-              validatedBy: 1,
+              validatedBy: this.currentUser.id,
               validatedAt: now,
               repository: 'otherunknown',
               repositoryIdNomen: randomInteger,
@@ -951,7 +951,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
         // row with other/unknown data
         const randomInteger = _.random(-1, -1000000, false);
         currentContent.validation = {
-          validatedBy: 1,
+          validatedBy: this.currentUser.id,
           validatedAt: now,
           repository: 'otherunknown',
           repositoryIdNomen: randomInteger,
@@ -2215,7 +2215,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
     // note: user values are set on the backend regardless of input values (back looks for user trough SSO process)
     // however, I think it's better to have the user values here, at less for debugging
     const user = this.currentUser;
-    let userId: number;          // database field nullable
+    let userId: string;          // database field nullable
     let userEmail: string;       // database field *not nullable*
     let userPseudo: string;      // database field nullable
     // let userInstitution: string; // database field nullable
@@ -2226,9 +2226,9 @@ export class TableImportComponent implements OnInit, OnDestroy {
       this.notificationService.warn('Il semble que vous ne soyez plus connecté. Nous ne pouvons pas poursuivre l\'import du tableau.');
       return;
     } else {
-      userId = Number(user.id);
-      userEmail = user.sub;
-      userPseudo = user.intitule;
+      userId = user.id;
+      userEmail = user.email;
+      userPseudo = user ? this.userService.getUserFullName() : null;
 
       if (null == userId || null == userEmail) {
         this.notificationService.warn('Nous ne parvenons pas à vous identifier (votre identifiant unique ou votre email est inconnu)');
@@ -2602,7 +2602,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
     console.log(this.tableService.toString(newTable));
     console.log(newTable);
-    
+
     this.tablePreviewIsSet = true;
 
     this.tableService.setCurrentTable(newTable, forceReloadDataView);

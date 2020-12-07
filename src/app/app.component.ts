@@ -37,13 +37,25 @@ export class AppComponent implements OnInit {
     this.tableService.setCurrentTable(this.tableService.createTable()); // Create a fresh table and set it as current table
     moment.locale('fr');
 
-    // Do we have a token ?
-    if (this.ssoService.isTokenSet()) {
-      const token = this.ssoService.getToken();
-      // Token is not empty ?
-      if (token !== null) {
-        // Refresh token at startup ; This will also refresh the token periodically
-        this.ssoService.refreshToken();
+    // Try to login the user at startup
+    // Do we have a refresh token in local storage ?
+    if (this.ssoService.isRefreshTokenSet()) {
+      const refreshToken = this.ssoService.getRefreshToken();
+      if (refreshToken !== null) {
+        this.ssoService.refreshToken(refreshToken).subscribe(
+          response => {
+            if (response['access_token'] && response['refresh_token']) {
+              // Ok, we've got a token,
+              // Set token and refresh token to the SSO service
+              this.ssoService.currentToken.next(response['access_token']);
+              this.ssoService.currentRefreshToken.next(response['refresh_token']);
+              // And refresh the token periodically
+              this.ssoService.alwaysRefreshToken();
+            }
+          }, error => {
+            console.log('error ', error);
+          }
+        );
       }
     }
   }

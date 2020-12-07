@@ -17,12 +17,16 @@ export const environment = {
     absoluteBaseUrl: '',
   },
   sso: {
-    baseUrl:          'http://${HOST}:${SSO_PORT}/service:annuaire:auth',               // https://beta.tela-botanica.org/service:annuaire:auth
-    loginEndpoint:    'http://${HOST}:${SSO_PORT}/service:annuaire:auth/connexion',
-    logoutEndpoint:   'http://${HOST}:${SSO_PORT}/service:annuaire:auth/deconnexion',
-    identiteEndpoint: 'http://${HOST}:${SSO_PORT}/service:annuaire:auth/identite',
-    refreshEndpoint:  'http://${HOST}:${SSO_PORT}/service:annuaire:auth/rafraichir',
-    refreshInterval:  600000
+    clientId:         '${SSO_CLIENT_ID}',
+    baseUrl:          'http://${SSO_HOST}:${SSO_PORT}${SSO_URI}',
+    loginEndpoint:    'http://${SSO_HOST}:${SSO_PORT}${SSO_URI}${SSO_LOGIN_ENDPOINT}',
+    logoutEndpoint:   'http://${SSO_HOST}:${SSO_PORT}${SSO_URI}${SSO_LOGOUT_ENDPOINT}',
+    identiteEndpoint: 'http://${SSO_HOST}:${SSO_PORT}${SSO_URI}${SSO_REFRESH_ENDPOINT}',
+    refreshEndpoint:  'http://${SSO_HOST}:${SSO_PORT}${SSO_URI}${SSO_REFRESH_ENDPOINT}',
+    refreshInterval:  '${SSO_REFRESH_INTERVAL}',
+    roles: {
+      admin: 'admin'
+    }
   },
   mapQuestApiKey: 'ApIFfQWsb8jW6bkYDD2i0Sq5BD9moJ3l',
   tbRepositoriesConfigVegetation: [

@@ -86,12 +86,17 @@ export class MetadataService {
 
   retrieveMetadataList() {
     const storedData = localStorage.getItem('metadataList');
-    const list = JSON.parse(storedData);
-    if (list instanceof Array && list.length > 0) {
-      this.metadataList.next(list);
-    } else {
-      this.metadataList.next([]);
+    try {
+      const list = JSON.parse(storedData);
+      if (list instanceof Array && list.length > 0) {
+        this.metadataList.next(list);
+      } else {
+        this.metadataList.next([]);
+      }
+    } catch (error) {
+      console.log('error', error);
     }
+    this.metadataList.next([]);
   }
 
   createInput(metadataType: ExtendedFieldModel): FormControl {

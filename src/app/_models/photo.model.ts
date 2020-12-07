@@ -2,7 +2,7 @@ import { OccurrenceModel } from './occurrence.model';
 
 export interface PhotoModel {
   id: number;
-  userId: number;
+  userId: string;
   userEmail: string;
   userPseudo?: string;
   originalName: string;

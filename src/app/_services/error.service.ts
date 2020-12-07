@@ -29,7 +29,7 @@ export class ErrorService {
     const name = error.name || null;
     const appId = 'VL';
     const userId = currentUser ? currentUser.id : 'null';
-    const userName = currentUser ? currentUser.intitule : null;
+    const userName = currentUser ? this.userService.getUserName() : null;
     const time = new Date().getTime();
     const id = currentUser ? `${appId}-${currentUser.id}-${time}` : `${appId}-notLogged-${time}`;
     const location = this.injector.get(LocationStrategy);

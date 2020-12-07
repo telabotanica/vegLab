@@ -8,7 +8,7 @@ import { Biblio } from './biblio.model';
 export interface Table {
   id:              number;
 
-  userId:          number;  // not mandatory in backend but we force mandatory in front
+  userId:          string;  // not mandatory in backend but we force mandatory in front
   userEmail:       string;  // mandatory in backend
   userPseudo:      string;  // not mandatory in backend but we force mandatory in front
   ownedByCurrentUser: boolean;  // not included in the database ; this field is populated at GET Table (table service)
@@ -16,9 +16,9 @@ export interface Table {
   isDiagnosis?:    boolean;
   validations?:    Array<OccurrenceValidationModel>;
 
-  createdBy:       number;
+  createdBy:       string;
   createdAt:       Date;
-  updatedBy?:      number;
+  updatedBy?:      string;
   updatedAt?:      Date;
 
   title?:          string;

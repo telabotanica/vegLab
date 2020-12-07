@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 import { UserModel } from '../_models/user.model';
@@ -40,7 +40,6 @@ export class UserService {
             // User may change ?
             if (this.lastToken === newToken) {
               // No change
-              // console.log('Token has been updated');
             } else {
               this.lastToken = newToken;
               const userData = this.decode(newToken);
@@ -73,12 +72,27 @@ export class UserService {
   getUserName(): string {
     const cUser = this.currentUser.getValue();
     if (cUser) {
-      if (cUser.intitule) {
-        return cUser.intitule;
-      } else if (cUser.pseudoUtilise && cUser.pseudo) {
-        return cUser.pseudo;
-      } else if (cUser.nom && cUser.prenom) {
-        return cUser.prenom + ' ' + cUser.nom;
+      if (cUser.preferred_username) {
+        return cUser.preferred_username;
+      } else if (cUser.name) {
+        return cUser.name;
+      } else if (cUser.given_name && cUser.family_name) {
+        return cUser.given_name + ' ' + cUser.family_name;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  getUserFullName(): string {
+    const cUser = this.currentUser.getValue();
+    if (cUser) {
+      if (cUser.given_name && cUser.family_name) {
+        return cUser.given_name + ' ' + cUser.family_name;
+      } else if (cUser.preferred_username) {
+        return cUser.preferred_username;
+      } else if (cUser.name) {
+        return cUser.name;
       }
     } else {
       return null;
@@ -87,15 +101,21 @@ export class UserService {
 
   /**
    * Is current user an admin ?
-   * @TODO important : set up a role based authentification
-   * E-mail check is for testing only
    */
+  hasCurrentUserRole(role: string): boolean {
+    const cuRoles = this.getCurrentUserRoles();
+    return cuRoles && cuRoles.length > 0 && cuRoles.includes(role) ? true : false;
+  }
+
   isAdmin(): boolean {
-    const currentUser = this.currentUser.getValue();
-    if (currentUser !== null && currentUser.sub === 'stephane@phytoscopa.fr') {
-      return true;
-    } else {
-      return false;
+    return this.hasCurrentUserRole(environment.sso.roles.admin);
+  }
+
+  getCurrentUserRoles(): Array<string> {
+    const cu = this.currentUser.getValue();
+    if (cu && cu['resource_access'] && cu['resource_access'][environment.sso.clientId]) {
+      return cu['resource_access'][environment.sso.clientId].roles as Array<string>;
     }
+    return [];
   }
 }

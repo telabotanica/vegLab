@@ -139,7 +139,7 @@ export class OccurrenceService {
           "must": [
             {
               "term": {
-                "userId": "${Number(currentUser.id)}"
+                "userId": "${currentUser.id}"
               }
             }
           ], "must_not": [

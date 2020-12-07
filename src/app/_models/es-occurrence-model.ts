@@ -12,7 +12,7 @@ import { EsExtendedFieldModel } from './es-extended-field-model';
 
 export interface EsOccurrenceModel {
   id?: number;
-  userId: number;
+  userId: string;
 
   // originalReference?: string;  // needed for table import
 

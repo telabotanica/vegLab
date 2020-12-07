@@ -6,8 +6,8 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./tb-user-label.component.scss']
 })
 export class TbUserLabelComponent implements OnInit {
-  @Input() userId: number;
-  
+  @Input() userId: string;
+
   constructor() { }
 
   ngOnInit() {

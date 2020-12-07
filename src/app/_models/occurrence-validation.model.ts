@@ -2,9 +2,9 @@ import { UserModel } from './user.model';
 
 export interface OccurrenceValidationModel {
   id?:               number;
-  validatedBy:       number;    // user id
+  validatedBy:       string;    // user id
   validatedAt:       Date;
-  updatedBy?:        number;     // user id
+  updatedBy?:        string;     // user id
   updatedAt?:        Date;
   repository:        string;
   repositoryIdNomen: number;

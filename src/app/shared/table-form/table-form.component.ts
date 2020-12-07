@@ -343,7 +343,7 @@ export class TableFormComponent implements OnInit, OnDestroy {
       validName: name,
       validatedName: name,
       validatedAt: new Date(),
-      validatedBy: Number(this.currentUser.id)
+      validatedBy: this.currentUser.id
     };
     return ovm;
   }

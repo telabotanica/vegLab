@@ -1,22 +1,22 @@
 <div class="login-wrapper">
   <mat-card class="login-card">
     <mat-card-header>
-      <div mat-card-avatar class="tela-botanica-header-image"></div>
+      <!--<div mat-card-avatar><mat-icon aria-hidden="false" aria-label="Icone connexion">account_circle</mat-icon></div>-->
       <mat-card-title>Se connecter</mat-card-title>
-      <mat-card-subtitle>avec Tela Botanica</mat-card-subtitle>
+      <!--<mat-card-subtitle>avec Tela Botanica</mat-card-subtitle>-->
     </mat-card-header>
     <mat-card-content class='content'>
       <form>
         <p>
           <mat-form-field>
-            <input matInput placeholder="Adresse courriel" name="username" type="text" [formControl]="email" required>
+            <input matInput placeholder="E-mail ou nom d'utilisateur" name="username" type="text" [formControl]="email" required>
             <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
           </mat-form-field>
         </p>
       
         <p>
           <mat-form-field>
-            <input matInput placeholder="Mot de passe" name="password" [type]="hidePassword ? 'password' : 'text'" [formControl]="password"  required>
+            <input matInput placeholder="Mot de passe" name="password" [type]="hidePassword ? 'password' : 'text'" [formControl]="password" (keypress)="onPasswordKeyup($event)" required>
             <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Masquer le mot de passe'" [attr.aria-pressed]="'masquer'">
             <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
             </button>
@@ -27,9 +27,9 @@
       </form>
     </mat-card-content>
     <mat-card-actions class="action-buttons">
-      <a class="button" mat-button href="https://www.tela-botanica.org/inscription/" target="_blank">Créer un compte</a>
-      <button mat-raised-button class="button" color="primary" *ngIf="!isLogging" type="submit" [disabled]="!isFormComplete()" (click)="login()">Connexion</button>
-      <button mat-raised-button class="button" color="primary" *ngIf="isLogging" disabled><mat-spinner diameter="16"></mat-spinner></button>
+      <!--<a class="button" mat-button href="https://www.tela-botanica.org/inscription/" target="_blank">Créer un compte</a>-->
+      <button mat-raised-button class="button login" color="primary" *ngIf="!isLogging" type="submit" [disabled]="!isFormComplete()" (click)="login()">Connexion</button>
+      <button mat-raised-button class="button login" color="primary" *ngIf="isLogging" disabled><mat-spinner diameter="16"></mat-spinner></button>
     </mat-card-actions>
   </mat-card>
 </div>

@@ -54,32 +54,20 @@ export class LoginPageComponent implements OnInit {
     this.isLogging = true;
     this.errorMessage = null;
     this.ssoService.loginWithEmailAndPassword(this.email.value, this.password.value).subscribe(
-      identite => {
+      response => {
         this.isLogging = false;
-        // For now, SSO doesn't returns a valid body (body === null), we can't get the token
-        // @DEV : setToken will be ignored (identite === null) and Identity() is call from ssoService wich returns a valid mocked token
-        // @TODO IMPORTANT : FIX SSO LOGIN
-        if (identite && identite.token) {
+        if (response && response.access_token) {
           // At this point, we should have a valid identite.token value
-          this.ssoService.setToken(identite.token);
+          this.ssoService.setToken(response.access_token);
+          this.ssoService.setRefreshToken(response.refresh_token);
+
+          // Refresh the token periodically
+          this.ssoService.alwaysRefreshToken();
+
+          // Go to desired page
           this.routerService.navigateByUrl(this.redirectUrl);
         } else {
-          // If, for any reason (?), we don't get the token,
-          // try to get it trought identity
-          this.ssoService.getIdentity().subscribe(
-            _identite => {
-              if (_identite && _identite.token) {
-                this.ssoService.setToken(_identite.token);
-                this.routerService.navigateByUrl(this.redirectUrl);
-              } else {
-                // @TODO Log error to admin
-                this.notificationService.warn('Nous ne parvenons pas à vous connecter au serveur');
-              }
-            }, error => {
-              // @Todo manage error
-              console.log(error);
-            }
-          );
+          // For any reason (?), we don't get the token...
         }
       }, error => {
         if (error.status) {
@@ -102,6 +90,11 @@ export class LoginPageComponent implements OnInit {
         console.log(error);
       }
     );
+  }
+
+  onPasswordKeyup(event: any): void {
+    event.preventDefault();
+    this.login();
   }
 
 }

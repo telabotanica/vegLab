@@ -6,11 +6,11 @@ export interface EsTableModel {
   hasPdf:                 boolean;
   pdfContentUrl:          string;
   vlBiblioSource:         string;
-  userId:                 number;
+  userId:                 string;
   ownedByCurrentUser:     boolean;  // not included in the database ; this field is populated at GET Table (table service)
-  createdBy:              number;
+  createdBy:              string;
   createdAt:              string;
-  updatedBy:              number;
+  updatedBy:              string;
   updatedAt:              string;
   occurrencesCount:       number;
   rowsCount:              number;

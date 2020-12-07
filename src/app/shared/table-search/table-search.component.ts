@@ -683,7 +683,7 @@ export class TableSearchComponent implements OnInit, OnDestroy {
 
     const parts: Array<string> = [];
     if (this.tableMustBeMine) {
-      const matchPhrase = `{ "term": { "userId": ${Number(cu.id)} } }`;
+      const matchPhrase = `{ "term": { ${cu.id} } }`;
       parts.push(matchPhrase);
     }
     return parts;

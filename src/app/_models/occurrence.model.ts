@@ -16,7 +16,7 @@ import { Biblio } from './biblio.model';
 
 export interface OccurrenceModel {
   id?: number;
-  userId: number;
+  userId: string;
 
   originalReference?: string;  // needed for table import
 

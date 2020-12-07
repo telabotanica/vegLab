@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 
 import { OccurrenceService } from '../../_services/occurrence.service';
+import { UserService } from '../../_services/user.service';
 
 import { OccurrenceModel } from '../../_models/occurrence.model';
 import { RepositoryItemModel } from 'tb-tsb-lib';
@@ -24,7 +25,9 @@ import { LocationAccuracy } from 'src/app/_enums/location-accuracy-enum';
 export class OccurrenceFormBindingService {
   xOccurrence: OccurrenceModel;
 
-  constructor(private occurenceService: OccurrenceService, private dateAdapter: DateAdapter<any>) { }
+  constructor(private occurenceService: OccurrenceService,
+              private userService: UserService,
+              private dateAdapter: DateAdapter<any>) { }
 
   bindOccurrenceData(citedSyntaxon: RepositoryItemModel, level: Level, location: LocationModel, occurrences: Array<{ layer: string, taxa: RepositoryItemModel, coef: string }>, form: FormGroup, user: UserModel, metadatas: Array<{metadata: ExtendedFieldModel, control: FormControl}>): OccurrenceModel {
     //
@@ -44,7 +47,7 @@ export class OccurrenceFormBindingService {
       // bind validation
       if (citedSyntaxon && citedSyntaxon !== null) {
         this.xOccurrence.validations = [{
-          validatedBy: Number(user.id),
+          validatedBy: user.id,
           validatedAt: new Date(),
           repository: citedSyntaxon.repository,
           repositoryIdNomen: +citedSyntaxon.idNomen,
@@ -69,7 +72,7 @@ export class OccurrenceFormBindingService {
         if (occ.taxa.idTaxo !== null) { yIdTaxo = occ.taxa.idTaxo.toString(); }
         if (yIdTaxo === null && occ.taxa.validOccurence !== null && occ.taxa.validOccurence.idNomen !== null) { yIdTaxo =  occ.taxa.validOccurence.idNomen.toString(); }
         yOcc.validations = [{
-          validatedBy: Number(user.id),
+          validatedBy: user.id,
           validatedAt: new Date(),
           repository: occ.taxa.repository,
           repositoryIdNomen: +occ.taxa.idNomen,
@@ -103,7 +106,7 @@ export class OccurrenceFormBindingService {
       // bind validation
       if (citedSyntaxon && citedSyntaxon !== null) {
         this.xOccurrence.validations = [{
-          validatedBy: Number(user.id),
+          validatedBy: user.id,
           validatedAt: new Date(),
           repository: citedSyntaxon.repository,
           repositoryIdNomen: +citedSyntaxon.idNomen,
@@ -141,7 +144,7 @@ export class OccurrenceFormBindingService {
           if (z.taxa.idTaxo !== null) { zIdTaxo = z.taxa.idTaxo.toString(); }
           if (zIdTaxo === null && z.taxa.validOccurence !== null && z.taxa.validOccurence.idNomen !== null) { zIdTaxo =  z.taxa.validOccurence.idNomen.toString(); }
           zOcc.validations = [{
-            validatedBy: Number(user.id),
+            validatedBy: user.id,
             validatedAt: new Date(),
             repository: z.taxa.repository,
             repositoryIdNomen: +z.taxa.idNomen,
@@ -171,9 +174,9 @@ export class OccurrenceFormBindingService {
   }
 
   private bindUserAndObserverData(occ: OccurrenceModel, formData: FormGroup, user: UserModel) {
-    occ.userId = Number(user.id);
-    occ.userEmail = user.sub;
-    occ.userPseudo = user.intitule;
+    occ.userId = user.id;
+    occ.userEmail = user.email;
+    occ.userPseudo = user ? this.userService.getUserFullName() : null;
     occ.userProfile = [];
 
     occ.observer = formData.controls.observer.value;
