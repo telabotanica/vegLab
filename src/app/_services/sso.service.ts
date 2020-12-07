@@ -43,9 +43,7 @@ export class SsoService {
       .set('grant_type', encodeURIComponent('refresh_token'))
       .set('refresh_token', encodeURIComponent(refreshToken));
 
-    return this.http.post(this.refreshEndpoint, body, { headers }).pipe(
-      tap(response => console.log(response))
-    );
+    return this.http.post(this.refreshEndpoint, body, { headers });
   }
 
   /**
