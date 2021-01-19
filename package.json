@@ -63,7 +63,7 @@
     "stacktrace-js": "^2.0.0",
     "tb-dropfile-lib": "https://github.com/steph-del/tb-dropfile-lib/releases/download/v0.5.3/tb-dropfile-lib-0.5.3.tgz",
     "tb-geoloc-lib": "https://github.com/steph-del/tb-geoloc-lib/releases/download/v0.8.3/tb-geoloc-lib-0.8.3.tgz",
-    "tb-tsb-lib": "https://github.com/steph-del/tb-tsb-lib/releases/download/v0.5.8-vl.1/tb-tsb-lib-0.5.8-vl.1.tgz",
+    "tb-tsb-lib": "https://github.com/steph-del/tb-tsb-lib/releases/download/0.5.8-vl.2/tb-tsb-lib-0.5.8-vl.2.tgz",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.26"
   },
@@ -75,7 +75,7 @@
     "@schematics/angular": "^7.2.0",
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
-    "@types/node": "^12.7.10",
+    "@types/node": "^14.0.4",
     "codelyzer": "~4.5.0",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
