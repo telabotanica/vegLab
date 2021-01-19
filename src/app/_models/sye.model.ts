@@ -16,6 +16,7 @@ export interface Sye {
   occurrences:        Array<OccurrenceModel>;
   occurrencesOrder?:  string;
   syntheticColumn:    SyntheticColumn;
+  syntheticSye?: boolean;
   onlyShowSyntheticColumn: boolean;
   validations?:       Array<OccurrenceValidationModel>;
   vlBiblioSource?:    Biblio;

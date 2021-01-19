@@ -770,8 +770,18 @@ export class TableService {
 
   public createSyntheticColumnsForSyeOnTable(table: Table, currentUser: UserModel) {
     for (const sye of table.sye) {
-      const syntheticColumn = this.createSyntheticColumn(sye.occurrences, currentUser, sye);
-      sye.syntheticColumn = syntheticColumn;
+      if (sye.syntheticSye === false) {
+        const syntheticColumn = this.createSyntheticColumn(sye.occurrences, currentUser, sye);
+        sye.syntheticColumn = syntheticColumn;
+      }
+    }
+  }
+
+  public createSyntheticColumnForSyntheticSye(syntheticSye: Sye, syntheticItem: OccurrenceModel, currentUser: UserModel) {
+    if (syntheticSye && syntheticItem) {
+      const syntheticColumn = this.createSyntheticColumn([syntheticItem], currentUser, syntheticSye, syntheticSye.occurrencesCount);
+      console.log('SYNTHETIC SYE SYNTHETIC COL: ', syntheticColumn);
+      syntheticSye.syntheticColumn = syntheticColumn;
     }
   }
 
@@ -945,13 +955,20 @@ export class TableService {
               // @Todo notify user
               this.errorService.log('[Internal error] Try to create a new table dataView but no synthetic column provided');
             }
+            
             for (const syeCellItem of sye.syntheticColumn.items) {
               // @Todo check that there is only one child occurrence that match the if statment
               if (syeCellItem.repositoryIdTaxo === row.repositoryIdTaxo && syeCellItem.layer === row.layer) {
                 // synthetic column value to show
                 // syeItem.value = syeCellItem.occurrencesCount + ' / ' + sye.occurrencesCount;
-                syeItem.value = this.syntheticColumnService.getReadableCoef('roman', sye.occurrencesCount, syeCellItem.occurrencesCount, minRowCoef, maxRowCoef);     //
+                if (sye.syntheticSye === false) {
+                  syeItem.value = this.syntheticColumnService.getReadableCoef('roman', sye.occurrencesCount, syeCellItem.occurrencesCount, minRowCoef, maxRowCoef);     //
+                } else {
+                  // For a synthetic Sye, just set the existing coef value
+                  syeItem.value = syeCellItem.coef;
+                }
               }
+              
             }
             rowItem.items.push(syeItem);
 
@@ -998,7 +1015,12 @@ export class TableService {
               if (syeCellItem.repositoryIdTaxo === row.repositoryIdTaxo && syeCellItem.layer === row.layer) {
                 // synthetic column value to show
                 // syeItem.value = syeCellItem.occurrencesCount + ' / ' + sye.occurrencesCount;
-                syeItem.value = this.syntheticColumnService.getReadableCoef('roman', sye.occurrencesCount, syeCellItem.occurrencesCount, minRowCoef, maxRowCoef);       //
+                if (sye.syntheticSye === false) {
+                  syeItem.value = this.syntheticColumnService.getReadableCoef('roman', sye.occurrencesCount, syeCellItem.occurrencesCount, minRowCoef, maxRowCoef);
+                } else {
+                  // For a synthetic Sye, just set the existing coef value
+                  syeItem.value = syeCellItem.coef;
+                }
               }
             }
             rowItem.items.push(syeItem);
@@ -2268,9 +2290,18 @@ export class TableService {
   /**
    * Create a new synthetic column from given occurrences
    * If a sye is provided AND has an id, we keep this id (and also @id) for PATCH/PUT requests
+   * If occCount (occurrencesCount) is given, the occurrences param. will be traited as a synthetic column
    */
-  createSyntheticColumn(occurrences: Array<OccurrenceModel>, currentUser: UserModel, sye?: Sye): SyntheticColumn {
-    console.log('occurrences', occurrences);
+  createSyntheticColumn(occurrences: Array<OccurrenceModel>, currentUser: UserModel, sye?: Sye, occCount?: number): SyntheticColumn {
+    if (occCount !== undefined) {
+      console.log('CREATE SYNTH COL FOR SYNTH SYE: ', occurrences, sye, occCount);
+    }
+
+    // Set occCount if not provided but exists for synthetic Sye
+    if (sye && sye.syntheticSye && sye.syntheticSye && sye.occurrencesCount) {
+      occCount = sye.occurrencesCount
+    }
+
     const syntheticColumn: SyntheticColumn = {
       '@id': sye && sye['@id'] ? sye['@id'] : null,
       id: (sye && sye.id && sye.syntheticColumn) ? sye.syntheticColumn.id : null,    // If the sye already has a synthetic column, set id & sye properties
@@ -2287,6 +2318,10 @@ export class TableService {
     const names = this.getNames(occurrences);
     const uniquNames = _.uniqBy(names, n => n.layer + n.name + n.repositoryIdTaxo);
 
+    if (occCount !== undefined) {
+      console.log('UNIQ NAMES: ', uniquNames);
+    }
+
     for (const name of uniquNames) {
       const syntheticItem: SyntheticItem = {
         id: null,
@@ -2298,7 +2333,7 @@ export class TableService {
         repositoryIdNomen: null,
         repositoryIdTaxo: null,
         displayName: null,
-        occurrencesCount: null,
+        occurrencesCount: occCount !== undefined ? occCount : null,
         isOccurrenceCountEstimated: false,
         frequency: 0,
         coef: null,
@@ -2310,7 +2345,8 @@ export class TableService {
       syntheticItem.repositoryIdTaxo = name.repositoryIdTaxo;
 
       let displayName = '?';
-      let occurrencesCount = 0;
+      let occurrencesCount = occCount !== undefined ? occCount : 0;
+      let inputCoef = '';
       let minCoef = '?';
       let maxCoef = '?';
 
@@ -2319,6 +2355,8 @@ export class TableService {
         const childrenOccurrences = this.getChildOccurrences(occurrence);
         // @Todo manage no coef error
         for (const child of childrenOccurrences) {
+          inputCoef = child.coef;
+          // if (occCount !== null) {console.log('inputCoef', inputCoef);}
           if (minCoef === '?' && maxCoef === '?') {
             if (child.coef && child.coef !== '' && child.validations[0].repositoryIdTaxo === name.repositoryIdTaxo && child.layer === name.layer) {
               minCoef = child.coef;
@@ -2333,9 +2371,9 @@ export class TableService {
           }
         }
       }
-      syntheticItem.occurrencesCount = occurrencesCount;
-      syntheticItem.frequency =  occurrencesCount === 0 ?  0 : (occurrencesCount * 100) / occurrences.length;
-      syntheticItem.coef = this.syntheticColumnService.getRomanCoef(syntheticItem.frequency);
+      syntheticItem.occurrencesCount = occCount !== undefined ? occCount : occurrencesCount;
+      syntheticItem.frequency =  occCount !== undefined ? this.getFrequencyBySyntheticCoef(minCoef) : occurrencesCount === 0 ?  0 : (occurrencesCount * 100) / occurrences.length;
+      syntheticItem.coef = occCount !== undefined ? minCoef : this.syntheticColumnService.getRomanCoef(syntheticItem.frequency);
       syntheticItem.displayName = displayName;
       syntheticItem.minCoef = minCoef;
       syntheticItem.maxCoef = maxCoef;
@@ -2385,6 +2423,42 @@ export class TableService {
     } catch (error) {
       return false;
     }
+  }
+
+
+  getFrequencyBySyntheticCoef(coef: string): number {
+    const _coef = coef.slice(0,1);
+    switch (_coef) {
+      case '0':
+        return 1;
+      case '+':
+        return 1;
+      case '1':
+        return 3;
+      case '2':
+        return 15;
+      case '3':
+        return 37.5;
+      case '4':
+        return 62.5;
+      case '5':
+        return 87.5;
+    }
+
+    switch (coef) {
+      case 'I':
+        return 3;
+      case 'II':
+        return 15;
+      case 'III':
+        return 37.5;
+      case 'IV':
+        return 62.5;
+      case 'V':
+        return 87.5;
+    }
+
+    return 0;
   }
 
   // --------

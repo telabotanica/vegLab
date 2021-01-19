@@ -96,6 +96,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
   rawLocation: Array<Array<string>> = [];
   rawValidation: Array<Array<string>> = [];
   rawBiblio: Array<Array<string>> = [];
+  rawRelevesCount: Array<Array<string>> = [];
   rawMetadata: Array<Array<string>> = [];
   rawContent: Array<Array<string>> = [];
 
@@ -153,6 +154,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
   REPOSITORY_ROW_POS    = { initialPos: 12, groupPosition: 0, keywords: ['Référentiel'] };
   REPOSITORY_ID_ROW_POS = { initialPos: 13, groupPosition: 1, keywords: ['Numéro nomenclatural'] };
   BIBLIO_ROW_POS        = { ititialPos: 14, groupPosition: 0, keywords: ['Ref. biblio.'] };
+  NUMBER_RELEVES_ROW_POS = { initialPos: 15, groupePosition: 0, keywords: ['Nombre de relevés'] };
 
   REPO_COL_POS            = { position: 0, keywords: ['Référentiel'] };
   NOMEN_COL_POS           = { position: 1, keywords: ['Nomen'] };
@@ -217,6 +219,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
       sye: Array<{
         id: string,
         validation: ImportValidation,
+        syntheticSye?: boolean,
         releves: Array<{
           id: string,
           validation: ImportValidation
@@ -321,6 +324,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
     this.rawLocation = [];
     this.rawValidation = [];
     this.rawBiblio = [];
+    this.rawRelevesCount = [];
     this.rawMetadata = [];
     this.rawContent = [];
 
@@ -456,18 +460,19 @@ export class TableImportComponent implements OnInit, OnDestroy {
     if (this.parsedCsvFile) {
       // Splice headers
       this.rawHeaders = this.parsedCsvFile.splice(0, 4);
-      console.log(this.rawHeaders);
+      console.log('raw headers', this.rawHeaders);
 
       // Splice location attributes
       this.rawLocation = this.parsedCsvFile.splice(0, 7);
-      console.log(this.rawLocation);
+      console.log('raw location', this.rawLocation);
 
       // Splice validation attributes
       this.rawValidation = this.parsedCsvFile.splice(0, 2);
-      console.log(this.rawValidation);
+      console.log('raw validation', this.rawValidation);
 
       // Splice biblio attributes
       this.rawBiblio = this.parsedCsvFile.splice(0, 1);
+      console.log('raw biblio', this.rawBiblio);
 
       // Get row position for 'Nomen'
       let i = 0;
@@ -477,16 +482,21 @@ export class TableImportComponent implements OnInit, OnDestroy {
         i++;
       }
 
+      // Splice number of releves
+      this.rawRelevesCount = this.parsedCsvFile.splice(0, 1);
+      console.log('raw releves count', this.rawRelevesCount);
+
       // Splice metadata
       if (rowNomenStartPosition) {
-        this.rawMetadata = this.parsedCsvFile.splice(0, rowNomenStartPosition);
-        console.log(this.rawMetadata);
+        this.rawMetadata = this.parsedCsvFile.splice(0, rowNomenStartPosition - 1);
+        console.log('raw metadata', this.rawMetadata);
       } else {
         /* LOG ERROR AND ABORT */
         // Can't find 'Nomen' position
       }
 
       // Splice content
+      console.log('PARSED CSV FILE : ', this.parsedCsvFile);
       if (this.parsedCsvFile[0][this.REPO_COL_POS.position].toLocaleLowerCase() === 'référentiel'
           && this.parsedCsvFile[0][this.NOMEN_COL_POS.position].toLocaleLowerCase() === 'nomen'
           && this.parsedCsvFile[0][this.LAYER_COL_POS.position].toLowerCase() === 'strate') {
@@ -502,6 +512,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
         // set rawContent
         this.rawContent = this.parsedCsvFile;
+        console.log('RAW CONTENT : ', this.rawContent);
         const lastRow = this.rawContent[this.rawContent.length - 1];
         if (lastRow.length  === 1 && lastRow[0] === '') { this.rawContent.splice(this.rawContent.length - 1, 1); } // delete last line if empty
         console.log(this.rawContent);
@@ -677,6 +688,45 @@ export class TableImportComponent implements OnInit, OnDestroy {
     // Repository can be empty but, if present, check repo is available
     // Nomenclatural id can be empty
     // Metadata can be empty but, if present, no ducplicates (layer + metadata name check)
+
+    // A synthetic Sye (group) should only contain 1 synthetic relevé
+    const rawRelevesCountCells = this.spliceXCols(this.rawRelevesCount[0], this.ignoreFirstXCols);
+    const rawGroupsCells = this.spliceXCols(this.rawHeaders[this.GROUP_ROW_POS.groupPosition], this.ignoreFirstXCols);
+
+    if (rawRelevesCountCells.length !== rawGroupsCells.length) {
+      this.importFileStatus.next('error');
+      this.importFileMessagesPush(`Les lignes 'Groupe' et 'Nombre de relevés' sont de tailles différentes`);
+    } else {
+      // @Todo
+      const groups = _.groupBy(this.spliceXCols(this.rawHeaders[this.GROUP_ROW_POS.groupPosition], this.ignoreFirstXCols));
+      const orderedGroups = {};
+      Object.keys(groups).forEach(key => orderedGroups[key] = {count: []});
+
+      for (let i = 0; i < rawGroupsCells.length; i++) {
+       
+        const group = rawGroupsCells[i];
+
+        const count = rawRelevesCountCells[i];
+        orderedGroups[group].count.push(Number(count));
+      }
+
+      Object.keys(groups).forEach(key => orderedGroups[key].uniqCount = _.uniq(orderedGroups[key].count));
+      Object.keys(groups).forEach(key => {
+        orderedGroups[key].uniqCount.forEach(uCount => {
+          if (uCount > 1) {
+            // should be a synthetic column
+            if (orderedGroups[key].count.length > 1) {
+              // Error, a Synthetic group (synthetic Sye) could not contain more than 1 column !
+              this.importFileStatus.next('error');
+              this.importFileMessagesPush(`Le groupe '${key}' contient à la fois des relevés simples et synthétiques`);
+            }
+          }
+        });
+      });
+    }
+
+    // A synthetic columns should not contains location data
+    // @Todo
   }
 
   private spliceStartingCols(values: Array<Array<string>>): Array<Array<string>> {
@@ -839,6 +889,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
     const rowNb = this.rawContent.length;
     let countRow = 0;
     this.isLoadingTaxonomicList = true;
+    console.log('...', this.rawContent);
     for (const t of this.rawContent) {
       const id = t[this.REPO_COL_POS.position].toString() + '~' + t[this.NOMEN_COL_POS.position].toString() + '~' + t[this.LAYER_COL_POS.position].toString() + '~' + t[this.HEADERS_LABELS_COL_POS.position].toString();
       const currentContent = _.find(this.taxonomicList, tl => tl.id === id);
@@ -870,7 +921,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
           map (r => r[0] as RepositoryItemModel) // Ensure type
         ).subscribe(
           result => {
-            if (result === undefined) { // @Todo : duplicate code (see error catching below)
+            if (result === undefined || (result !== undefined && result.idTaxo == null)) { // @Todo : duplicate code (see error catching below)
               const randomInteger = _.random(-1, -1000000, false);
               currentContent.validation = {
                 validatedBy: this.currentUser.id,
@@ -1822,7 +1873,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
     const clonedRawHeaders = this.spliceStartingCols(_.cloneDeep(this.rawHeaders));
     const groupsLabels = _.uniq(clonedRawHeaders[this.GROUP_ROW_POS.groupPosition]); // ie. ["A", "B"]
     for (const gl of groupsLabels) {
-      const sye = {id: gl, validation: null, releves: []};
+      const sye = {id: gl, validation: null, isSynthetic: false, releves: []};
       this.validationList.table.sye.push(sye);
     }
 
@@ -1830,6 +1881,9 @@ export class TableImportComponent implements OnInit, OnDestroy {
       for (let l = 0; l < this.rawHeaders[0].length - this.ignoreFirstXCols; l++) {
         const groupId = this.rawHeaders[0][l + this.ignoreFirstXCols].toString();
         const sye = _.find(this.validationList.table.sye, s => s.id === groupId);
+        const isSyntheticColumn = Number(this.rawRelevesCount[0][l + this.ignoreFirstXCols]) > 1 ? true : false;
+        sye.syntheticSye = isSyntheticColumn;
+
         sye.releves.push({
           id: this.rawHeaders[1][this.ignoreFirstXCols + l].toString(),
           validation: {nomen: this.rawValidation[1][l + this.ignoreFirstXCols], repository: this.rawValidation[0][l + this.ignoreFirstXCols], repositoryIsAvailable: false, consolidedValidation: null}
@@ -2258,6 +2312,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
     const taxoCoefsArray = this.getTaxoCoefsArray();
 
     let syeCount = 0;
+    let releveCount = 0;
     for (const sye of this.validationList.table.sye) {
       const newSye: Sye = {
         id: null,
@@ -2269,15 +2324,25 @@ export class TableImportComponent implements OnInit, OnDestroy {
         occurrencesCount: sye.releves.length,
         occurrences: [],
         syntheticColumn: null, // get synthetic column
+        syntheticSye: false,
         onlyShowSyntheticColumn: false,
         vlWorkspace: this.wsService.currentWS.getValue()
       };
 
-      let releveCount = 0;
+      
       for (const releve of sye.releves) {
+        console.log('releveCount: ', releveCount, releve.id);
         // new sye occurrences (synusy, microcenosis, etc.)
         // new occurrence level ?
         const newOccurrence0Level: Level = this.getReleveLevelById(releve.id, tablePreview);
+        const isSyntheticColumn: boolean = this.isSyntheticColumn(releve.id, tablePreview);
+        newSye.syntheticSye = isSyntheticColumn;
+
+        if (isSyntheticColumn) {
+          // Set sye occurrences count
+          newSye.occurrencesCount = Number(this.rawRelevesCount[0][releveCount + this.ignoreFirstXCols]);
+        }
+
         const newOccurrence0: OccurrenceModel = {
           userId,
           userEmail,
@@ -2403,7 +2468,19 @@ export class TableImportComponent implements OnInit, OnDestroy {
       syeCount++;
     }
 
-    // Create synthetic columns
+    for (const sye of newTable.sye) {
+      // For synthetic Sye only, create the synthetic columns
+      if (sye.syntheticSye) {
+        this.tableService.createSyntheticColumnForSyntheticSye(sye, sye.occurrences[0], this.currentUser);
+        sye.onlyShowSyntheticColumn = true;
+
+        // remove sye occurrences
+        sye.occurrences = [];
+      }
+    }
+    
+
+    // Create synthetic columns for classic Sye with occurrences (not synthetic Sye)
     this.tableService.createSyntheticColumnsForSyeOnTable(newTable, this.currentUser);
     this.tableService.createTableSyntheticColumn(newTable, this.currentUser);
 
@@ -2843,6 +2920,14 @@ export class TableImportComponent implements OnInit, OnDestroy {
     } else if (layers.length > 1) {
       return Level.MICROCENOSIS;
     }
+  }
+
+  // Is a column represents a synthetic set of occurrences ?
+  // Just read the given "Nombre de relevés" (releves count)
+  private isSyntheticColumn(releveId: string, tablePreview: Array<Array<string>>): boolean {
+    const releveIndexInTablePreview = tablePreview[0].indexOf(releveId);
+    const rawCount = Number(this.rawRelevesCount[0][releveIndexInTablePreview]);
+    return rawCount > 1 ? true : false;
   }
 
   // *******
