@@ -33,6 +33,44 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
     if (cu !== null) {
       return true;
     } else {
+      // Do we have a refresh token in local storage
+      if (this.ssoService.isRefreshTokenSet()) {
+        const refreshToken = this.ssoService.getRefreshToken();
+        if (refreshToken !== null) {
+          return this.ssoService.refreshToken(refreshToken).pipe(
+            map(response => {
+              if (response['access_token'] && response['refresh_token']) {
+                // Ok, we've got a token,
+                // Set token and refresh token to the SSO service
+                this.ssoService.currentToken.next(response['access_token']);
+                this.ssoService.currentRefreshToken.next(response['refresh_token']);
+                // And refresh the token periodically
+                this.ssoService.alwaysRefreshToken();
+              }
+              return true;
+            }, error => {
+              console.log('error ', error);
+              // Navigate to the login page
+              this.routerService.navigate(['/login'], {
+                queryParams: {
+                  redirectUrl: next.routeConfig.path
+                }
+              });
+              return false;
+            }),
+            map(response => response)
+          );
+        } else {
+          // Navigate to the login page
+          this.routerService.navigate(['/login'], {
+            queryParams: {
+              redirectUrl: next.routeConfig.path
+            }
+          });
+          return false;
+        }
+      }
+
       // Navigate to the login page
       this.routerService.navigate(['/login'], {
         queryParams: {
@@ -47,20 +85,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-    // Get the current user
-    const cu = this.userService.currentUser.getValue();
-
-    if (cu !== null) {
-      return true;
-    } else {
-      // Navigate to the login page
-      this.routerService.navigate(['/login'], {
-        queryParams: {
-          redirectUrl: next.routeConfig.path
-        }
-      });
-      return false;
-    }
+    return this.canActivate(next, state);
   }
 
   canLoad(
