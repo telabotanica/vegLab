@@ -6,6 +6,7 @@ import { RepositoryService } from 'tb-tsb-lib';
 
 import { TableRowDefinition } from 'src/app/_models/table-row-definition.model';
 import { OccurrenceModel } from 'src/app/_models/occurrence.model';
+import { Sye } from 'src/app/_models/sye.model';
 
 import * as _ from 'lodash';
 import { Level } from 'src/app/_enums/level-enum';
@@ -18,7 +19,7 @@ import { Level } from 'src/app/_enums/level-enum';
 export class TableSelectedElementComponent implements OnInit, OnDestroy {
   tableSelectionSubscriber: Subscription;
 
-  elementType: 'row' | 'column' | 'groupTitle' | 'groupName' | 'occurrenceValue' | 'syntheticValue' = null;
+  elementType: 'row' | 'column' | 'syntheticColumn' | 'groupTitle' | 'groupName' | 'occurrenceValue' | 'syntheticValue' = null;
   elementTypeDisplay: string = null;
 
   // Row elements to show
@@ -33,6 +34,9 @@ export class TableSelectedElementComponent implements OnInit, OnDestroy {
   // Column elements to show
   columnElements: Array<OccurrenceModel> = [];
 
+  // Sye to show (selected synthetic column)
+  syeElement: Sye = null;
+
   constructor(private tableService: TableService, private repoService: RepositoryService) { }
 
   ngOnInit() {
@@ -42,6 +46,7 @@ export class TableSelectedElementComponent implements OnInit, OnDestroy {
       this.elementTypeDisplay = null;
       this.rowElements = [];
       this.columnElements = [];
+      this.syeElement = null;
 
       if (selectedElement.element === 'row') {
         // row
@@ -78,13 +83,17 @@ export class TableSelectedElementComponent implements OnInit, OnDestroy {
         }
       } else if (selectedElement.element === 'column') {
         // column
-        this.elementType = 'column';
-        this.elementTypeDisplay = 'Colonne';
-        if (selectedElement.occurrenceIds) {
+        if (selectedElement.occurrenceIds.length > 0 && selectedElement.occurrenceIds[0] !== null) {
+          this.elementType = 'column';
+          this.elementTypeDisplay = 'Colonne';
           for (const occurrenceId of selectedElement.occurrenceIds) {
             const occurrence = this.tableService.getReleveById(occurrenceId);
             if (occurrence) { this.columnElements.push(occurrence); }
           }
+        } else if (selectedElement.occurrenceIds.length === 0 || selectedElement.occurrenceIds[0] == null) {
+          this.elementType = 'syntheticColumn';
+          this.elementTypeDisplay = 'Colonne synthétique';
+          this.syeElement = this.tableService.getSyeById(this.tableService.getCurrentTable(), selectedElement.syeId);
         }
       } else if (selectedElement.element === 'groupTitle') {
         // row definition group title
@@ -158,6 +167,14 @@ export class TableSelectedElementComponent implements OnInit, OnDestroy {
       return `[${occurrence.validations[0].repository}] ${occurrence.validations[0].validatedName}`;
     } else {
       return 'Relevé non identifié';
+    }
+  }
+
+  getSyeValidation(sye: Sye): string {
+    if (sye && sye.validations && sye.validations.length > 0) {
+      return `[${sye.validations[0].repository}] ${sye.validations[0].validatedName}`;
+    } else {
+      return 'Sye non identifié';
     }
   }
 

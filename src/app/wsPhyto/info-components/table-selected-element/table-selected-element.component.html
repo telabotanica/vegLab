@@ -1,9 +1,7 @@
-<div *ngIf="rowElements.length === 0 && columnElements.length === 0" class="no-selection">
+<div *ngIf="rowElements.length === 0 && columnElements.length === 0 && syeElement === null" class="no-selection">
   <p>Afficher les informations d'une ligne ou d'une colonne</p>
   <p class="min">Selectionnez une ligne ou une colonne du tableau pour afficher les informations</p>
 </div>
-
-{{ elementTypeDisplay }}
 
 <!-- ROW -->
 <div *ngIf="elementType === 'row'" class="row-container">
@@ -21,6 +19,49 @@
 <div *ngIf="elementType === 'column'" class="column-container">
     <div class="content">
       <div *ngFor="let releve of columnElements">
+        <mat-list class="row-item parent">
+          <mat-list-item>
+            <p mat-line><b>{{ releve.level | level }} n° {{ releve.id }}</b></p>
+            <p mat-line><b>{{ getOccurrenceValidation(releve) }}</b></p>
+            <p mat-line>Strate : {{ releve.layer ? releve.layer : '-' }}</p>
+            <p mat-line>Auteur(s) : {{ getOccurrenceVlObservers(releve) }}</p>
+            <p mat-line *ngIf="!releve.dateObservedPrecision">Date : {{ releve.dateObserved | momentLocalDate }}</p>
+            <p mat-line *ngIf="releve.dateObservedPrecision">Date : {{ releve.dateObserved | momentLocalDate:releve.dateObservedPrecision }}</p>
+            <p mat-line>Localisation : <span *ngIf="releve.vlLocationAccuracy">[{{ releve.vlLocationAccuracy }}] </span>{{ releve.locality}} ({{ releve.osmCountryCode | uppercase }} {{ releve.osmPostcode | slice:0:2 }})</p>
+          </mat-list-item>
+        </mat-list>
+        <div *ngIf="releve.level === 'microcenosis'">
+          <mat-list *ngFor="let child of releve.children" class="row-item child">
+            <mat-list-item>
+                <p mat-line><b>{{ child.level | level }} n° {{ child.id }}</b></p>
+              <p mat-line><b>{{ getOccurrenceValidation(releve) }}</b></p>
+              <p mat-line>Strate : {{ child.layer }}</p>
+              <p mat-line>Auteur(s) : {{ getOccurrenceVlObservers(child) }}</p>
+              <p mat-line *ngIf="!child.dateObservedPrecision">Date : {{ child.dateObserved | momentLocalDate }}</p>
+              <p mat-line *ngIf="child.dateObservedPrecision">Date : {{ child.dateObserved | momentLocalDate:child.dateObservedPrecision }}</p>
+              <p mat-line>Localisation : <span *ngIf="child.vlLocationAccuracy">[{{ child.vlLocationAccuracy }}] </span>{{ child.locality}} ({{ child.osmCountryCode | uppercase }} {{ child.osmPostcode | slice:0:2 }})</p>
+            </mat-list-item>
+          </mat-list>
+        </div>
+        <hr />
+      </div>
+    </div>
+  </div>
+
+  <!-- COLUMN (synthetic col) -->
+  <div *ngIf="elementType === 'syntheticColumn' && syeElement" class="column-container">
+    <div class="content">
+      <mat-list class="row-item parent">
+        <mat-list-item>
+          <p mat-line><b>Colonne synthétique n° {{ syeElement.id }}</b></p>
+          <p mat-line *ngIf="syeElement.syntheticSye">Cette colonne synthétique ne contient aucun relevé</p>
+          <p mat-line *ngIf="!syeElement.syntheticSye">Cette colonne synthétique contient {{ syeElement.occurrencesCount }} {{ syeElement.occurrencesCount > 1 ? 'relevés' : 'relevé' }}</p>
+          <p mat-line><b>{{ getSyeValidation(syeElement) }}</b></p>
+        </mat-list-item>
+      </mat-list>
+
+      <!-- Same code as above -->
+      <div *ngFor="let releve of syeElement.occurrences">
         <mat-list class="row-item parent">
           <mat-list-item>
             <p mat-line><b>{{ releve.level | level }} n° {{ releve.id }}</b></p>
