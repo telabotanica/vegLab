@@ -902,7 +902,7 @@ export class TableService {
           if (columnPositions.onlyShowSyntheticColumn) {
             // Only push synthetic column
             if (columnPositions.syntheticColumnPosition !== null) {
-              rowItem.items.push({type: 'cellSynColValue', syeId: columnPositions.id, occurrenceId: null, value: null});
+              rowItem.items.push({type: 'cellSynColValue', syeId: columnPositions.id, occurrenceId: null, value: null, syntheticSye: table.sye[columnPositions.id].syntheticSye});
             }
           } else {
             // push relevés columns and synthetic column
@@ -912,17 +912,17 @@ export class TableService {
               let n = 0;
               // push items
               for (let m = columnPositions.startColumnPosition; m <= columnPositions.endColumnPosition; m++) {
-                rowItem.items.push({type: 'rowValue', syeId: columnPositions.id, occurrenceId: syeOccsIds[n], value: null});
+                rowItem.items.push({type: 'rowValue', syeId: columnPositions.id, occurrenceId: syeOccsIds[n], value: null, syntheticSye: table.sye[columnPositions.id].syntheticSye});
                 n++;
               }
               // push synthetic column item
               if (columnPositions.syntheticColumnPosition !== null) {
-                rowItem.items.push({type: 'cellSynColValue', syeId: columnPositions.id, occurrenceId: null, value: null});
+                rowItem.items.push({type: 'cellSynColValue', syeId: columnPositions.id, occurrenceId: null, value: null, syntheticSye: table.sye[columnPositions.id].syntheticSye});
               }
             }
             // special case : sye is empty (only one synthtic column)
             if (columnPositions.syntheticColumnPosition === columnPositions.startColumnPosition && columnPositions.syntheticColumnPosition === columnPositions.endColumnPosition) {
-              rowItem.items.push({type: 'cellSynColValue', syeId: columnPositions.id, occurrenceId: null, value: null});
+              rowItem.items.push({type: 'cellSynColValue', syeId: columnPositions.id, occurrenceId: null, value: null, syntheticSye: table.sye[columnPositions.id].syntheticSye});
             }
           }
         }
@@ -946,16 +946,17 @@ export class TableService {
           if (columnPositions.onlyShowSyntheticColumn) {
             // Push synthetic column
             // row item push synthetic column value
-            const syeItem = {type: null, syeId: null, occurrenceId: null, value: null};                                                                               // DUPLICATE CODE --A-- SEE BELOW
+            const syeItem = {type: null, syeId: null, occurrenceId: null, value: null, syntheticSye: null};                                                                               // DUPLICATE CODE --A-- SEE BELOW
             syeItem.type = 'cellSynColValue';
             syeItem.syeId = sye.syeId;
             syeItem.occurrenceId = null;
+            syeItem.syntheticSye = table.sye[columnPositions.id].syntheticSye;
 
             if (!sye.syntheticColumn || sye.syntheticColumn === null) {
               // @Todo notify user
               this.errorService.log('[Internal error] Try to create a new table dataView but no synthetic column provided');
             }
-            
+
             for (const syeCellItem of sye.syntheticColumn.items) {
               // @Todo check that there is only one child occurrence that match the if statment
               if (syeCellItem.repositoryIdTaxo === row.repositoryIdTaxo && syeCellItem.layer === row.layer) {
@@ -968,7 +969,7 @@ export class TableService {
                   syeItem.value = syeCellItem.coef;
                 }
               }
-              
+
             }
             rowItem.items.push(syeItem);
 
@@ -977,10 +978,11 @@ export class TableService {
             // ...get child occurrences of each sye occurrence and create a row item
             for (const occ of sye.occurrences) {
               // Create occurrence row item
-              const item = {type: null, syeId: null, occurrenceId: null, value: null};
+              const item = {type: null, syeId: null, occurrenceId: null, value: null, syntheticSye: null};
               item.type = 'cellOccValue';
               item.syeId = sye.syeId;
               item.occurrenceId = occ.id;
+              item.syntheticSye = table.sye[columnPositions.id].syntheticSye;
 
               const childOcc = this.getChildOccurrences(occ);
               for (const cOcc of childOcc) {
@@ -1001,10 +1003,11 @@ export class TableService {
               rowItem.items.push(item);
             }
             // Create the sye synthetic column row item
-            const syeItem = {type: null, syeId: null, occurrenceId: null, value: null};                                                                                 // DUPLICATE CODE --A-- SEE ABOVE
+            const syeItem = {type: null, syeId: null, occurrenceId: null, value: null, syntheticSye: null};                                                                                 // DUPLICATE CODE --A-- SEE ABOVE
             syeItem.type = 'cellSynColValue';
             syeItem.syeId = sye.syeId;
             syeItem.occurrenceId = null;
+            syeItem.syntheticSye = table.sye[columnPositions.id].syntheticSye;
 
             if (!sye.syntheticColumn || sye.syntheticColumn === null) {
               // @Todo notify user
@@ -1033,6 +1036,7 @@ export class TableService {
     this.updateColumnsPositions(table);
     const t1 = performance.now();
     // console.log(`createDataView took ${t1 - t0} milliseconds for +-${table.rowsDefinition.length} occurrences rows and ${nbOccurrencesInTable} occurrences columns`);
+    console.log('rrrrrrrr', rows);
     return rows;
   }
 

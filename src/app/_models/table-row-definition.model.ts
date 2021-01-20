@@ -16,7 +16,8 @@ export interface TableRow extends TableRowDefinition {
   items: Array<{
     type:         'cellOccValue' | 'cellSynColValue' | 'rowTitle' | 'rowValue';
     syeId:        number;
-    occurrenceId: number,
+    syntheticSye: boolean;
+    occurrenceId: number;
     value:        string
   }>;
 }

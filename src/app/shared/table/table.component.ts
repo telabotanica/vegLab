@@ -980,7 +980,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
           if (setSyeId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_syeId', cell.syeId); }
           if (setRowId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_rowId', row.rowId); }
           if (setGroupId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_groupId', row.groupId); }
-          if (setClassName) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_className', `coef sye-${cell.syeId}`); }
+          if (setClassName) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_className', `coef ${row.type !== 'group' && cell.syntheticSye ? 'syntheticSye' : ''} sye-${cell.syeId}`); }
           /*if (setClassName) {
             if (_.indexOf(this.selectedOccurrencesIds, cell.occurrenceId) !== -1) {
               this.tableInstance.setCellMeta(rowPosition, colPosition, 'className', `selected coef sye-${cell.syeId}`);
@@ -994,14 +994,14 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
           if (setSyeId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_syeId', cell.syeId); }
           if (setRowId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_rowId', row.rowId); }
           if (setGroupId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_groupId', row.groupId); }
-          if (setClassName) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_className', `titleRowValue sye-${cell.syeId}`); }
+          if (setClassName) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_className', `titleRowValue ${row.type !== 'group' && cell.syntheticSye ? 'syntheticSye' : ''} sye-${cell.syeId}`); }
         } else if (cell.type === 'cellSynColValue') {
           if (setType) {  this.tableInstance.setCellMeta(rowPosition, colPosition, '_type', 'syntheticValue'); }
           if (setOccId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_occurrenceId', cell.occurrenceId); }
           if (setSyeId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_syeId', cell.syeId); }
           if (setRowId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_rowId', row.rowId); }
           if (setGroupId) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_groupId', row.groupId); }
-          if (setClassName) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_className', `synthetic sye-${cell.syeId}`); }
+          if (setClassName) { this.tableInstance.setCellMeta(rowPosition, colPosition, '_className', `synthetic ${row.type !== 'group' && cell.syntheticSye ? 'syntheticSye' : ''} sye-${cell.syeId}`); }
         }
         colPosition++;
       }

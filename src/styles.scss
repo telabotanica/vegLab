@@ -87,13 +87,15 @@ body {
   }
   td.synthetic {
     text-align: center;
-    background-color: rgba(0, 0, 0, 0.1);
+    &:not(.syntheticSye) {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
 
-    &.sye-0 {background-color: rgba($cell-color-0, $cell-color-transparency); }
-    &.sye-1 {background-color: rgba($cell-color-1, $cell-color-transparency); }
-    &.sye-2 {background-color: rgba($cell-color-2, $cell-color-transparency); }
-    &.sye-3 {background-color: rgba($cell-color-3, $cell-color-transparency); }
-    &.sye-4 {background-color: rgba($cell-color-4, $cell-color-transparency); }
+    // &.sye-0 {background-color: rgba($cell-color-0, $cell-color-transparency); }
+    // &.sye-1 {background-color: rgba($cell-color-1, $cell-color-transparency); }
+    // &.sye-2 {background-color: rgba($cell-color-2, $cell-color-transparency); }
+    // &.sye-3 {background-color: rgba($cell-color-3, $cell-color-transparency); }
+    // &.sye-4 {background-color: rgba($cell-color-4, $cell-color-transparency); }
 
   }
 
@@ -101,30 +103,30 @@ body {
     text-align: center;
     background-color: rgba(0, 0, 0, 0.1);
 
-    &.sye-0 {background-color: rgba(0, 0, 0, 0.05); }
-    &.sye-1 {background-color: rgba(0, 0, 0, 0.05); }
-    &.sye-2 {background-color: rgba(0, 0, 0, 0.05); }
-    &.sye-3 {background-color: rgba(0, 0, 0, 0.05); }
-    &.sye-4 {background-color: rgba(0, 0, 0, 0.05); }
+    // &.sye-0 {background-color: rgba(0, 0, 0, 0.05); }
+    // &.sye-1 {background-color: rgba(0, 0, 0, 0.05); }
+    // &.sye-2 {background-color: rgba(0, 0, 0, 0.05); }
+    // &.sye-3 {background-color: rgba(0, 0, 0, 0.05); }
+    // &.sye-4 {background-color: rgba(0, 0, 0, 0.05); }
 
   }
 
-  td.sye-0 { color: $cell-color-0; }
-  td.sye-1 { color: $cell-color-1; }
-  td.sye-2 { color: $cell-color-2; }
-  td.sye-3 { color: $cell-color-3; }
-  td.sye-4 { color: $cell-color-4; }
+  // td.sye-0 { color: $cell-color-0; }
+  // td.sye-1 { color: $cell-color-1; }
+  // td.sye-2 { color: $cell-color-2; }
+  // td.sye-3 { color: $cell-color-3; }
+  // td.sye-4 { color: $cell-color-4; }
 
-  th.sye-0 { background-color: rgba($cell-color-0, $cell-color-transparency);
-    &.ht__highlight { background-color: rgba($cell-color-0, $cell-color-transparency-highlight);} }
-  th.sye-1 { background-color: rgba($cell-color-1, $cell-color-transparency);
-    &.ht__highlight { background-color: rgba($cell-color-1, $cell-color-transparency-highlight);} }
-  th.sye-2 { background-color: rgba($cell-color-2, $cell-color-transparency);
-    &.ht__highlight { background-color: rgba($cell-color-2, $cell-color-transparency-highlight);} }
-  th.sye-3 { background-color: rgba($cell-color-3, $cell-color-transparency);
-    &.ht__highlight { background-color: rgba($cell-color-3, $cell-color-transparency-highlight);} }
-  th.sye-4 { background-color: rgba($cell-color-4, $cell-color-transparency);
-    &.ht__highlight { background-color: rgba($cell-color-4, $cell-color-transparency-highlight);} }
+  // th.sye-0 { background-color: rgba($cell-color-0, $cell-color-transparency);
+  //   &.ht__highlight { background-color: rgba($cell-color-0, $cell-color-transparency-highlight);} }
+  // th.sye-1 { background-color: rgba($cell-color-1, $cell-color-transparency);
+  //   &.ht__highlight { background-color: rgba($cell-color-1, $cell-color-transparency-highlight);} }
+  // th.sye-2 { background-color: rgba($cell-color-2, $cell-color-transparency);
+  //   &.ht__highlight { background-color: rgba($cell-color-2, $cell-color-transparency-highlight);} }
+  // th.sye-3 { background-color: rgba($cell-color-3, $cell-color-transparency);
+  //   &.ht__highlight { background-color: rgba($cell-color-3, $cell-color-transparency-highlight);} }
+  // th.sye-4 { background-color: rgba($cell-color-4, $cell-color-transparency);
+  //   &.ht__highlight { background-color: rgba($cell-color-4, $cell-color-transparency-highlight);} }
 }
 
 // Material overwrite
