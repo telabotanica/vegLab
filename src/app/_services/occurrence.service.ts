@@ -138,7 +138,7 @@ export class OccurrenceService {
         "bool": {
           "must": [
             {
-              "term": {
+              "match": {
                 "userId": "${currentUser.id}"
               }
             }

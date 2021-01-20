@@ -251,7 +251,7 @@ export class TableService {
       "query": {
         "bool": {
           "must": [{
-            "term": {
+            "match": {
               "userId": "${currentUser.id}"
             }
           }]
