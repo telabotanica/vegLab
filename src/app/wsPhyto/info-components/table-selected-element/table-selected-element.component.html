@@ -54,9 +54,9 @@
       <mat-list class="row-item parent">
         <mat-list-item>
           <p mat-line><b>Colonne synthétique n° {{ syeElement.id }}</b></p>
+          <p mat-line><b>{{ getSyeValidation(syeElement) }}</b></p>
           <p mat-line *ngIf="syeElement.syntheticSye">Cette colonne synthétique ne contient aucun relevé</p>
           <p mat-line *ngIf="!syeElement.syntheticSye">Cette colonne synthétique contient {{ syeElement.occurrencesCount }} {{ syeElement.occurrencesCount > 1 ? 'relevés' : 'relevé' }}</p>
-          <p mat-line><b>{{ getSyeValidation(syeElement) }}</b></p>
         </mat-list-item>
       </mat-list>
 
