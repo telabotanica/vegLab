@@ -1739,20 +1739,32 @@ export class TableService {
     // Get sye columnPositions that the target belong to
     let destinationSyeColumnsDef: ColumnPositions = null;
     this.columnsPositions.forEach(columnPositions => {
-      // if columns are moved in an empty sye
-      if (columnPositions.startColumnPosition === columnPositions.endColumnPosition && target === columnPositions.syntheticColumnPosition - 1) {
-        destinationSyeColumnsDef = columnPositions;
-      }
-      // if columns are moved at the end of a sye
-      if (target === columnPositions.syntheticColumnPosition && target !== 0) {
-        destinationSyeColumnsDef = columnPositions;
-      }
-      // if columns are moved at the end of the table
-      // @Todo should we create a new sye in this case ?
+      // If synthetic column move
+      if (sourceSyeColumnsDef.onlyShowSyntheticColumn) {
+        // Move a synthetic column to another synthetic column position
+        if (columnPositions.startColumnPosition === columnPositions.endColumnPosition && target === columnPositions.syntheticColumnPosition + (movingDirection === 'ltr' ? 1 : 0)) {
+          destinationSyeColumnsDef = columnPositions;
+        } else if (columnPositions.startColumnPosition !== columnPositions.endColumnPosition) {
+          if (target >= columnPositions.startColumnPosition && target <= columnPositions.endColumnPosition) {
+            destinationSyeColumnsDef = columnPositions;
+          }
+        }
+      } else {
+        // if columns are moved in an empty sye
+        if (columnPositions.startColumnPosition === columnPositions.endColumnPosition && target === columnPositions.syntheticColumnPosition - 1) {
+          destinationSyeColumnsDef = columnPositions;
+        }
+        // if columns are moved at the end of a sye
+        if (target === columnPositions.syntheticColumnPosition && target !== 0) {
+          destinationSyeColumnsDef = columnPositions;
+        }
+        // if columns are moved at the end of the table
+        // @Todo should we create a new sye in this case ?
 
-      // else, columns are moved inside an existing sye columns interval
-      if (target >= columnPositions.startColumnPosition && target <= columnPositions.endColumnPosition) {
-        destinationSyeColumnsDef = columnPositions;
+        // else, columns are moved inside an existing sye columns interval
+        if (target >= columnPositions.startColumnPosition && target <= columnPositions.endColumnPosition) {
+          destinationSyeColumnsDef = columnPositions;
+        }
       }
     });
 
@@ -2303,7 +2315,7 @@ export class TableService {
 
     // Set occCount if not provided but exists for synthetic Sye
     if (sye && sye.syntheticSye && sye.syntheticSye && sye.occurrencesCount) {
-      occCount = sye.occurrencesCount
+      occCount = sye.occurrencesCount;
     }
 
     const syntheticColumn: SyntheticColumn = {
@@ -2431,7 +2443,7 @@ export class TableService {
 
 
   getFrequencyBySyntheticCoef(coef: string): number {
-    const _coef = coef.slice(0,1);
+    const _coef = coef.slice(0, 1);
     switch (_coef) {
       case '0':
         return 1;
