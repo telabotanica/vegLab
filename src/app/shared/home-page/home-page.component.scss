@@ -1,3 +1,14 @@
+@import '../../_styles/colors';
+
+@mixin h3Title {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  color: $vl-color-1;
+  font-size: 2em;
+  text-align: center;
+}
+
 #homepage-container {
 
   .header, .fullwidth-block, .footer {
@@ -10,16 +21,18 @@
     justify-content: center;
     align-items: center;
     height: 300px;
-    background-image: url('../../../assets/shared/img/vl_header_home.jpg');
-    background-size: cover;
+    margin-top: -40px;
+    // background-image: url('../../../assets/shared/img/vl_header_home.jpg');
+    // background-size: cover;
+    background-image: linear-gradient(160deg, #0093E9 0%, #80D0C7 100%);
     color: white;
 
     h1 {
-      font-size: 3em;
+      font-size: 4em;
       margin-bottom: 0px;
     }
     h2 {
-      font-size: 1.5em;
+      font-size: 2em;
       text-align: center;
     }
     button {
@@ -28,6 +41,181 @@
     }
   }
 
+  @media screen and (max-width: 600px) {
+    .header {
+      height: auto;
+      padding-top: 50px;
+      padding-bottom: 50px;
+    }
+  }
+
+  .flux {
+    h3 {
+      @include h3Title;
+    }
+    .items {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      font-weight: bold;
+      font-variant: small-caps;
+      .list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        background-image: linear-gradient(90deg, #39AEDA 0%, #7ECFC7 100%);
+        padding-top: 15px;
+        padding-bottom: 15px;
+        .item {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          text-align: center;
+          min-width: 200px;
+          max-width: 200px;
+          margin: 10px;
+          margin-right: 0;
+          padding: 10px;
+          font-size: 1.2em;
+          color: white;
+          border-radius: .4rem;
+          cursor: pointer;
+          &:hover {
+            background-color: #ffffff4a;
+          }
+          &.selected {
+            background-color: white;
+            color: black;                                       
+          }
+        }
+      }
+      
+    }
+  }
+
+  .divider {
+    height: 30px;
+    background-image: linear-gradient(90deg, #39AEDA 0%, #7ECFC7 100%);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    .blank {
+      flex: 2;
+      background-color: white;
+      &.left {
+        border-radius: 0 30px 0 0;
+      }
+      &.right {
+        border-radius: 30px 0 0 0;
+      }
+    }
+    .arrow {
+      width: 0;
+    }
+
+    &.reverse {
+      .blank {
+        &.left {
+          border-radius: 0 0 30px 0;
+        }
+        &.right {
+          border-radius: 0 0 0 30px;
+        }
+      }
+    }
+  }
+
+  .count-wrapper {
+    h3 {
+      @include h3Title;
+    }
+    .counters {
+      // background-image: linear-gradient(90deg, #39AEDA 0%, #7ECFC7 100%);
+      min-height: 150px;
+      padding: 20px;
+      .items {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        .item {
+          height: 100px;
+          width: 100px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          border: 3px solid $vl-color-2;
+          border-radius: 50px;
+          .number {
+            font-size: 2em;
+            color: $vl-color-1;
+          }
+        }
+      }
+    }
+  }
+
+  .details-wrapper {
+    padding: 15px;
+    .details {
+      .text {
+        font-size: 1.2em;
+        text-align: center;
+      }
+    }
+  }
+
+  .quick-access {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    .wrapper {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      .item {
+        min-height: 50px;
+        max-width: 250px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+        color: white;
+        text-align: center;
+        font-size: 1.6em;
+        font-weight: bold;
+        margin: 15px;
+        border: 2px solid white;
+        border-radius: .4em;
+        cursor: pointer;
+        &:hover {
+          background-color: #ffffff4a;
+        }
+        &.app {
+
+        }
+        &.doc {
+
+        }
+      }
+    }
+  }
+
+  .separator {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 20px;
+    font-size: 2em;
+    color: $vl-color-1;
+  }
+/*
   .content-wrapper {
     display: block !important;
     .content {
@@ -111,6 +299,6 @@
       }
     }
   }
-
+*/
   
 }

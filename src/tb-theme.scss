@@ -6,7 +6,7 @@
 
 $tb-light-green: #C3D45D;
 $tb-dark-green: #8E9F31;
-$tb-orange: #E16E2E;
+$vl-color-2: #E16E2E;
 
 $tb-light-grey: #F0F0F1;
 $tb-mid-grey: #B3B3B3;
@@ -80,7 +80,7 @@ $tb-dark-green-palette: (
     )
 );
 
-$tb-orange-palette: (
+$vl-color-2-palette: (
     50 : #fbeee6,
     100 : #f6d4c0,
     200 : #f0b797,
@@ -115,7 +115,7 @@ $tb-orange-palette: (
 
 $tb-theme-primary: mat-palette($tb-dark-green-palette);
 $tb-theme-accent : mat-palette($tb-light-green-palette);
-$tb-theme-warn   : mat-palette($tb-orange-palette);
+$tb-theme-warn   : mat-palette($vl-color-2-palette);
 
 $tb-general-typography: mat-typography-config(
   $font-family: '"Muli", sans-serif;'

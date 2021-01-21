@@ -1,10 +1,88 @@
 <div id="homepage-container" fxLayout="column" fxLayoutAlign="start none">
   <div class="header">
     <h1>VegLab</h1>
-    <h2>Saisie, traitement et analyse de données<br />pour les végétations et les habitats</h2>
+    <h2>Traitement et analyse de données<br />pour les végétations et les habitats</h2>
+    <div class="quick-access">
+      <div class="wrapper">
+        <div class="item app" (click)="router.navigate(['/phyto/app'])">Accéder à l'application</div>
+        <div class="item doc">Documentation</div>
+      </div>
+    </div>
   </div>
 
-  <div class="content-wrapper">
+  <div class="flux">
+    <h3>Flux de travail pour la phytosociologie</h3>
+    <div class="items">
+      <div class="list">
+        <div class="item" [class.selected]="selectedWorkflowItem === 1" (click)="selectedWorkflowItem = 1">Importer / exporter</div>
+        <div class="item" [class.selected]="selectedWorkflowItem === 2" (click)="selectedWorkflowItem = 2">Rechercher</div>
+        <div class="item" [class.selected]="selectedWorkflowItem === 3" (click)="selectedWorkflowItem = 3">Élaborer un tableau</div>
+        <div class="item" [class.selected]="selectedWorkflowItem === 4" (click)="selectedWorkflowItem = 4">Cartes, documents et indicateurs</div>
+        <div class="item" [class.selected]="selectedWorkflowItem === 5" (click)="selectedWorkflowItem = 5">Identifier</div>
+        <div class="item" [class.selected]="selectedWorkflowItem === 6" (click)="selectedWorkflowItem = 6">Partagez votre travail</div>
+      </div>
+      <div class="divider">
+        <div class="blank left"></div>
+        <div class="arrow"></div>
+        <div class="blank right"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="details-wrapper" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="15px">
+    <div class="details" fxLayout="row wrap" *ngIf="selectedWorkflowItem === 1">
+      <div class="text">
+        Utilisez vos propres relevés en important vos tableaux depuis une interface dédiée.<br />
+      </div>
+    </div>
+    <div class="details" fxLayout="row wrap" fxLayoutAlign="center center" *ngIf="selectedWorkflowItem === 2">
+      <div class="text">
+        Créez vos propres requêtes : utilisez les filtres de manière itérative afin de cibler les relevés ou les tableaux selon vos critères.<br />
+        Vous pouvez filtrer les relevés et les tableaux disponibles par auteur, date, taxons, syntaxons, localisation, etc.<br />
+      </div>
+    </div>
+    <div class="details" fxLayout="row wrap" fxLayoutAlign="center center" *ngIf="selectedWorkflowItem === 3">
+      <div class="text">
+        Utilisez notre interface de type tableur pour mettre en forme vos tableaux.<br />
+        Créer des groupes sociologiques, déplacez les lignes et colonnes et diagonalisez vos relevés manuellement ou à l'aide de nos outils de tri.<br />
+      </div>
+    </div>
+    <div class="details" fxLayout="row wrap" fxLayoutAlign="center center" *ngIf="selectedWorkflowItem === 4">
+      <div class="text">
+        En travaillant sur vos tableaux, visualisez la localsation des relevés, les diagnoses en version PDF et d'autres indicateurs statistiques et structurels.<br />
+      </div>
+    </div>
+    <div class="details" fxLayout="row wrap" fxLayoutAlign="center center" *ngIf="selectedWorkflowItem === 5">
+      <div class="text">
+        Identifiez vos relevés et tableaux avec différents référentiels (PVF2, baseveg, etc.)<br />
+        Vous pouvez remplacer (sans les supprimer) les identifications des autres utilisateurs et confronter vos points de vus.
+      </div>
+    </div>
+    <div class="details" fxLayout="row wrap" fxLayoutAlign="center center" *ngIf="selectedWorkflowItem === 6">
+      <div class="text">
+        VegLab dispose de sa propre base de données.<br />
+        Le travail que vous réalisez au sein de l'application est réutilisable pour les autres utilisateurs.
+      </div>
+    </div>
+  </div>
+
+  <div class="separator">&#x0223C;</div>
+  
+  <div class="count-wrapper">
+    <h3>Actuellement en ligne</h3>
+    <div class="counters">
+      <div class="items">
+        <div class="item"><div class="number">{{ countTables ? countTables : '...' }}</div><div class="label">Tableaux</div></div>
+        <div class="item"><div class="number">{{ countReleves ? countReleves : '...' }}</div><div class="label">Relevés</div></div>
+        <div class="item"><div class="number">{{ countIdiotaxons ? countIdiotaxons : '...' }}</div><div class="label">Idiotaxons</div></div>
+      </div>
+    </div>
+    
+  </div>
+  
+  
+
+  <!--<div class="content-wrapper">
 
     <div class="content" fxFlex fxLayout="column" fxLayoutAlign="center none">
       <div class="section main-description" fxLayout="column" fxLayoutAlign="center center">
@@ -83,7 +161,7 @@
     </div>
     
 
-  </div>
+  </div>-->
 
   
 </div>

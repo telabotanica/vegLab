@@ -5,6 +5,7 @@
   height: 40px;
   .mat-toolbar-row {
     height: 40px;
+    overflow: hidden;
   }
 
   button.mat-menu-item.app-toolbar-button {
@@ -34,7 +35,7 @@
       text-decoration: none;
       height: 100%;
       margin-left: -16px;
-      background-color: $tb-green;
+      background-color: $vl-color-1;
       color: white;
       display: flex;
       flex-direction: row;
@@ -42,12 +43,13 @@
       align-items: center;
   
       &.ws {
-        background-color: $tb-orange;
+        background-color: $vl-color-2;
       }
 
       .title {
         padding-left: 20px;
         padding-right: 20px;
+        display: flex;
       }
 
       .triangle {
@@ -59,11 +61,11 @@
         margin-left: -5px;
     
         &.vl {
-          border-color: $tb-orange whitesmoke $tb-orange $tb-green;
+          border-color: $vl-color-2 whitesmoke $vl-color-2 $vl-color-1;
         }
     
         &.ws {
-          border-color: whitesmoke whitesmoke whitesmoke $tb-orange;
+          border-color: whitesmoke whitesmoke whitesmoke $vl-color-2;
         }
       }
     }

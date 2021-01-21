@@ -57,7 +57,7 @@ h2 {
     color: #444444;
     text-align: center;
     span.color-tb-orange-light {
-      background-color: $tb-orange-light;
+      background-color: $vl-color-2-light;
     }
   }
 
@@ -180,9 +180,9 @@ h2 {
       cursor: default;
       padding: 5px;
       border-radius: 3px;
-      background-color: $tb-green-light;
+      background-color: $vl-color-1-light;
       &:hover {
-        background-color: $tb-green;
+        background-color: $vl-color-1;
       }
     }
 
@@ -190,9 +190,9 @@ h2 {
       cursor: default;
       padding: 5px;
       border-radius: 3px;
-      background-color: $tb-orange-light;
+      background-color: $vl-color-2-light;
       &:hover {
-        background-color: $tb-orange;
+        background-color: $vl-color-2;
       }
     }
     
@@ -280,42 +280,42 @@ h2 {
   
     &.complete {
       .tick {
-        border: 1px solid $tb-green-dark;
+        border: 1px solid $vl-color-1-dark;
         mat-icon {
-          color: $tb-green;
+          color: $vl-color-1;
         }
       }
       .content {
-        background-color: $tb-green-lighter;
+        background-color: $vl-color-1-lighter;
         .title {
-          color: $tb-green-dark;
+          color: $vl-color-1-dark;
         }
         .sub-title {
-          color: $tb-green-dark;
+          color: $vl-color-1-dark;
         }
       }
       .actions {
-        background-color: $tb-green-lighter;
+        background-color: $vl-color-1-lighter;
       }
     }
     &.warning {
       .tick {
-        border: 1px solid $tb-orange-dark;
+        border: 1px solid $vl-color-2-dark;
         mat-icon {
-          color: $tb-orange;
+          color: $vl-color-2;
         }
       }
       .content {
-        background-color: $tb-orange-lighter;
+        background-color: $vl-color-2-lighter;
         .title {
-          color: $tb-orange-dark;
+          color: $vl-color-2-dark;
         }
         .sub-title {
-          color: $tb-orange-dark;
+          color: $vl-color-2-dark;
         }
       }
       .actions {
-        background-color: $tb-orange-lighter;
+        background-color: $vl-color-2-lighter;
       }
     }
     &.error {
@@ -368,10 +368,10 @@ h2 {
   }
   .data-type-value-error {
     font-size: .8em;
-    color: $tb-orange-dark;
+    color: $vl-color-2-dark;
     padding-top: 5px;
     padding-bottom: 5px;
-    background-color: $tb-orange-lighter;
+    background-color: $vl-color-2-lighter;
     margin-bottom: 10px;
   }
   .min-max-value {
@@ -482,12 +482,12 @@ mat-icon {
     width: 30px;
     height: 30px;
     &.valid {
-      color: $tb-green-dark;
-      background-color: $tb-green-lighter;
+      color: $vl-color-1-dark;
+      background-color: $vl-color-1-lighter;
     }
     &.warning {
-      color: $tb-orange-dark;
-      background-color: $tb-orange-lighter;
+      color: $vl-color-2-dark;
+      background-color: $vl-color-2-lighter;
     }
     &.error {
       color: red;

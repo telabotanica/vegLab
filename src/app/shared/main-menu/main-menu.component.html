@@ -1,7 +1,7 @@
 <mat-toolbar class="app-toolbar">
   <mat-toolbar-row>
     <a class="navbar-brand" [routerLink]="['/']">
-      <div class="title">VegLab</div>
+      <div class="title"><mat-icon>home</mat-icon></div>
       <div *ngIf="currentWorkspace !== 'none'" class="triangle vl"></div>
     </a>
     <a *ngIf="currentWorkspace !== 'none'" class="navbar-brand ws" [routerLink]="getWorkspaceNavigationPath()">
