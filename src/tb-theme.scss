@@ -1,5 +1,6 @@
 @import '~@angular/material/theming';
 @import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+@import './app//_styles/colors.scss';
 
 /* 
   Palettes based on
@@ -13,6 +14,9 @@ $tb-mid-grey: #B3B3B3;
 $tb-dark-grey: #333333;
 
 */
+
+// Create a palette : http://mcg.mbitson.com/#!?mcgpalette0=%233f51b5
+
 
 $tb-light-green-palette: (
     50 : #f8faec,
@@ -113,9 +117,111 @@ $vl-color-2-palette: (
     )
 );
 
-$tb-theme-primary: mat-palette($tb-dark-green-palette);
-$tb-theme-accent : mat-palette($tb-light-green-palette);
-$tb-theme-warn   : mat-palette($vl-color-2-palette);
+$md-vl-primary: (
+    50 : #e1f3fc,
+    100 : #b5e0f8,
+    200 : #84cbf3,
+    300 : #53b6ee,
+    400 : #2ea7eb,
+    500 : #0997e7,
+    600 : #088fe4,
+    700 : #0684e0,
+    800 : #057add,
+    900 : #0269d7,
+    A100 : #feffff,
+    A200 : #cbe1ff,
+    A400 : #98c4ff,
+    A700 : #7fb5ff,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #000000,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+$md-vl-accent: (
+    50 : #e1edf5,
+    100 : #b5d3e5,
+    200 : #83b6d4,
+    300 : #5199c2,
+    400 : #2c83b5,
+    500 : #076da8,
+    600 : #0665a0,
+    700 : #055a97,
+    800 : #04508d,
+    900 : #023e7d,
+    A100 : #aaceff,
+    A200 : #77b0ff,
+    A400 : #4492ff,
+    A700 : #2a83ff,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #ffffff,
+    )
+);
+
+
+
+$md-vl-warning: (
+    50 : #fef8e1,
+    100 : #fceeb4,
+    200 : #fae383,
+    300 : #f8d851,
+    400 : #f7cf2b,
+    500 : #f5c706,
+    600 : #f4c105,
+    700 : #f2ba04,
+    800 : #f0b303,
+    900 : #eea602,
+    A100 : #ffffff,
+    A200 : #fff5e1,
+    A400 : #ffe3ae,
+    A700 : #ffdb95,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #000000,
+        500 : #000000,
+        600 : #000000,
+        700 : #000000,
+        800 : #000000,
+        900 : #000000,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+
+$tb-theme-primary: mat-palette($md-vl-primary);
+$tb-theme-accent : mat-palette($md-vl-accent);
+$tb-theme-warn   : mat-palette($md-vl-warning);
 
 $tb-general-typography: mat-typography-config(
   $font-family: '"Muli", sans-serif;'

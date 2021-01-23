@@ -1,3 +1,5 @@
+@import '../../_styles/colors.scss';
+
 .login-wrapper {
   width: 100%;
   height: calc(100vh - 50px);
@@ -5,7 +7,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-image: url('../../../assets/img/login.jpg');
+  background-image: url('../../../assets/img/login_nb.jpg');
   background-size: cover;
 
   .login-card {
@@ -13,6 +15,11 @@
     .mat-card-header {
       justify-content: center;
       margin-bottom: 24px;
+      .mat-card-title {
+        color: $vl-color-1;
+        font-weight: bold;
+        font-size: 1.9em;
+      }
     }
   }
   
