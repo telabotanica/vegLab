@@ -41,17 +41,19 @@ export class TableValidationsPreviewComponent implements OnInit {
         validations.push({element: 'releve', label: 'Relevé', value: releve});
       }
     }
-
     return validations;
   }
 
   getValidationLabel(element: 'table' | 'sye' | 'releve', validations: Array<OccurrenceValidationModel>): string {
-    const preferedValidation = this.validationService.getPreferedValidation(element, validations);
+    /*const preferedValidation = this.validationService.getPreferedValidation(element, validations);
     if (preferedValidation) {
       return preferedValidation.validatedName;
     } else {
       return 'Non identifié';
-    }
+    }*/
+
+    // @ TODO implements ; Before, check ES table model : validations are empty !!
+    return '--';
   }
 
 }

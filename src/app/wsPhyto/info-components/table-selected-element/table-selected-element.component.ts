@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { TableService } from '../../../_services/table.service';
-import { RepositoryService } from 'tb-tsb-lib';
+import { ValidationService } from 'src/app/_services/validation.service';
 
 import { TableRowDefinition } from 'src/app/_models/table-row-definition.model';
 import { OccurrenceModel } from 'src/app/_models/occurrence.model';
@@ -37,7 +37,8 @@ export class TableSelectedElementComponent implements OnInit, OnDestroy {
   // Sye to show (selected synthetic column)
   syeElement: Sye = null;
 
-  constructor(private tableService: TableService, private repoService: RepositoryService) { }
+  constructor(private tableService: TableService,
+              private validationService: ValidationService) { }
 
   ngOnInit() {
     this.tableSelectionSubscriber = this.tableService.tableSelectionElement.subscribe(selectedElement => {
@@ -163,19 +164,13 @@ export class TableSelectedElementComponent implements OnInit, OnDestroy {
   }
 
   getOccurrenceValidation(occurrence: OccurrenceModel): string {
-    if (occurrence && occurrence.validations && occurrence.validations.length > 0) {
-      return `[${occurrence.validations[0].repository}] ${occurrence.validations[0].validatedName}`;
-    } else {
-      return 'Relevé non identifié';
-    }
+    const preferedValidation = this.validationService.getPreferedValidation(occurrence);
+    return preferedValidation && preferedValidation.validatedName ? preferedValidation.validatedName : 'Relevé non identifié';
   }
 
   getSyeValidation(sye: Sye): string {
-    if (sye && sye.validations && sye.validations.length > 0) {
-      return `[${sye.validations[0].repository}] ${sye.validations[0].validatedName}`;
-    } else {
-      return 'Sye non identifié';
-    }
+    const preferedValidation = this.validationService.getPreferedValidation(sye);
+    return preferedValidation && preferedValidation.validatedName ? preferedValidation.validatedName : 'Sye non identifié';
   }
 
 }

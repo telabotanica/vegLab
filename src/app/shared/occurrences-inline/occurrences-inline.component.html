@@ -32,7 +32,7 @@
           <div class="preview item"><mat-icon (click)="togglePreview()" inline="true" matTooltip="Afficher plus de détails">search</mat-icon></div>
           <div class="level item">{{ item.occurrence.occurrence.level | shortLevel }}</div>
           <div class="layer item">{{ item.occurrence.occurrence.layer }}</div>
-          <div class="validation item">{{ item.occurrence.occurrence.validations && item.occurrence.occurrence.validations[0] ? item.occurrence.occurrence.validations[0].validatedName : '-' }}</div>
+          <div class="validation item">{{ item.occurrence.occurrence.validations ? getPreferedValidation(item.occurrence.occurrence)?.validatedName : '-' }}</div>
           <div class="authors item"><mat-icon inline="true" class="grey">person</mat-icon> {{ getObserversPreview(item.occurrence.occurrence) }}</div>
           <div class="date item" *ngIf="!item.occurrence.occurrence.dateObservedPrecision">
             <mat-icon inline="true" class="grey">calendar_today</mat-icon> {{ item.occurrence.occurrence.dateObserved | momentLocalDate }}
@@ -68,7 +68,7 @@
             <div class="preview item"><mat-icon (click)="togglePreview()" inline="true" matTooltip="Afficher plus de détails">search</mat-icon></div>
             <div class="level item">{{ item.occurrence.occurrence.level | shortLevel }}</div>
             <div class="layer item">{{ item.occurrence.occurrence.layer }}</div>
-            <div class="validation item">{{ item.occurrence.occurrence.validations && item.occurrence.occurrence.validations[0] ? item.occurrence.occurrence.validations[0].validatedName : '-' }}</div>
+            <div class="validation item">{{ item.occurrence.occurrence.validations ? getPreferedValidation(item.occurrence.occurrence)?.validatedName : '-' }}</div>
             <div class="authors item"><mat-icon inline="true" class="grey">person</mat-icon> {{ getObserversPreview(item.occurrence.occurrence) }}</div>
             <div class="date item" *ngIf="!item.occurrence.occurrence.dateObservedPrecision">
               <mat-icon inline="true" class="grey">calendar_today</mat-icon> {{ item.occurrence.occurrence.dateObserved | momentLocalDate }}
@@ -93,7 +93,7 @@
               <div class="preview item"><mat-icon (click)="togglePreview()" inline="true" matTooltip="Afficher plus de détails">search</mat-icon></div>
               <div class="level item">{{ childOcc.occurrence.level | shortLevel }}</div>
               <div class="layer item">{{ childOcc.occurrence.layer }}</div>
-              <div class="validation item">{{ childOcc.occurrence.validations && childOcc.occurrence.validations[0] ? childOcc.occurrence.validations[0].validatedName : '-' }}</div>
+              <div class="validation item">{{ childOcc.occurrence.validations ? getPreferedValidation(childOcc.occurrence)?.validatedName : '-' }}</div>
               <div class="authors item"><mat-icon inline="true" class="grey">person</mat-icon> {{ getObserversPreview(childOcc.occurrence) }}</div>
               <div class="date item" *ngIf="!childOcc.occurrence.dateObservedPrecision">
                 <mat-icon inline="true" class="grey">calendar_today</mat-icon> {{ childOcc.occurrence.dateObserved | momentLocalDate }}

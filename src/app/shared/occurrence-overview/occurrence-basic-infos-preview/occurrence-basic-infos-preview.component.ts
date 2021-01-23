@@ -34,7 +34,7 @@ export class OccurrenceBasicInfosPreviewComponent implements OnInit {
   }
 
   public getPreferedValidation(occurrence: EsOccurrenceModel) {
-    this.validationService.getPreferedValidation('releve', occurrence.validations);
+    this.validationService.getPreferedValidation(occurrence);
   }
 
 }

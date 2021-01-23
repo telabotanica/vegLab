@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
 
 import { TableService } from 'src/app/_services/table.service';
+import { ValidationService } from 'src/app/_services/validation.service';
 
 import { Table } from 'src/app/_models/table.model';
 import { Sye } from 'src/app/_models/sye.model';
@@ -18,7 +19,7 @@ export class ValidationComponent implements OnInit, OnDestroy {
   tableDataviewSubscriber: Subscription;
   table: Table;
 
-  constructor(private tableService: TableService) { }
+  constructor(private tableService: TableService, private validationService: ValidationService) { }
 
   ngOnInit() {
     // Check current table at startup
@@ -72,27 +73,18 @@ export class ValidationComponent implements OnInit, OnDestroy {
   }
 
   getTableValidation(): string {
-    if (this.table && this.table.validations && this.table.validations.length > 0) {
-      return this.table.validations[0].validName;
-    } else {
-      return 'non identifié';
-    }
+    const preferedValidation = this.validationService.getPreferedValidation(this.table);
+    return preferedValidation && preferedValidation.validName ? preferedValidation.validatedName : 'non identifié';
   }
 
   getSyeValidation(sye: Sye): string {
-    if (sye.validations && sye.validations.length > 0) {
-      return sye.validations[0].validName;
-    } else {
-      return 'non identifié';
-    }
+    const preferedValidation = this.validationService.getPreferedValidation(sye);
+    return preferedValidation && preferedValidation.validName ? preferedValidation.validatedName : 'non identifié';
   }
 
   getReleveValidation(releve: OccurrenceModel): string {
-    if (releve.validations && releve.validations.length > 0) {
-      return releve.validations[0].validName;
-    } else {
-      return 'non identifié';
-    }
+    const preferedValidation = this.validationService.getPreferedValidation(releve);
+    return preferedValidation && preferedValidation.validName ? preferedValidation.validatedName : 'non identifié';
   }
 
 }

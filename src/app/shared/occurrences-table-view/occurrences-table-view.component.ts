@@ -7,6 +7,7 @@ import { MatCheckboxChange } from '@angular/material';
 import { EsOccurrenceModel } from 'src/app/_models/es-occurrence-model';
 
 import { TableService } from 'src/app/_services/table.service';
+import { ValidationService } from 'src/app/_services/validation.service';
 
 import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
@@ -66,7 +67,7 @@ export class OccurrencesTableViewComponent implements OnInit, OnDestroy {
   occurrencesIdsInCurrentTableSubscription: Subscription;
   _occurrencesIdsInCurrentTable: Array<number> = [];
 
-  constructor(private tableService: TableService) { }
+  constructor(private tableService: TableService, private validationService: ValidationService) { }
 
   ngOnInit() {
     // Get table occurrences ids
@@ -88,7 +89,8 @@ export class OccurrencesTableViewComponent implements OnInit, OnDestroy {
 
   getValidation(occurrence: EsOccurrenceModel): string {
     if (occurrence && occurrence.validations && occurrence.validations.length > 0) {
-      return occurrence.validations[0].validatedName;
+      const preferedValidation = this.validationService.getPreferedValidation(occurrence);
+      return preferedValidation ? preferedValidation.validatedName : '?';
     } else {
       return '?';
     }

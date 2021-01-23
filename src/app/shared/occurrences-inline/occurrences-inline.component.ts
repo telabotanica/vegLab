@@ -1,9 +1,16 @@
 import { Component, OnInit, OnDestroy, Input, Output, ChangeDetectionStrategy, EventEmitter } from '@angular/core';
-import * as _ from 'lodash';
+
 
 import { OccurrenceModel } from 'src/app/_models/occurrence.model';
-import { Subscription } from 'rxjs/internal/Subscription';
+import { OccurrenceValidationModel } from 'src/app/_models/occurrence-validation.model';
+
 import { TableService } from 'src/app/_services/table.service';
+import { ValidationService } from 'src/app/_services/validation.service';
+
+import { OccurrenceValidationsPreviewComponent } from '../occurrence-overview/occurrence-validations-preview/occurrence-validations-preview.component';
+
+import * as _ from 'lodash';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'vl-occurrences-inline',
@@ -25,7 +32,7 @@ export class OccurrencesInlineComponent implements OnInit, OnDestroy {
   _occurrencesIdsInCurrentTable: Array<number> = [];
   occurrencesIdsInCurrentTableSubscription: Subscription;
 
-  constructor(private tableService: TableService) { }
+  constructor(private tableService: TableService, private validationService: ValidationService) { }
 
   ngOnInit() {
     this.occurrencesIdsInCurrentTableSubscription = this.tableService.currentTableOccurrencesIds.subscribe(
@@ -166,6 +173,10 @@ export class OccurrencesInlineComponent implements OnInit, OnDestroy {
         occ.occurrence.selected = true;
       }
     }
+  }
+
+  public getPreferedValidation(occurrence: OccurrenceModel): OccurrenceValidationModel {
+    return this.validationService.getPreferedValidation(occurrence);
   }
 
 }

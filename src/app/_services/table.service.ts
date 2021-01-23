@@ -815,8 +815,17 @@ export class TableService {
             };
             names.push(newName);
           } else if (childOcc.validations.length > 1) {
-            // @Todo it should not append most of the cases
-            // @Todo check if there are several validations. Select a "prefered" one regarding app parameters, location, etc.
+            const preferedValidation = this.validationService.getPreferedValidation(childOcc);
+            const newName = {
+              group: {id: 0, label: 'default'}, // Add a default group
+              // group: {id: group.id, label: group.label}, // TEST
+              layer: occLayer,
+              repository: preferedValidation.repository,
+              repositoryIdNomen: preferedValidation.repositoryIdNomen,
+              repositoryIdTaxo: preferedValidation.repositoryIdTaxo,
+              name: preferedValidation.repository === 'otherunknown' ? preferedValidation.inputName : preferedValidation.validatedName
+            };
+            names.push(newName);
           }
         }
       } else {
@@ -838,8 +847,17 @@ export class TableService {
               };
               names.push(newName);
             } else if (grandChild.validations.length > 1) {
-              // @Todo it should not append most of the cases
-              // @Todo check if there are several validations. Select a "prefered" one regarding app parameters, location, etc.
+              const preferedValidation = this.validationService.getPreferedValidation(grandChild);
+              const newName = {
+                group: {id: 0, label: 'default'}, // Add a default group
+                // group: {id: group.id, label: group.label}, // TEST
+                layer: occLayer,
+                repository: preferedValidation.repository,
+                repositoryIdNomen: preferedValidation.repositoryIdNomen,
+                repositoryIdTaxo: preferedValidation.repositoryIdTaxo,
+                name: preferedValidation.repository === 'otherunknown' ? preferedValidation.inputName : preferedValidation.validatedName
+              };
+              names.push(newName);
             }
           }
         }
@@ -986,7 +1004,7 @@ export class TableService {
 
               const childOcc = this.getChildOccurrences(occ);
               for (const cOcc of childOcc) {
-                const cOccValidation = cOcc.validations.find(x => x !== undefined); // get the first available item (the first item could not be validations[0] !)
+                const cOccValidation = this.validationService.getPreferedValidation(cOcc);
                 // @Todo check that there is only one child occurrence that match the if statment
                 //       (An occurrence can't contains several identical child occurrences)
                 if (cOccValidation.repositoryIdTaxo) {
@@ -2372,16 +2390,17 @@ export class TableService {
         // @Todo manage no coef error
         for (const child of childrenOccurrences) {
           inputCoef = child.coef;
+          const childValidation = this.validationService.getPreferedValidation(child);
           // if (occCount !== null) {console.log('inputCoef', inputCoef);}
           if (minCoef === '?' && maxCoef === '?') {
-            if (child.coef && child.coef !== '' && child.validations[0].repositoryIdTaxo === name.repositoryIdTaxo && child.layer === name.layer) {
+            if (child.coef && child.coef !== '' && childValidation && childValidation.repositoryIdTaxo === name.repositoryIdTaxo && child.layer === name.layer) {
               minCoef = child.coef;
               maxCoef = child.coef;
             }
           }
-          if (child.validations[0].repositoryIdTaxo === name.repositoryIdTaxo && child.layer === name.layer) {
+          if (childValidation && childValidation.repositoryIdTaxo === name.repositoryIdTaxo && child.layer === name.layer) {
             occurrencesCount++;
-            displayName = this.validationService.getSingleName('releve', child.validations);
+            displayName = this.validationService.getSingleName(child);
             minCoef = this.isLowerCoef(minCoef, child.coef) ? child.coef : minCoef;
             maxCoef = this.isUpperCoef(maxCoef, child.coef) ? child.coef : maxCoef;
           }
@@ -2995,7 +3014,12 @@ export class TableService {
         const occurrences = this.getChildOccurrences(rel);
         const colItems: Array<string> = [];
         for (const rd of table.rowsDefinition) {
-          const occurrence = _.find(occurrences, occ => occ.layer === rd.layer && occ.validations[0].repository === rd.repository && occ.validations[0].repositoryIdNomen === rd.repositoryIdNomen);
+          const occurrence = _.find(occurrences, occ => {
+            const occValidation = this.validationService.getPreferedValidation(occ);
+            if (occ.layer === rd.layer && occValidation.repository === rd.repository && occValidation.repositoryIdNomen === rd.repositoryIdNomen) {
+              return true;
+            }
+          });
           if (occurrence) {
             colItems.push(_.take(occurrence.coef, 1)[0]);
           } else {
