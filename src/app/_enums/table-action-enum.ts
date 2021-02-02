@@ -7,5 +7,6 @@ export enum TableActionEnum {
   syeMove = 'sye_move',
   rowGroupMove = 'row_group_move',
   addReleve = 'add_releve',
-  mergeTable = 'merge_table'
+  mergeTable = 'merge_table',
+  setIdentifications = 'set_identifications'
 }

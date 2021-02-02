@@ -1,0 +1,247 @@
+<div class="container identification-wrapper empty-table" *ngIf="currentTableIsEmpty">
+  <h1>Identifications</h1>
+  <p class="no-table">Il n'y a aucun tableau de travail en cours.</p>
+</div>
+
+<div class="container identification-wrapper" *ngIf="!currentTableIsEmpty">
+  <!-- --------------- -->
+  <!-- IDENTIFICATIONS -->
+  <!-- --------------- -->
+  <h1>Identifications</h1>
+  <div class="top-content">
+    <div *ngIf="currentTable && currentTable.sye && currentTable.sye.length > 0">
+      <div class="elements">
+
+        <div class="element table">
+          <div class="title"><span>Tab. </span><span class="id">n° {{ currentTable.id }}</span></div>
+          <div class="separator"></div>
+          <div class="identification-cpt"><vl-identification-inline [element]="currentTable"></vl-identification-inline></div>
+          <button mat-icon-button (click)="editTableIdentifications()">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+
+        <div *ngFor="let sye of currentTable.sye">
+          <div class="element sye" [class.selected]="isSelectedSye(sye)">
+            <div class="title"><span>Sye </span><span class="id">n° {{ sye.id }}</span></div>
+            <div class="separator"></div>
+            <div class="identification-cpt"><vl-identification-inline [element]="sye"></vl-identification-inline></div>
+            <button mat-icon-button (click)="editSyeIdentifications(sye)">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+          
+          <div *ngFor="let occ of sye.occurrences">
+            <div class="element occurrence" [class.selected]="isSelectedReleve(occ)">
+              <div class="title"><span>Rel. </span><span class="id">n° {{ occ.id }}</span></div>
+              <div class="separator"></div>
+              <div class="identification-cpt"><vl-identification-inline [element]="occ"></vl-identification-inline></div>
+              <button mat-icon-button (click)="editReleveIdentifications(occ)">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+
+            <!-- Are nested occurrences for a microcenosis ? -->
+            <div *ngIf="occ.level === 'microcenosis' && occ.children && occ.children.length > 0">
+              <div *ngFor="let child of occ.children">
+                <div class="element child-occurrence" [class.selected]="isSelectedReleve(child)">
+                  <div class="title"><span>Rel. </span><span class="id">n° {{ child.id }}</span></div>
+                  <div class="separator"></div>
+                  <div class="identification-cpt"><vl-identification-inline [element]="child"></vl-identification-inline></div>
+                  <button mat-icon-button (click)="editReleveIdentifications(child)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+
+  <!-- --------------- -->
+  <!-- EDITING ELEMENTS-->
+  <!-- --------------- -->
+  <div class="bottom-content" *ngIf="isEditingElement">
+    <div class="content-wrapper">
+      <!-- ----------------- -->
+      <!-- table ident. edit -->
+      <!-- ----------------- -->
+      <div class="content-edit table" *ngIf="isEditingElement && editingTable !== null">
+        <div class="title">Identifier le tableau n°{{ editingTable.id }}</div>
+        <div class="identification-cpt">
+          <span class="current-identifications">Ce tableau est actuellement identifié avec les valeurs suivantes :</span>
+          <vl-identification-inline
+            [element]="currentTable"
+            allowDelete="true"
+            (elementToDelete)="removeIdentification($event)"></vl-identification-inline>
+        </div>
+        <div class="input-cpt">
+          <span class="title">Vous allez lui appliquer l'identification suivante, en tant que "{{ selectedEditAs.label }}" :</span>
+          <tb-tsb-search-box
+            level="microcenosis"
+            placeholder="Rechercher un nom de végétation"
+            [attachRawData]=true
+            (newData)="newIdentifcationData($event)"></tb-tsb-search-box>
+        </div>
+        <div class="pending-identifications">
+          <mat-chip-list class="identification-chips">
+            <mat-chip
+              *ngFor="let pendingId of pendingIdentifications"
+              removable="true"
+              (removed)="removePendingIdentification(pendingId)">
+              [{{ pendingId.repository }}] {{ pendingId.inputName }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+        <div class="pending-identifications-to-remove" *ngIf="pendingIdentificationsToRemove.length > 0">
+          <span class="title" *ngIf="pendingIdentificationsToRemove.length === 1">Vous allez supprimer l'identification suivante :</span>
+          <span class="title" *ngIf="pendingIdentificationsToRemove.length > 1">Vous allez supprimer les identifications suivantes :</span>
+          <mat-chip-list class="identification-chips">
+            <mat-chip
+              *ngFor="let elementToRemove of pendingIdentificationsToRemove"
+              removable="true"
+              (removed)="removePendingIdentificationToRemove(elementToRemove)">
+              [{{ elementToRemove.repository }}] {{ elementToRemove.validatedName }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+        <div class="options">
+          <mat-checkbox class="apply-change-opt" (click)="changesShouldBeAppliedToAllSye($event)" [(ngModel)]="applyChangesToAllSye">Appliquer à tous les groupes de colonnes (Sye)</mat-checkbox>
+          <mat-checkbox class="apply-change-opt" (click)="changesShouldBeAppliedToEntireTable($event)" [(ngModel)]="applyChangesToEntireTable">Appliquer à tous les éléments du tableau</mat-checkbox>
+        </div>
+        <div class="actions">
+          <button mat-stroked-button (click)="stopEditing()">Annuler</button>
+          <button mat-flat-button color="primary" (click)="applyChanges()">Appliquer</button>
+        </div>
+      </div>
+
+      <!-- --------------- -->
+      <!-- sye ident. edit -->
+      <!-- --------------- -->
+      <div class="content-edit table" *ngIf="isEditingElement && editingSye !== null">
+        <div class="title">Identifier le Sye n°{{ editingSye.id }}</div>
+        <div class="identification-cpt">
+          <span class="current-identifications">Ce Sye est actuellement identifié avec les valeurs suivantes :</span>
+          <vl-identification-inline
+            [element]="editingSye"
+            allowDelete="true"
+            (elementToDelete)="removeIdentification($event)"></vl-identification-inline>
+        </div>
+        <div class="input-cpt">
+          <span class="title">Vous allez lui appliquer l'identification suivante, en tant que "{{ selectedEditAs.label }}" :</span>
+          <tb-tsb-search-box
+            level="microcenosis"
+            placeholder="Rechercher un nom de végétation"
+            [attachRawData]=true
+            (newData)="newIdentifcationData($event)"></tb-tsb-search-box>
+        </div>
+        <div class="pending-identifications">
+          <mat-chip-list class="identification-chips">
+            <mat-chip
+              *ngFor="let pendingId of pendingIdentifications"
+              removable="true"
+              (removed)="removePendingIdentification(pendingId)">
+              [{{ pendingId.repository }}] {{ pendingId.inputName }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+        <div class="pending-identifications-to-remove" *ngIf="pendingIdentificationsToRemove.length > 0">
+          <span class="title" *ngIf="pendingIdentificationsToRemove.length === 1">Vous allez supprimer l'identification suivante :</span>
+          <span class="title" *ngIf="pendingIdentificationsToRemove.length > 1">Vous allez supprimer les identifications suivantes :</span>
+          <mat-chip-list class="identification-chips">
+            <mat-chip
+              *ngFor="let elementToRemove of pendingIdentificationsToRemove"
+              removable="true"
+              (removed)="removePendingIdentificationToRemove(elementToRemove)">
+              [{{ elementToRemove.repository }}] {{ elementToRemove.validatedName }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+        <div class="options">
+          <mat-checkbox class="apply-change-opt" [(ngModel)]="applyChangesToAllRelevesOfEditedSye">Appliquer à tous les relevés de ce groupe de colonnes (Sye)</mat-checkbox>
+        </div>
+        <div class="actions">
+          <button mat-stroked-button (click)="stopEditing()">Annuler</button>
+          <button mat-flat-button color="primary" (click)="applyChanges()">Appliquer</button>
+        </div>
+      </div>
+
+      <!-- ------------------ -->
+      <!-- releve ident. edit -->
+      <!-- ------------------ -->
+      <div class="content-edit table" *ngIf="isEditingElement && editingReleve !== null">
+        <div class="title">Identifier le relevé n°{{ editingReleve.id }}</div>
+        <div class="identification-cpt">
+          <span class="current-identifications">Ce relevé est actuellement identifié avec les valeurs suivantes :</span>
+          <vl-identification-inline
+            [element]="editingReleve"
+            allowDelete="true"
+            (elementToDelete)="removeIdentification($event)"></vl-identification-inline>
+        </div>
+        <div class="input-cpt">
+          <span class="title">Vous allez lui appliquer l'identification suivante, en tant que "{{ selectedEditAs.label }}" :</span>
+          <tb-tsb-search-box
+            level="microcenosis"
+            placeholder="Rechercher un nom de végétation"
+            [attachRawData]=true
+            (newData)="newIdentifcationData($event)"></tb-tsb-search-box>
+        </div>
+        <div class="pending-identifications">
+          <mat-chip-list class="identification-chips">
+            <mat-chip
+              *ngFor="let pendingId of pendingIdentifications"
+              removable="true"
+              (removed)="removePendingIdentification(pendingId)">
+              [{{ pendingId.repository }}] {{ pendingId.inputName }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+        <div class="pending-identifications-to-remove" *ngIf="pendingIdentificationsToRemove.length > 0">
+          <span class="title" *ngIf="pendingIdentificationsToRemove.length === 1">Vous allez supprimer l'identification suivante :</span>
+          <span class="title" *ngIf="pendingIdentificationsToRemove.length > 1">Vous allez supprimer les identifications suivantes :</span>
+          <mat-chip-list class="identification-chips">
+            <mat-chip
+              *ngFor="let elementToRemove of pendingIdentificationsToRemove"
+              removable="true"
+              (removed)="removePendingIdentificationToRemove(elementToRemove)">
+              [{{ elementToRemove.repository }}] {{ elementToRemove.validatedName }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+        <div class="actions">
+          <button mat-stroked-button (click)="stopEditing()">Fermer</button>
+          <button mat-flat-button color="primary" (click)="applyChanges()">Appliquer</button>
+        </div>
+      </div>
+
+      <!-- edit as... -->
+      <!-- @Todo : edit as user / organization / group / ... -->
+      <!--
+      <div class="edit-as">
+        <mat-form-field>
+          <mat-label>Éditer en tant que</mat-label>
+          <mat-select [(value)]="selectedEditAs">
+            <mat-option *ngFor="let item of editAs" [value]="item" [disabled]="item.disabled">
+              {{ item.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      -->
+    </div>
+    
+  </div>
+  
+</div>

@@ -122,20 +122,23 @@ import { TableSimpleComponent } from './shared/table-simple/table-simple.compone
 import { WsLabelPipe } from './_pipes/ws-label.pipe';
 import { SophyImportComponent } from './admin/sophy/sophy-import/sophy-import.component';
 import { DataSourcesPageComponent } from './admin/dataSources/data-sources-page.component';
+import { IdentificationComponent } from './shared/identification/identification.component';
+import { IdentificationInlineComponent } from './shared/identification-inline/identification-inline.component';
 
 import * as Sentry from '@sentry/browser';
+
 Sentry.init({
   dsn: 'https://3cd3bcc6591d450d9f0808b78675a4b0@sentry.io/1542725'
 });
 
-@Injectable()
+/*@Injectable()
 export class SentryErrorHandler implements ErrorHandler {
   constructor() {}
   handleError(error) {
     const eventId = Sentry.captureException(error.originalError || error);
     Sentry.showReportDialog({ eventId });
   }
-}
+}*/
 
 @NgModule({
   declarations: [
@@ -158,7 +161,7 @@ export class SentryErrorHandler implements ErrorHandler {
     TablePreviewComponent, TableBasicInfosPreviewComponent, TableValidationsPreviewComponent, TableRenderPreviewComponent,
     OccurrenceBasicInfosPreviewComponent, OccurrencePreviewComponent, OccurrenceRenderPreviewComponent, SimpleGeojsonMapComponent,
     OccurrenceValidationsPreviewComponent, OccurrenceMetadataPreviewComponent, TbUserLabelComponent, SophyImportAndSplitCsvComponent,
-    TableSimpleComponent, WsLabelPipe, SophyImportComponent,  DataSourcesPageComponent// admin
+    TableSimpleComponent, WsLabelPipe, SophyImportComponent,  DataSourcesPageComponent, IdentificationComponent, IdentificationInlineComponent// admin
   ],
   entryComponents: [
     OccurrenceSearchMetadataModal1Component
@@ -190,7 +193,7 @@ export class SentryErrorHandler implements ErrorHandler {
               {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
               {provide: MatPaginatorIntl, useClass: MatPaginatorIntlService},
               MomentLocalDatePipe,
-              {provide: ErrorHandler, useClass: SentryErrorHandler}
+              /*{provide: ErrorHandler, useClass: SentryErrorHandler}*/
             ],
   bootstrap: [AppComponent]
 })

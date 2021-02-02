@@ -11,12 +11,18 @@ $vl-text-grey: #777676;
 
 $green: #278065;
 $blue: #0569A6;
+$orange: #FD9A28;
 
 $blue-material: #3f51b5;
 $blue-material-light: scale-color($blue-material, $lightness: 50%);
 
-$occurrence-color: $green;
 $table-color: $blue;
+$table-color-light-bg: scale-color($table-color, $lightness: 80%);;
+$sye-color: $orange;
+$sye-color-light-bg: scale-color($sye-color, $lightness: 80%);
+$occurrence-color: $green;
+$occurrence-color-light-bg: scale-color($occurrence-color, $lightness: 80%);
+
 $table-diagnosis-background: scale-color($table-color, $lightness: 95%);
 
 $cell-color-transparency: .1;

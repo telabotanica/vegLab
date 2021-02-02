@@ -1,0 +1,68 @@
+.validation-inline-wrapper {
+  h1 {
+    text-align: center;
+    padding-right: 10px;
+    font-size: 20px;
+  }
+  ul.validation-element {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    li {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      &.my-validation {
+        font-weight: bold;
+      }
+      &.showHideOtherValidations {
+        font-style: italic;
+        color: grey;
+        cursor: pointer;
+      }
+      span.label {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+        margin-right: 30px;
+        span.level {
+          margin-right: 5px;
+        }
+        span.text {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: nowrap;
+          align-items: center;
+          &.user-icon {
+            mat-icon {
+              margin-right: 5px;
+            }
+          }
+          &.delete-icon {
+            mat-icon {
+              margin-left: 5px;
+            }
+          }
+          &.no-identification {
+            font-style: italic;
+            color: grey;
+          }
+        }
+      }
+      mat-icon {
+        cursor: default;
+        color: grey;
+        &:not(.disabled) {
+          cursor: pointer;
+          color: black;
+        }
+      }
+    }
+  }
+}

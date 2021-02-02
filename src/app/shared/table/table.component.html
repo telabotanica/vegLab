@@ -38,6 +38,17 @@
     <div class="separator"></div>
 
     <div class="button">
+      <button mat-button
+        (click)="router.navigate(['/phyto/app/identification'])"
+        matTooltip="Identifications">
+        <mat-icon>check</mat-icon>
+        <span> Identifications</span>
+      </button>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="button">
       <button mat-button class="button">
         <mat-icon>undo</mat-icon>
       </button>

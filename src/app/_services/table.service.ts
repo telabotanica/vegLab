@@ -770,7 +770,7 @@ export class TableService {
 
   public createSyntheticColumnsForSyeOnTable(table: Table, currentUser: UserModel) {
     for (const sye of table.sye) {
-      if (sye.syntheticSye === false) {
+      if (sye.syntheticSye == null || sye.syntheticSye === false) {
         const syntheticColumn = this.createSyntheticColumn(sye.occurrences, currentUser, sye);
         sye.syntheticColumn = syntheticColumn;
       }
@@ -980,7 +980,7 @@ export class TableService {
               if (syeCellItem.repositoryIdTaxo === row.repositoryIdTaxo && syeCellItem.layer === row.layer) {
                 // synthetic column value to show
                 // syeItem.value = syeCellItem.occurrencesCount + ' / ' + sye.occurrencesCount;
-                if (sye.syntheticSye === false) {
+                if (sye.syntheticSye == null || sye.syntheticSye === false) {
                   syeItem.value = this.syntheticColumnService.getReadableCoef('roman', sye.occurrencesCount, syeCellItem.occurrencesCount, minRowCoef, maxRowCoef);     //
                 } else {
                   // For a synthetic Sye, just set the existing coef value
@@ -1036,7 +1036,7 @@ export class TableService {
               if (syeCellItem.repositoryIdTaxo === row.repositoryIdTaxo && syeCellItem.layer === row.layer) {
                 // synthetic column value to show
                 // syeItem.value = syeCellItem.occurrencesCount + ' / ' + sye.occurrencesCount;
-                if (sye.syntheticSye === false) {
+                if (sye.syntheticSye == null || sye.syntheticSye === false) {
                   syeItem.value = this.syntheticColumnService.getReadableCoef('roman', sye.occurrencesCount, syeCellItem.occurrencesCount, minRowCoef, maxRowCoef);
                 } else {
                   // For a synthetic Sye, just set the existing coef value
@@ -2332,7 +2332,7 @@ export class TableService {
     }
 
     // Set occCount if not provided but exists for synthetic Sye
-    if (sye && sye.syntheticSye && sye.syntheticSye && sye.occurrencesCount) {
+    if (sye && sye.syntheticSye && sye.occurrencesCount) {
       occCount = sye.occurrencesCount;
     }
 

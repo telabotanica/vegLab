@@ -1,0 +1,83 @@
+<div class="validation-inline-wrapper">
+  <ul class="validation-element" *ngIf="myValidations.length === 0 && otherValidations.length === 0">
+    <li>
+      <span class="label">
+        <span class="level" *ngIf="_element.level && _element.level === 'synusy'">σ</span>
+        <span class="level" *ngIf="_element.level && _element.level === 'microcenosis'">µC</span>
+        <span class="level" *ngIf="_element.level && _element.level === 'phytocenosis'">φ</span>
+        <span class="text no-identification">Aucune identification</span>
+      </span>
+    </li>
+  </ul>
+
+  <ul class="validation-element" *ngIf="myValidations.length > 0">
+    <li class="my-validation" *ngFor="let myValidation of myValidations">
+      <span class="label">
+        <span class="text user-icon">
+          <mat-icon inline="true" matTooltip="Cette identification est la vôtre">account_circle</mat-icon>
+        </span>
+        <span class="level" *ngIf="_element.level && _element.level === 'synusy'">σ</span>
+        <span class="level" *ngIf="_element.level && _element.level === 'microcenosis'">µC</span>
+        <span class="level" *ngIf="_element.level && _element.level === 'phytocenosis'">φ</span>
+        <span class="text" [class.delete-icon]="allowDelete">
+          <span>[{{ myValidation.repository }}] {{ myValidation.validatedName }}</span>
+          <span class="delete-icon" *ngIf="allowDelete">
+            <mat-icon inline="true" matTooltip="Supprimer cette identification" (click)="deleteElement(myValidation)">delete</mat-icon>
+          </span>
+        </span>
+      </span>
+      <!--<mat-icon *ngIf="!showAllValidations" [class.disabled]="otherValidations.length === 0" (click)="toggleShowAllValidations()">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="showAllValidations" (click)="toggleShowAllValidations()">keyboard_arrow_down</mat-icon>-->
+    </li>
+    <li class="showHideOtherValidations" *ngIf="!showAllValidations && otherValidations.length > 0" (click)="showAllValidations = !showAllValidations">
+      <span class="text" *ngIf="otherValidations.length === 1">Afficher 1 autre identification</span>
+      <span class="text" *ngIf="otherValidations.length > 1">Afficher {{ otherValidations.length }} autres identifications</span>
+    </li>
+    <li class="showHideOtherValidations" *ngIf="showAllValidations && otherValidations.length > 0" (click)="showAllValidations = !showAllValidations">
+      <span class="text" *ngIf="otherValidations.length === 1">Masquer  1 autre identification</span>
+      <span class="text" *ngIf="otherValidations.length > 1">Masquer {{ otherValidations.length }} autres identifications</span>
+    </li>
+    <div *ngIf="showAllValidations">
+      <li class="other-validation" *ngFor="let validation of otherValidations">
+        <span class="label">
+          <span class="level" *ngIf="_element.level && _element.level === 'synusy'">σ</span>
+          <span class="level" *ngIf="_element.level && _element.level === 'microcenosis'">µC</span>
+          <span class="level" *ngIf="_element.level && _element.level === 'phytocenosis'">φ</span>
+          <span class="text">[{{ validation.repository }}] {{ validation.validatedName }}</span>
+        </span>
+      </li>
+    </div>
+  </ul>
+
+  <ul class="validation-element" *ngIf="myValidations.length === 0">
+    <li *ngIf="otherValidations.length > 0">
+      <span class="label">
+        <span class="level" *ngIf="_element.level && _element.level === 'synusy'">σ</span>
+        <span class="level" *ngIf="_element.level && _element.level === 'microcenosis'">µC</span>
+        <span class="level" *ngIf="_element.level && _element.level === 'phytocenosis'">φ</span>
+        <span class="text">[{{ otherValidations[0].repository }}] {{ otherValidations[0].validatedName }}</span>
+      </span>
+      <!--<mat-icon *ngIf="!showAllValidations" [class.disabled]="otherValidations.length === 1" (click)="toggleShowAllValidations()">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="showAllValidations" (click)="toggleShowAllValidations()">keyboard_arrow_down</mat-icon>-->
+    </li>
+    <li class="showHideOtherValidations" *ngIf="!showAllValidations && otherValidations.length > 1" (click)="showAllValidations = !showAllValidations">
+      <span class="text" *ngIf="otherValidations.length - 1 === 1">Afficher 1 autre identification</span>
+      <span class="text" *ngIf="otherValidations.length - 1 > 1">Afficher {{ otherValidations.length - 1 }} autres identifications</span>
+    </li>
+    <li class="showHideOtherValidations" *ngIf="showAllValidations && otherValidations.length > 1" (click)="showAllValidations = !showAllValidations">
+      <span class="text" *ngIf="otherValidations.length - 1 === 1">Masquer 1 autre identification</span>
+      <span class="text" *ngIf="otherValidations.length - 1 > 1">Masquer {{ otherValidations.length - 1 }} autres identifications</span>
+    </li>
+    <div *ngIf="showAllValidations">
+      <li class="other-validation" *ngFor="let validation of otherValidations | slice:1">
+        <span class="label">
+          <span class="level" *ngIf="_element.level && _element.level === 'synusy'">σ</span>
+          <span class="level" *ngIf="_element.level && _element.level === 'microcenosis'">µC</span>
+          <span class="level" *ngIf="_element.level && _element.level === 'phytocenosis'">φ</span>
+          <span class="text">[{{ validation.repository }}] {{ validation.validatedName }}</span>
+        </span>
+      </li>
+    </div>
+  </ul>
+
+</div>
