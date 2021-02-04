@@ -49,12 +49,8 @@ export class UserService {
               this.lastToken = newToken;
               const userData = this.decode(newToken);
               this.getEsUserBySsoId(userData.id).subscribe(vlUser => {
-                if (vlUser !== null) {
-                  this.currentUser.next(userData);
-                  this.currentVlUser.next(vlUser);
-                } else {
-                  // User can't be finded through API
-                }
+                this.currentUser.next(userData);
+                this.currentVlUser.next(vlUser);
               }, error => {
                 console.log(error);
               });
@@ -65,12 +61,8 @@ export class UserService {
             const userData = this.decode(newToken);
             console.log(userData.id);
             this.getEsUserBySsoId(userData.id).subscribe(vlUser => {
-              if (vlUser !== null) {
-                this.currentUser.next(userData);
-                this.currentVlUser.next(vlUser);
-              } else {
-                // User can't be finded through API
-              }
+              this.currentUser.next(userData);
+              this.currentVlUser.next(vlUser);
             }, error => {
               console.log(error);
             });
