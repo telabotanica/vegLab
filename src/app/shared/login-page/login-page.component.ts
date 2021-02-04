@@ -92,9 +92,14 @@ export class LoginPageComponent implements OnInit {
     );
   }
 
-  onPasswordKeyup(event: any): void {
+  onPasswordKeyup(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      this.login();
+    }
+  }
+
+  onHidePasswordKeypress(event: KeyboardEvent): void {
     event.preventDefault();
-    this.login();
   }
 
 }
