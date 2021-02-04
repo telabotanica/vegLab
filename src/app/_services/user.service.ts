@@ -48,7 +48,7 @@ export class UserService {
             } else {
               this.lastToken = newToken;
               const userData = this.decode(newToken);
-              this.getEsUserBySsoId(userData.id).subscribe(vlUser => {
+              this.getVlUserBySsoId(userData.id).subscribe(vlUser => {
                 this.currentUser.next(userData);
                 this.currentVlUser.next(vlUser);
               }, error => {
@@ -60,7 +60,7 @@ export class UserService {
             this.lastToken = newToken;
             const userData = this.decode(newToken);
             console.log(userData.id);
-            this.getEsUserBySsoId(userData.id).subscribe(vlUser => {
+            this.getVlUserBySsoId(userData.id).subscribe(vlUser => {
               this.currentUser.next(userData);
               this.currentVlUser.next(vlUser);
             }, error => {
@@ -165,6 +165,13 @@ export class UserService {
         }
 
       })
+    );
+  }
+
+  getVlUserBySsoId(ssoId: string): Observable<VlUser> {
+    const headers = {'Content-Type': 'application/ld+json'};
+    return this.http.get(`${environment.apiBaseUrl}/users?ssoId=${ssoId}`, {headers}).pipe(
+      map(metadataResponse => metadataResponse['hydra:member'][0]) // For a filtered query, API Platform returns a response with metadata values nesting the core response ('hydra:member')
     );
   }
 }
