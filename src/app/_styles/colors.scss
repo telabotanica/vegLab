@@ -1,7 +1,7 @@
 $vl-color-1: #0997e7;
 $vl-color-1-light: #0997e7;
 $vl-color-1-lighter: #0997e7;
-$vl-color-1-dark: #0997e7;
+$vl-color-1-dark: #0b70aa;
 $vl-color-2: #7ecfc7;
 $vl-color-2-light: #7ecfc7;
 $vl-color-2-lighter: #7ecfc7;
@@ -12,6 +12,11 @@ $vl-text-grey: #777676;
 $green: #278065;
 $blue: #0569A6;
 $orange: #FD9A28;
+$red: #C61518;
+
+$success: $green;
+$warning: $orange;
+$error: $red;
 
 $blue-material: #3f51b5;
 $blue-material-light: scale-color($blue-material, $lightness: 50%);

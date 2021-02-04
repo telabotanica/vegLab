@@ -1,5 +1,5 @@
 /**
- * Model form Tela Botanica
+ * SSO User Model
  */
 export interface UserModel {
   // id: string;                 // number as string

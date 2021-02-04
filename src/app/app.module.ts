@@ -124,6 +124,8 @@ import { SophyImportComponent } from './admin/sophy/sophy-import/sophy-import.co
 import { DataSourcesPageComponent } from './admin/dataSources/data-sources-page.component';
 import { IdentificationComponent } from './shared/identification/identification.component';
 import { IdentificationInlineComponent } from './shared/identification-inline/identification-inline.component';
+import { CreateUserFormComponent } from './user/create-user-form/create-user-form.component';
+import { AdminCreateUserComponent } from './admin/user/admin-create-user/admin-create-user.component';
 
 import * as Sentry from '@sentry/browser';
 
@@ -160,8 +162,8 @@ export class SentryErrorHandler implements ErrorHandler {
     BaseflorDiagramComponent, BaseflorDiagramSelectorComponent, OccurrencesTableViewComponent, TablesTableViewComponent,
     TablePreviewComponent, TableBasicInfosPreviewComponent, TableValidationsPreviewComponent, TableRenderPreviewComponent,
     OccurrenceBasicInfosPreviewComponent, OccurrencePreviewComponent, OccurrenceRenderPreviewComponent, SimpleGeojsonMapComponent,
-    OccurrenceValidationsPreviewComponent, OccurrenceMetadataPreviewComponent, TbUserLabelComponent, SophyImportAndSplitCsvComponent,
-    TableSimpleComponent, WsLabelPipe, SophyImportComponent,  DataSourcesPageComponent, IdentificationComponent, IdentificationInlineComponent// admin
+    OccurrenceValidationsPreviewComponent, OccurrenceMetadataPreviewComponent, TbUserLabelComponent, SophyImportAndSplitCsvComponent, CreateUserFormComponent,
+    TableSimpleComponent, WsLabelPipe, SophyImportComponent,  DataSourcesPageComponent, IdentificationComponent, IdentificationInlineComponent, AdminCreateUserComponent// admin
   ],
   entryComponents: [
     OccurrenceSearchMetadataModal1Component

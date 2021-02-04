@@ -3,28 +3,32 @@
     <mat-toolbar-row>
       
       <button mat-button>
-        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example user verified icon">dashboard</mat-icon>
+        <mat-icon class="example-icon" aria-hidden="false">dashboard</mat-icon>
         <span>Accueil</span>
       </button>
     </mat-toolbar-row>
 
     <mat-toolbar-row>
       <button mat-button (click)="router.navigate(['/admin/data-sources'])">
-        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example user verified icon">storage</mat-icon>
+        <mat-icon class="example-icon" aria-hidden="false">storage</mat-icon>
         <span>Sources de données</span>
       </button>
     </mat-toolbar-row>
   
     <mat-toolbar-row>
-      <button mat-button disabled>
-        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example user verified icon">account_circle</mat-icon>
+      <button mat-button [matMenuTriggerFor]="menuUser">
+        <mat-icon class="example-icon" aria-hidden="false">account_circle</mat-icon>
         <span>Utilisateurs</span>
       </button>
+      <mat-menu #menuUser="matMenu">
+        <button mat-menu-item (click)="router.navigate(['/admin/create-user'])">Créer</button>
+        <button mat-menu-item (click)="router.navigate(['/admin/list-users'])">Liste</button>
+      </mat-menu>
     </mat-toolbar-row>
   
     <mat-toolbar-row>
       <button mat-button [matMenuTriggerFor]="menuMeta">
-        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">local_offer</mat-icon>
+        <mat-icon class="example-icon" aria-hidden="false">local_offer</mat-icon>
         <span>Métadonnées</span>
       </button>
       <mat-menu #menuMeta="matMenu">
@@ -35,7 +39,7 @@
 
     <mat-toolbar-row>
       <button mat-button [matMenuTriggerFor]="menuSophy">
-        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">settings</mat-icon>
+        <mat-icon class="example-icon" aria-hidden="false">settings</mat-icon>
         <span>SOPHY</span>
       </button>
       <mat-menu #menuSophy="matMenu">

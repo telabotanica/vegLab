@@ -21,6 +21,7 @@ import { TableFormComponent } from './shared/table-form/table-form.component';
 import { TableSearchComponent } from './shared/table-search/table-search.component';
 import { TableImportComponent } from './shared/table-import/table-import.component';
 import { IdentificationComponent } from './shared/identification/identification.component';
+import { AdminCreateUserComponent } from './admin/user/admin-create-user/admin-create-user.component';
 
 import { MyDataPageComponent } from './user/my-data-page/my-data-page.component';
 
@@ -55,7 +56,9 @@ const routes: Routes = [
     { path: 'metadata-test', component: AdminTestMetadataComponent},
     { path: 'sophy-consolidate', component: SophyImportAndSplitCsvComponent },
     { path: 'sophy-import', component: SophyImportComponent },
-    { path: 'data-sources', component: DataSourcesPageComponent }
+    { path: 'data-sources', component: DataSourcesPageComponent },
+    { path: 'create-user', component: AdminCreateUserComponent },
+    { path: 'list-users', component: AdminCreateUserComponent }
   ]},
   { path: '**', component: FatalErrorPageComponent, data: { error: 404 } },
 ];

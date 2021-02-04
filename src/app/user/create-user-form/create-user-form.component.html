@@ -1,0 +1,61 @@
+<div class="create-user-form-wrapper">
+  <mat-card class="signup-card">
+    <mat-card-header>
+      <!--<div mat-card-avatar><mat-icon aria-hidden="false" aria-label="Icone connexion">account_circle</mat-icon></div>-->
+      <mat-card-title>{{ title }}</mat-card-title>
+      <!--<mat-card-subtitle>...</mat-card-subtitle>-->
+    </mat-card-header>
+    <mat-card-content class='content'>
+      <form class="form" [formGroup]="form">
+        <div class="form-fields" *ngIf="userHasBeenCreated === null">
+          <mat-form-field>
+            <input matInput formControlName="firstName" name="firstName" autocomplete="given-name" placeholder="Prénom" type="text" pattern="[A-zÀ-ú(.)(\-)( )?]*">
+            <mat-error >Entrez votre prénom. Seuls les points et les tirets sont accéptés en plus des lettres.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <input matInput formControlName="lastName" name="lastName" autocomplete="family-name" placeholder="Nom" type="text" pattern="[A-zÀ-ú(.)(\-)( )?]*">
+            <mat-error>Entrez votre nom. Seuls les points et les tirets sont accéptés en plus des lettres.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <input matInput formControlName="username" name="userName" autocomplete="off" placeholder="Nom d'utilisateur" type="text" pattern="[A-zÀ-ú(.)(\-)( )?]*">
+            <mat-hint>Votre nom, tel qu'il apparaîtra dans l'application</mat-hint>
+            <mat-error>Entrez votre nom d'utilsateur. Seuls les points et les tirets sont accéptés en plus des lettres.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <input matInput formControlName="email" name="email" autocomplete="email" type="email" placeholder="Adresse e-mail">
+            <mat-error>Cette adresse e-mail n'est pas valide.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <input matInput formControlName="emailVerification" name="email-verification" autocomplete="email" type="email" placeholder="Confirmez votre adresse e-mail">
+            <mat-error>Les adresses e-mail ne correspondent pas.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <input matInput formControlName="password" name="password" autocomplete="new-password" placeholder="Mot de passe" type="password">
+            <mat-error>Entrez un mot de passe d'au moins 8 caractères.</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="success" *ngIf="userHasBeenCreated !== null && redirectAfterAccountCreated === true">
+          <p class="icon-success"><mat-icon inline="true">done</mat-icon></p>
+          <p>Vous allez être redirigé vers la page de connexion.</p>
+        </div>
+
+        <div class="actions">
+          <button mat-flat-button color="primary"
+                  submit
+                  *ngIf="userHasBeenCreated === null"
+                  (click)="createUser($event)"
+                  [class.spinner]="creatingUser"
+                  [disabled]="!form.valid || creatingUser">Valider</button>
+          
+          <button mat-flat-button *ngIf="userHasBeenCreated !== null" (click)="router.navigate(['/login'])">Se connecter</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

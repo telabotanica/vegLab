@@ -3,11 +3,13 @@ import { environment } from '../../environments/environment';
 import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
-import { UserModel } from '../_models/user.model';
+import { UserModel } from '../_models/user.model';  // SSO User Model
+import { VlUser } from '../_models/vl-user.model';  // API User Model
 
 import { SsoService } from './sso.service';
 
 import * as jwt_decode from 'jwt-decode';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable({
   providedIn: 'root'
@@ -56,6 +58,11 @@ export class UserService {
         // @Todo manage error
       }
     );
+  }
+
+  createUser(user: VlUser): Observable<VlUser> {
+    const headers = {'Content-Type': 'application/ld+json'};
+    return this.http.post<VlUser>(`${environment.apiBaseUrl}/users`, JSON.stringify(user), {headers});
   }
 
   private decode(token: string): UserModel {

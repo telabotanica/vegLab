@@ -1,0 +1,46 @@
+@import '../../_styles/colors.scss';
+
+ .create-user-form-wrapper { 
+  .signup-card {
+    max-width: 500px;
+    .mat-card-header {
+      justify-content: center;
+      margin-bottom: 24px;
+      .mat-card-title {
+        color: $vl-color-1;
+        font-weight: bold;
+        font-size: 1.9em;
+      }
+    }
+  }
+
+  .form {
+    .form-fields {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+    }
+    .actions {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-evenly;
+      margin-top: 20px;
+    }
+    .success {
+      display: flex;
+      flex-direction: column;
+      color: $vl-color-1-dark;
+      text-align: center;
+      font-weight: bold;
+      p.icon-success {
+        font-size: 62px;
+        .mat-icon {
+          height: 100px;
+          width: 100px;
+          border: 2px solid $vl-color-1;
+          border-radius: 50px;
+        }
+      }
+    }
+  }
+}
