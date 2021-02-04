@@ -4,7 +4,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
 import { SsoService } from 'src/app/_services/sso.service';
-import { NotificationService } from 'src/app/_services/notification.service';
 import { WorkspaceService } from 'src/app/_services/workspace.service';
 import { MenuService } from 'src/app/_services/menu.service';
 
@@ -30,7 +29,6 @@ export class LoginPageComponent implements OnInit {
   constructor(private ssoService: SsoService,
               private routerService: Router,
               private route: ActivatedRoute,
-              private notificationService: NotificationService,
               private wsService: WorkspaceService,
               private menuService: MenuService) { }
 

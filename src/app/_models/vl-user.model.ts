@@ -14,5 +14,5 @@ export interface VlUser {
   lastName:      string;
   username:      string;
   email:         string;
-  password:      string; // not persisted in API database !
+  password?:      string; // not persisted in API database !
 }

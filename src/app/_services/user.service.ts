@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { BehaviorSubject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { UserModel } from '../_models/user.model';  // SSO User Model
 import { VlUser } from '../_models/vl-user.model';  // API User Model
@@ -9,14 +9,17 @@ import { VlUser } from '../_models/vl-user.model';  // API User Model
 import { SsoService } from './sso.service';
 
 import * as jwt_decode from 'jwt-decode';
+import * as _ from 'lodash';
 import { Observable } from 'rxjs/internal/Observable';
+import { map } from 'rxjs/internal/operators/map';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
-  public currentUser = new BehaviorSubject<UserModel>(null);
+  public currentUser = new BehaviorSubject<UserModel>(null);  // current SSO user
+  public currentVlUser = new BehaviorSubject<VlUser>(null);   // curren API user
 
   lastToken: string = null;
 
@@ -45,13 +48,32 @@ export class UserService {
             } else {
               this.lastToken = newToken;
               const userData = this.decode(newToken);
-              this.currentUser.next(userData);
+              this.getEsUserBySsoId(userData.id).subscribe(vlUser => {
+                if (vlUser !== null) {
+                  this.currentUser.next(userData);
+                  this.currentVlUser.next(vlUser);
+                } else {
+                  // User can't be finded through API
+                }
+              }, error => {
+                console.log(error);
+              });
             }
           } else {
             // User wasn't logged in
             this.lastToken = newToken;
             const userData = this.decode(newToken);
-            this.currentUser.next(userData);
+            console.log(userData.id);
+            this.getEsUserBySsoId(userData.id).subscribe(vlUser => {
+              if (vlUser !== null) {
+                this.currentUser.next(userData);
+                this.currentVlUser.next(vlUser);
+              } else {
+                // User can't be finded through API
+              }
+            }, error => {
+              console.log(error);
+            });
           }
         }
       }, error => {
@@ -124,5 +146,33 @@ export class UserService {
       return cu['resource_access'][environment.sso.clientId].roles as Array<string>;
     }
     return [];
+  }
+
+  getEsUserBySsoId(ssoId: string): Observable<any> {
+    const headers = new HttpHeaders('Accept: application/ld+json');
+    const query = `
+        {
+          "query": {
+            "bool": {
+              "must": [
+                { "match": { "ssoId": "${ssoId}" } }
+              ]
+            }
+          }
+        }
+      `;
+
+    headers.append('Content-Type', 'application/json');
+    console.log(`${environment.esBaseUrl}/vl_users/_search`);
+    return this.http.post<VlUser>(`${environment.esBaseUrl}/vl_users/_search`, JSON.parse(query), {headers}).pipe(
+      map(result => {
+        if (result['hits']['total'] === 1) {
+          return result['hits']['hits'][0]['_source'];
+        } else {
+          return null;
+        }
+
+      })
+    );
   }
 }
