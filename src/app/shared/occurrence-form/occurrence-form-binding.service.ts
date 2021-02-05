@@ -30,6 +30,7 @@ export class OccurrenceFormBindingService {
               private dateAdapter: DateAdapter<any>) { }
 
   bindOccurrenceData(citedSyntaxon: RepositoryItemModel, level: Level, location: LocationModel, occurrences: Array<{ layer: string, taxa: RepositoryItemModel, coef: string }>, form: FormGroup, user: UserModel, metadatas: Array<{metadata: ExtendedFieldModel, control: FormControl}>): OccurrenceModel {
+    const currentVlUser = this.userService.currentVlUser.getValue();
     //
     // SYNUSY
     //
@@ -49,6 +50,7 @@ export class OccurrenceFormBindingService {
         this.xOccurrence.validations = [{
           validatedBy: user.id,
           validatedAt: new Date(),
+          user: currentVlUser,
           repository: citedSyntaxon.repository,
           repositoryIdNomen: +citedSyntaxon.idNomen,
           repositoryIdTaxo: xIdTaxo,
@@ -74,6 +76,7 @@ export class OccurrenceFormBindingService {
         yOcc.validations = [{
           validatedBy: user.id,
           validatedAt: new Date(),
+          user: currentVlUser,
           repository: occ.taxa.repository,
           repositoryIdNomen: +occ.taxa.idNomen,
           repositoryIdTaxo: yIdTaxo,
@@ -108,6 +111,7 @@ export class OccurrenceFormBindingService {
         this.xOccurrence.validations = [{
           validatedBy: user.id,
           validatedAt: new Date(),
+          user: currentVlUser,
           repository: citedSyntaxon.repository,
           repositoryIdNomen: +citedSyntaxon.idNomen,
           repositoryIdTaxo: xIdTaxo,
@@ -146,6 +150,7 @@ export class OccurrenceFormBindingService {
           zOcc.validations = [{
             validatedBy: user.id,
             validatedAt: new Date(),
+            user: currentVlUser,
             repository: z.taxa.repository,
             repositoryIdNomen: +z.taxa.idNomen,
             repositoryIdTaxo: zIdTaxo,
@@ -174,10 +179,20 @@ export class OccurrenceFormBindingService {
   }
 
   private bindUserAndObserverData(occ: OccurrenceModel, formData: FormGroup, user: UserModel) {
+    // get current vlUser
+    const cu = this.userService.currentVlUser.getValue();
+    if (cu === null) {
+      console.log('Current user is null');
+      return;
+    }
+
+    console.log('CURRENT VL USER', cu);
+
     occ.userId = user.id;
     occ.userEmail = user.email;
     occ.userPseudo = user ? this.userService.getUserFullName() : null;
     occ.userProfile = [];
+    occ.user = cu;
 
     occ.observer = formData.controls.observer.value;
     occ.observerInstitution = formData.controls.observerInstitution.value;

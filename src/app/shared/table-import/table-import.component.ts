@@ -35,6 +35,7 @@ import { FieldDataType } from 'src/app/_enums/field-data-type-enum';
 import { Observer } from 'src/app/_models/observer.model';
 import { Biblio } from 'src/app/_models/biblio.model';
 import { UserModel } from 'src/app/_models/user.model';
+import { VlUser } from 'src/app/_models/vl-user.model';
 
 import { environment } from '../../../environments/environment';
 
@@ -102,7 +103,9 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
   // User vars
   currentUser: UserModel;
+  currentVlUser: VlUser;
   userSubscription: Subscription;
+  vlUserSubscription: Subscription;
 
   // Stepper vars
   STEPS = {
@@ -269,6 +272,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
     // Get current user
     this.currentUser = this.userService.currentUser.getValue();
+    this.currentVlUser = this.userService.currentVlUser.getValue();
     if (this.currentUser == null) {
       // No user
       // Should refresh the token ?
@@ -284,6 +288,11 @@ export class TableImportComponent implements OnInit, OnDestroy {
       error => {
         // @Todo manage error
       }
+    );
+    this.vlUserSubscription = this.userService.currentVlUser.subscribe(
+      vlUser => {
+        this.currentVlUser = vlUser;
+      }, error => { console.log(error); }
     );
 
     this.availableRepository = environment.tbRepositoriesConfig;
@@ -307,6 +316,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.userSubscription) { this.userSubscription.unsubscribe(); }
+    if (this.vlUserSubscription) { this.vlUserSubscription.unsubscribe(); }
 
     if (this.stepFileSubscription) { this.stepFileSubscription.unsubscribe(); }
     if (this.stepNamesSubscription) { this.stepNamesSubscription.unsubscribe(); }
@@ -703,7 +713,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
       Object.keys(groups).forEach(key => orderedGroups[key] = {count: []});
 
       for (let i = 0; i < rawGroupsCells.length; i++) {
-       
+
         const group = rawGroupsCells[i];
 
         const count = rawRelevesCountCells[i];
@@ -926,6 +936,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
               currentContent.validation = {
                 validatedBy: this.currentUser.id,
                 validatedAt: now,
+                user: this.currentVlUser,
                 repository: 'otherunknown',
                 repositoryIdNomen: randomInteger,
                 repositoryIdTaxo: randomInteger.toString(),
@@ -944,6 +955,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
               currentContent.validation = {
                 validatedBy: this.currentUser.id,
                 validatedAt: now,
+                user: this.currentVlUser,
                 repository: useRepo,
                 repositoryIdNomen: Number(t[this.NOMEN_COL_POS.position]),
                 repositoryIdTaxo: result.idTaxo.toString(),
@@ -974,6 +986,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
             currentContent.validation = {
               validatedBy: this.currentUser.id,
               validatedAt: now,
+              user: this.currentVlUser,
               repository: 'otherunknown',
               repositoryIdNomen: randomInteger,
               repositoryIdTaxo: randomInteger.toString(),
@@ -1004,6 +1017,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
         currentContent.validation = {
           validatedBy: this.currentUser.id,
           validatedAt: now,
+          user: this.currentVlUser,
           repository: 'otherunknown',
           repositoryIdNomen: randomInteger,
           repositoryIdTaxo: randomInteger.toString(),
@@ -2295,6 +2309,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
       userId,
       userEmail,
       userPseudo,
+      user: this.currentVlUser,
       ownedByCurrentUser: user !== null,    // a new table is owned by its creator
       createdBy: userId,
       createdAt: new Date(),
@@ -2319,6 +2334,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
         userId,
         userEmail,
         userPseudo,
+        user: this.currentVlUser,
         originalReference: sye.id,
         syeId: syeCount,
         occurrencesCount: sye.releves.length,
@@ -2329,7 +2345,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
         vlWorkspace: this.wsService.currentWS.getValue()
       };
 
-      
+
       for (const releve of sye.releves) {
         console.log('releveCount: ', releveCount, releve.id);
         // new sye occurrences (synusy, microcenosis, etc.)
@@ -2347,6 +2363,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
           userId,
           userEmail,
           userPseudo,
+          user: null,
           observer: '',
           dateCreated: new Date(),
           taxoRepo: '',
@@ -2374,6 +2391,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
                 userId,
                 userEmail,
                 userPseudo,
+                user: null,
                 observer: '',
                 dateCreated: new Date(),
                 taxoRepo: '',
@@ -2402,6 +2420,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
                   userId,
                   userEmail,
                   userPseudo,
+                  user: null,
                   observer: '',
                   dateCreated: new Date(),
                   taxoRepo: '',
@@ -2438,6 +2457,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
               userId,
               userEmail,
               userPseudo,
+              user: null,
               observer: '',
               dateCreated: new Date(),
               taxoRepo: '',
@@ -2478,7 +2498,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
         sye.occurrences = [];
       }
     }
-    
+
 
     // Create synthetic columns for classic Sye with occurrences (not synthetic Sye)
     this.tableService.createSyntheticColumnsForSyeOnTable(newTable, this.currentUser);
@@ -2491,6 +2511,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
       const tableValidation: OccurrenceValidationModel = this.validationList.table.validation.consolidedValidation ? {
         validatedBy:       userId,
         validatedAt:       validationDate,
+        user:              this.currentVlUser,
         repository:        this.validationList.table.validation.consolidedValidation.repository,
         repositoryIdNomen: Number(this.validationList.table.validation.consolidedValidation.idNomen),
         repositoryIdTaxo:  this.validationList.table.validation.consolidedValidation.idTaxo.toString(),
@@ -2514,6 +2535,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
           const syeValidation: OccurrenceValidationModel = sye.validation.consolidedValidation ? {
             validatedBy:       userId,
             validatedAt:       validationDate,
+            user:              this.currentVlUser,
             repository:        sye.validation.consolidedValidation.repository,
             repositoryIdNomen: Number(sye.validation.consolidedValidation.idNomen),
             repositoryIdTaxo:  sye.validation.consolidedValidation.idTaxo.toString(),
@@ -2545,6 +2567,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
               const releveValidation: OccurrenceValidationModel = releve.validation && releve.validation.consolidedValidation ? {
                 validatedBy:       userId,
                 validatedAt:       validationDate,
+                user:              this.currentVlUser,
                 repository:        releve.validation.consolidedValidation.repository,
                 repositoryIdNomen: Number(releve.validation.consolidedValidation.idNomen),
                 repositoryIdTaxo:  releve.validation.consolidedValidation.idTaxo.toString(),

@@ -2,6 +2,7 @@ import { OccurrenceModel } from './occurrence.model';
 import { SyntheticColumn } from './synthetic-column.model';
 import { OccurrenceValidationModel } from './occurrence-validation.model';
 import { Biblio } from './biblio.model';
+import { VlUser } from './vl-user.model';
 
 export interface Sye {
   id:                 number;
@@ -9,6 +10,7 @@ export interface Sye {
   userId:             string;  // not mandatory in backend but we force mandatory in front
   userEmail:          string;  // mandatory in backend
   userPseudo:         string;  // not mandatory in backend but we force mandatory in front
+  user:               VlUser;
 
   originalReference?: string; // needed for table import
   syeId:              number;

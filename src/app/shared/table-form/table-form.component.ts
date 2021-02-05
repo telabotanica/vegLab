@@ -11,6 +11,7 @@ import { OccurrenceValidationModel } from 'src/app/_models/occurrence-validation
 import { PdfFile } from 'src/app/_models/pdf-file.model';
 import { TableRelatedSyntaxon } from 'src/app/_models/table-related-syntaxon';
 import { UserModel } from 'src/app/_models/user.model';
+import { VlUser } from 'src/app/_models/vl-user.model';
 
 import { RepositoryItemModel } from 'tb-tsb-lib';
 import { FileData } from 'tb-dropfile-lib/lib/_models/fileData';
@@ -19,6 +20,7 @@ import * as _ from 'lodash';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { sanitizeStyle } from '@angular/core/src/sanitization/sanitization';
 
 @Component({
   selector: 'vl-table-form',
@@ -35,7 +37,9 @@ export class TableFormComponent implements OnInit, OnDestroy {
   maxTitleLength = 100;
   maxDescriptionLength = 300;
   currentUser: UserModel;
+  currentVlUser: VlUser;
   userSubscription: Subscription;
+  vlUserSubscription: Subscription;
   relatedSyntaxon: Array<RepositoryItemModel> = [];
   relatedPdfFile: Array<FileData> = [];
   allowedUploadedFileTypes = ['pdf'];
@@ -58,6 +62,7 @@ export class TableFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Get current user
     this.currentUser = this.userService.currentUser.getValue();
+    this.currentVlUser = this.userService.currentVlUser.getValue();
     if (this.currentUser == null) {
       // No user
       // Should refresh the token ?
@@ -73,6 +78,11 @@ export class TableFormComponent implements OnInit, OnDestroy {
       error => {
         // @Todo manage error
       }
+    );
+    this.vlUserSubscription = this.userService.currentVlUser.subscribe(
+      vlUser => {
+        this.currentVlUser = vlUser;
+      }, error => { console.log(error); }
     );
 
     this.tableForm = new FormGroup({
@@ -178,6 +188,20 @@ export class TableFormComponent implements OnInit, OnDestroy {
   postTable() {
     const prePostedTable = _.cloneDeep(this.tableService.getCurrentTable());
     const prePostedTableValidations: Array<OccurrenceValidationModel> = [];
+
+    // Check user is binded to table and syes (it should !)
+    if (this.currentVlUser == null) {
+      this.notificationService.error('Une erreur est survenue : nous ne parvenons pas à vous identifier correctement');
+      return;
+    }
+    if (prePostedTable.user == null) {
+      prePostedTable.user = this.currentVlUser;
+      if (prePostedTable.syntheticColumn && prePostedTable.syntheticColumn.user == null) { prePostedTable.syntheticColumn.user = this.currentVlUser; }
+      for (const sye of prePostedTable.sye) {
+        if (sye.user == null) { sye.user = this.currentVlUser; }
+        if (sye.syntheticColumn && sye.syntheticColumn.user == null) { sye.syntheticColumn.user = this.currentVlUser; }
+      }
+    }
 
     // Bind metadata
     this.bindMetadataToTable(prePostedTable);
@@ -343,7 +367,8 @@ export class TableFormComponent implements OnInit, OnDestroy {
       validName: name,
       validatedName: name,
       validatedAt: new Date(),
-      validatedBy: this.currentUser.id
+      validatedBy: this.currentUser.id,
+      user: this.currentVlUser
     };
     return ovm;
   }

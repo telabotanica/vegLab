@@ -441,6 +441,7 @@ export class TableService {
       validName: name,
       validatedAt: new Date(),
       validatedBy: table.createdBy,
+      user: table.user,
       validatedName: name
     };
     return tableValidation;
@@ -501,12 +502,15 @@ export class TableService {
 
   createTable(): Table {
     const currentUser = this.userService.currentUser.getValue();
+    const currentVlUser = this.userService.currentVlUser.getValue();
+
     const table: Table = {
       id: null,
 
       userId: currentUser ? currentUser.id : null,
       userEmail: currentUser ? currentUser.email : null,
       userPseudo: currentUser ? this.userService.getUserFullName() : null,
+      user: currentVlUser ? currentVlUser : null,
       ownedByCurrentUser: currentUser !== null,     // a new table is owned by its creator
 
       isDiagnosis: false,
@@ -606,20 +610,26 @@ export class TableService {
   // ---------------
   // DUPLICATE TABLE
   // To duplicate a table, we remove all id properties (from Table, Syes, Synthetic columns, Row def, Validation and Pdf files)
+  // and set user as currentUser for table, sye and synthetic columns
+  // Note : Validations are not modified
   // ---------------
   duplicateTable(table: Table): Table {
     const cu = this.userService.currentUser.getValue();
-    if (cu == null || (cu && cu.id == null)) {
+    const vlCu = this.userService.currentVlUser.getValue();
+
+    if (cu == null || vlCu === null || (cu && cu.id == null) || (vlCu && vlCu.id == null)) {
       throw new Error('Can\'t duplicate the Table because user or user.id is null');
     }
 
     let tableToDuplicate = _.cloneDeep(table);
 
-    // 1. remove table ID
+    // 1. set current user  as table.user & remove table ID
+    tableToDuplicate.user = vlCu;
     tableToDuplicate = this.removeTableIds(tableToDuplicate);
 
-    // 2. remove sye IDs
+    // 2. set current user as table.user & remove sye IDs
     for (let sye of tableToDuplicate.sye) {
+      sye.user = vlCu;
       sye = this.syeService.removeIds(sye);
     }
 
@@ -627,12 +637,14 @@ export class TableService {
       tableToDuplicate.sye[i] = this.syeService.removeIds(tableToDuplicate.sye[i]);
     }
 
-    // 3. remove synthetic columns ids + Synthetic items ids
+    // 3. set current user as syntheticColumn.user & remove synthetic columns ids & Synthetic items ids
     if (tableToDuplicate.syntheticColumn !== null && tableToDuplicate.syntheticColumn !== undefined) {
+      tableToDuplicate.syntheticColumn.user = vlCu;
       tableToDuplicate.syntheticColumn = this.syntheticColumnService.removeIds(tableToDuplicate.syntheticColumn);
     }
     for (let j = 0; j < tableToDuplicate.sye.length; j++) {
       if (tableToDuplicate.sye[j].syntheticColumn !== null && tableToDuplicate.sye[j].syntheticColumn !== undefined) {
+        tableToDuplicate.sye[j].syntheticColumn.user = vlCu;
         tableToDuplicate.sye[j].syntheticColumn = this.syntheticColumnService.removeIds(tableToDuplicate.sye[j].syntheticColumn);
       }
     }
@@ -689,7 +701,7 @@ export class TableService {
     if (tableToDuplicate.isDiagnosis !== null && tableToDuplicate.isDiagnosis !== undefined && tableToDuplicate.isDiagnosis === true) {
       tableToDuplicate.isDiagnosis = false;
     }
-
+console.log('TABLE TO DUPLICATE END F()', tableToDuplicate);
     return tableToDuplicate;
   }
 
@@ -2327,6 +2339,7 @@ export class TableService {
    * If occCount (occurrencesCount) is given, the occurrences param. will be traited as a synthetic column
    */
   createSyntheticColumn(occurrences: Array<OccurrenceModel>, currentUser: UserModel, sye?: Sye, occCount?: number): SyntheticColumn {
+    const vlUser = this.userService.currentVlUser.getValue();
     if (occCount !== undefined) {
       console.log('CREATE SYNTH COL FOR SYNTH SYE: ', occurrences, sye, occCount);
     }
@@ -2342,6 +2355,7 @@ export class TableService {
       // sye: (sye && sye.id) ? sye : null,                                          // so the table PATCH operations will also patch sye & synthetic column
       userId: currentUser.id,
       userEmail: currentUser.email,
+      user: vlUser,
       userPseudo: currentUser ? this.userService.getUserFullName() : null,
       sye: null,
       validations: [],

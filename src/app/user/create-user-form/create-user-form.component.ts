@@ -87,6 +87,7 @@ export class CreateUserFormComponent implements OnInit, OnDestroy {
         email: this.emailCtrl.value,
         password: this.form.controls.password.value,
       };
+      console.log('CREATE USER WITH', newUser);
       this.userService.createUser(newUser).subscribe(createdUser => {
         this.creatingUser = false;
 

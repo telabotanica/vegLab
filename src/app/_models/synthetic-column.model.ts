@@ -2,6 +2,7 @@ import { OccurrenceValidationModel } from './occurrence-validation.model';
 import { SyntheticItem } from './synthetic-item.model';
 import { Sye } from './sye.model';
 import { Biblio } from './biblio.model';
+import { VlUser } from './vl-user.model';
 
 export interface SyntheticColumn {
   '@id'?:          string;
@@ -10,6 +11,7 @@ export interface SyntheticColumn {
   userId:          string;  // not mandatory in backend but we force mandatory in front
   userEmail:       string;  // mandatory in backend
   userPseudo:      string;  // not mandatory in backend but we force mandatory in front
+  user:            VlUser;
 
   sye:             Sye;
   validations:     Array<OccurrenceValidationModel>;

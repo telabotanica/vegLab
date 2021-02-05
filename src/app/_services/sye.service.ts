@@ -1,24 +1,30 @@
 import { Injectable } from '@angular/core';
 
 import { Sye } from '../_models/sye.model';
+import { OccurrenceModel } from '../_models/occurrence.model';
+
 import { WorkspaceService } from './workspace.service';
+import { UserService } from './user.service';
 
 import * as _ from 'lodash';
-import { OccurrenceModel } from '../_models/occurrence.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SyeService {
 
-  constructor(private wsService: WorkspaceService) { }
+  constructor(private wsService: WorkspaceService, private userService: UserService) { }
 
   createSye(id?: number): Sye {
+    // Get VlUser
+    const vlUser = this.userService.currentVlUser.getValue();
+
     const sye = {
       id: null,
       userId: null,
       userEmail: null,
       userPseudo: null,
+      user: vlUser,
       syeId: typeof(id) === 'number' ? id : null,
       occurrencesCount: 0,
       occurrences: [],

@@ -12,6 +12,7 @@ import { LayerEnum } from '../_enums/layer-list';
 import { VlAccuracyEnum } from 'tb-geoloc-lib';
 import { Observer } from './observer.model';
 import { Biblio } from './biblio.model';
+import { VlUser } from './vl-user.model';
 
 
 export interface OccurrenceModel {
@@ -22,6 +23,7 @@ export interface OccurrenceModel {
 
   userEmail: string;
   userPseudo?: string;
+  user: VlUser;
 
   observer: string;
   observerInstitution?: string;

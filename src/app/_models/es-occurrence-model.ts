@@ -9,6 +9,7 @@ import { OccurrenceValidationModel } from './occurrence-validation.model';
 import { Level } from '../_enums/level-enum';
 import { LayerEnum } from '../_enums/layer-list';
 import { EsExtendedFieldModel } from './es-extended-field-model';
+import { VlUser } from './vl-user.model';
 
 export interface EsOccurrenceModel {
   id?: number;
@@ -18,6 +19,7 @@ export interface EsOccurrenceModel {
 
   userEmail: string;
   userPseudo?: string;
+  user: VlUser;
 
   observer: string;
   observerInstitution?: string;

@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { UserModel } from 'src/app/_models/user.model';
+import { VlUser } from 'src/app/_models/vl-user.model';
 import { Table } from 'src/app/_models/table.model';
 import { OccurrenceModel } from 'src/app/_models/occurrence.model';
 import { Sye } from 'src/app/_models/sye.model';
@@ -24,6 +25,7 @@ export class IdentificationComponent implements OnInit, OnDestroy {
 
   // VARS
   currentUser: UserModel;
+  currentVlUser: VlUser;
   currentTable: Table;
   currentTableIsEmpty = false;
   currentTableSubscriber: Subscription;
@@ -63,6 +65,7 @@ export class IdentificationComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Get current user
     this.currentUser = this.userService.currentUser.getValue();
+    this.currentVlUser = this.userService.currentVlUser.getValue();
 
     // Get currentTable
     this.currentTable = _.cloneDeep(this.tableService.getCurrentTable());
@@ -191,6 +194,7 @@ export class IdentificationComponent implements OnInit, OnDestroy {
       // id?:               number;
       validatedBy:       this.currentUser.id,
       validatedAt:       new Date(),
+      user:              this.currentVlUser,
       // updatedBy?:        string;     // user id
       // updatedAt?:        Date;
       repository:        data.repository,
@@ -199,7 +203,8 @@ export class IdentificationComponent implements OnInit, OnDestroy {
       inputName:         data.name + (data.author ? (' ' + data.author) : ''),
       validatedName:     data.name + (data.author ? (' ' + data.author) : ''),
       validName:         data.name + (data.author ? (' ' + data.author) : ''),
-      userIdValidation:  this.currentUser.id
+      userIdValidation:  this.currentUser.id,
+      userValidation:    this.currentVlUser
     };
 
     // Push changes to pendingIdentifications
