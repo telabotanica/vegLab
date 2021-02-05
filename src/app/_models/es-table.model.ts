@@ -1,3 +1,5 @@
+import { VlUser } from "./vl-user.model";
+
 export interface EsTableModel {
   id:                     number;
   title:                  string;
@@ -7,6 +9,7 @@ export interface EsTableModel {
   pdfContentUrl:          string;
   vlBiblioSource:         string;
   userId:                 string;
+  user:                   VlUser;
   ownedByCurrentUser:     boolean;  // not included in the database ; this field is populated at GET Table (table service)
   createdBy:              string;
   createdAt:              string;
