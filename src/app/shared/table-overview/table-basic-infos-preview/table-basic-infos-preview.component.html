@@ -12,7 +12,7 @@
     </tr>
     <tr>
       <td class="item-header">Par</td>
-      <td class="item-content"><vl-tb-user-label [userId]="table.userId"></vl-tb-user-label></td>
+      <td class="item-content">{{ table && table.user !== null ? table.user.username : '?' }}</td>
     </tr>
     <tr>
       <td class="item-header">Titre</td>

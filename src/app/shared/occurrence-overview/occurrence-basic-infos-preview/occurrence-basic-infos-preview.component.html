@@ -13,7 +13,7 @@
     </tr>
     <tr>
       <td class="item-header">Par</td>
-      <td class="item-content"><vl-tb-user-label [userId]="occurrence.userId"></vl-tb-user-label></td>
+      <td class="item-content">{{ occurrence && occurrence.user !== null ? occurrence.user.username : '?' }}</td>
     </tr>
     <!-- Observation -->
     <tr>
