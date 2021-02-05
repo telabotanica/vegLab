@@ -1,3 +1,5 @@
+@import '../../_styles/colors.scss';
+
 .validation-inline-wrapper {
   h1 {
     text-align: center;
@@ -42,6 +44,10 @@
           &.user-icon {
             mat-icon {
               margin-right: 5px;
+              color: $vl-text-grey;
+              &.mine {
+                color: $vl-color-1-dark
+              }
             }
           }
           &.delete-icon {

@@ -27,7 +27,7 @@ export class IdentificationInlineComponent implements OnInit {
 
   @Output() elementToDelete = new EventEmitter<OccurrenceValidationModel>();
 
-  currentUser: UserModel;
+  currentUser: UserModel; // SSO user
   _element: OccurrenceModel | Sye | Table | SyntheticColumn = null;
   validations: Array<OccurrenceValidationModel> = [];
   myValidations: Array<OccurrenceValidationModel> = undefined;
@@ -41,9 +41,8 @@ export class IdentificationInlineComponent implements OnInit {
     this.currentUser = this.userService.currentUser.getValue();
 
     // Set validations lists
-    this.myValidations = this.currentUser && this.currentUser.id ? _.filter(this.validations, v => v.userIdValidation === this.currentUser.id) : [];
+    this.myValidations = this.currentUser && this.currentUser.id ? _.filter(this.validations, v => v.user.ssoId === this.currentUser.id) : [];
     this.otherValidations = _.difference(this.validations, this.myValidations);
-
   }
 
   toggleShowAllValidations() {

@@ -14,7 +14,7 @@
     <li class="my-validation" *ngFor="let myValidation of myValidations">
       <span class="label">
         <span class="text user-icon">
-          <mat-icon inline="true" matTooltip="Cette identification est la vôtre">account_circle</mat-icon>
+          <mat-icon class="mine" inline="true" matTooltip="Cette identification est la vôtre">account_circle</mat-icon>
         </span>
         <span class="level" *ngIf="_element.level && _element.level === 'synusy'">σ</span>
         <span class="level" *ngIf="_element.level && _element.level === 'microcenosis'">µC</span>
@@ -40,6 +40,9 @@
     <div *ngIf="showAllValidations">
       <li class="other-validation" *ngFor="let validation of otherValidations">
         <span class="label">
+          <span class="text user-icon" *ngIf="validation.user !== null">
+            <mat-icon inline="true" matTooltip="Identifié par '{{ validation.user.username }}'">account_circle</mat-icon>
+          </span>
           <span class="level" *ngIf="_element.level && _element.level === 'synusy'">σ</span>
           <span class="level" *ngIf="_element.level && _element.level === 'microcenosis'">µC</span>
           <span class="level" *ngIf="_element.level && _element.level === 'phytocenosis'">φ</span>
@@ -52,6 +55,9 @@
   <ul class="validation-element" *ngIf="myValidations.length === 0">
     <li *ngIf="otherValidations.length > 0">
       <span class="label">
+        <span class="text user-icon" *ngIf="otherValidations[0].user !== null">
+          <mat-icon inline="true" matTooltip="Identifié par '{{ otherValidations[0].user.username }}'">account_circle</mat-icon>
+        </span>
         <span class="level" *ngIf="_element.level && _element.level === 'synusy'">σ</span>
         <span class="level" *ngIf="_element.level && _element.level === 'microcenosis'">µC</span>
         <span class="level" *ngIf="_element.level && _element.level === 'phytocenosis'">φ</span>
@@ -71,6 +77,9 @@
     <div *ngIf="showAllValidations">
       <li class="other-validation" *ngFor="let validation of otherValidations | slice:1">
         <span class="label">
+          <span class="text user-icon" *ngIf="validation.user !== null">
+            <mat-icon inline="true" matTooltip="Identifié par '{{ validation.user.username }}'">account_circle</mat-icon>
+          </span>
           <span class="level" *ngIf="_element.level && _element.level === 'synusy'">σ</span>
           <span class="level" *ngIf="_element.level && _element.level === 'microcenosis'">µC</span>
           <span class="level" *ngIf="_element.level && _element.level === 'phytocenosis'">φ</span>
