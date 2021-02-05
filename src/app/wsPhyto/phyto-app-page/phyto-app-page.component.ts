@@ -28,7 +28,7 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
   infoPanelDisabledSubscription: Subscription;
 
   // Panels vars
-  infoPanelActive = true;
+  infoPanelActive = false;
   infoAreaActive = false;
   idioPhotoAreaActive = false;
   chartAreaActive = false;
@@ -63,7 +63,7 @@ export class PhytoAppPageComponent implements OnInit, OnDestroy {
     });
     this.infoPanelDisabledSubscription = this.appConfig.infoPanelDisabled.subscribe(value => {
       if (this._infoPanelDisabled !== value) {
-        if (value === true) { this.closeInfoPanel(); } else if (value === false) { this.openInfoPanel(); }
+        if (value === true) { this.closeInfoPanel(); }
         this._infoPanelDisabled = value;
       }
     });
