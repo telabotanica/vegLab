@@ -3,6 +3,7 @@ import { SyntheticItem } from './synthetic-item.model';
 import { Sye } from './sye.model';
 import { Biblio } from './biblio.model';
 import { VlUser } from './vl-user.model';
+import { ExtendedFieldOccurrence } from './extended-field-occurrence';
 
 export interface SyntheticColumn {
   '@id'?:          string;
@@ -18,4 +19,5 @@ export interface SyntheticColumn {
   items:           Array<SyntheticItem>;
   vlBiblioSource?: Biblio;
   vlWorkspace:     string;
+  extendedFieldOccurrences?: Array<ExtendedFieldOccurrence>;
 }
