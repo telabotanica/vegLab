@@ -2491,14 +2491,14 @@ export class TableImportComponent implements OnInit, OnDestroy {
       syeCount++;
     }
 
+    // For synthetic Sye, we have to create the synthetic columns
     for (const sye of newTable.sye) {
       // For synthetic Sye only, create the synthetic columns
       if (sye.syntheticSye) {
         this.tableService.createSyntheticColumnForSyntheticSye(sye, sye.occurrences[0], this.currentUser);
         sye.onlyShowSyntheticColumn = true;
 
-        // remove sye occurrences
-        sye.occurrences = [];
+        // remove sye occurrences, see at the end of this method
       }
     }
 
@@ -2701,6 +2701,22 @@ export class TableImportComponent implements OnInit, OnDestroy {
         newTable.vlBiblioSource = uniqBibliosSye[0];
         if (newTable.syntheticColumn) { newTable.syntheticColumn.vlBiblioSource = uniqBibliosSye[0]; }
       } else { /* do nothing */ }
+    }
+
+    // For synthetic Sye, we have to remove sye.occurrences since there are not persisted
+    // Also check that occurrences props are binded to sye or sye.syntheticColumn
+    // And remove occurrences
+    for (const sye of newTable.sye) {
+      // For synthetic Sye bind metadata
+      if (sye.syntheticSye) {
+        // set sye[0] metadata to sye synthetic column metadata (otherwise, we lose metadata)
+        if (sye.occurrences[0] && sye.occurrences[0].extendedFieldOccurrences && sye.occurrences[0].extendedFieldOccurrences.length > 0) {
+          sye.syntheticColumn.extendedFieldOccurrences = _.cloneDeep(sye.occurrences[0].extendedFieldOccurrences);
+        }
+
+        // remove sye occurrences
+        sye.occurrences = [];
+      }
     }
 
     console.log(this.tableService.toString(newTable));
