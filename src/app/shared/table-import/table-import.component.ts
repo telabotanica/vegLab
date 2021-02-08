@@ -200,7 +200,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
   displayedAuthorColumns = ['customColumn1', 'authorUserInput', 'customColumn2'];
   displayedDateColumns = ['customColumn1', 'dateUserInput', 'customColumn2'];
   expandedElement: Observer | null;
-  authorsSeparator: ';';
+  authorsSeparator = ';';
 
   // Metadata vars
   metadataList: Array<{ id: string, metadata: Array<MetadataItem> }> = [];
