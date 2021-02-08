@@ -15,13 +15,21 @@ export class SyntheticColumnService {
 
     switch (type) {
       case 'roman':
-        return this.getRomanCoef(freq);
+        return nbItems && nbItems <= 5 ? nbItems.toString() : this.getRomanCoef(freq);
       case 'romanMinMax':
         return this.getRomanCoef(freq) + (minCoef === maxCoef ? minCoef : minCoef + maxCoef);
       case 'percent':
         return Math.round(freq).toString() + '%';
       default:
         return nbItems.toString();
+    }
+  }
+
+  getSyntheticCoef(frequency: number, count: number): string {
+    if (count <= 5) {
+      return count.toString();
+    } else {
+      return this.getRomanCoef(frequency);
     }
   }
 

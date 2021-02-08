@@ -2366,10 +2366,6 @@ console.log('TABLE TO DUPLICATE END F()', tableToDuplicate);
     const names = this.getNames(occurrences);
     const uniquNames = _.uniqBy(names, n => n.layer + n.name + n.repositoryIdTaxo);
 
-    if (occCount !== undefined) {
-      console.log('UNIQ NAMES: ', uniquNames);
-    }
-
     for (const name of uniquNames) {
       const syntheticItem: SyntheticItem = {
         id: null,
@@ -2422,7 +2418,7 @@ console.log('TABLE TO DUPLICATE END F()', tableToDuplicate);
       }
       syntheticItem.occurrencesCount = occCount !== undefined ? occCount : occurrencesCount;
       syntheticItem.frequency =  occCount !== undefined ? this.getFrequencyBySyntheticCoef(minCoef) : occurrencesCount === 0 ?  0 : (occurrencesCount * 100) / occurrences.length;
-      syntheticItem.coef = occCount !== undefined ? minCoef : this.syntheticColumnService.getRomanCoef(syntheticItem.frequency);
+      syntheticItem.coef = occCount !== undefined ? minCoef : this.syntheticColumnService.getSyntheticCoef(syntheticItem.frequency, occurrencesCount);
       syntheticItem.displayName = displayName;
       syntheticItem.minCoef = minCoef;
       syntheticItem.maxCoef = maxCoef;
