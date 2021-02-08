@@ -144,6 +144,7 @@ export class OccurrenceFormBindingService {
           yOcc.layer = z.layer as Layer;
           zOcc.layer = z.layer as Layer;
           zOcc.parentLevel = yOcc.level;
+          zOcc.coef = z.coef;
           let zIdTaxo = null;
           if (z.taxa.idTaxo !== null) { zIdTaxo = z.taxa.idTaxo.toString(); }
           if (zIdTaxo === null && z.taxa.validOccurence !== null && z.taxa.validOccurence.idNomen !== null) { zIdTaxo =  z.taxa.validOccurence.idNomen.toString(); }
