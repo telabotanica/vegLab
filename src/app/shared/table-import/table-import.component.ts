@@ -1980,7 +1980,10 @@ export class TableImportComponent implements OnInit, OnDestroy {
               this.updateStepValidationStatus();
             }
           },
-          error => console.log(error)
+          error => {
+            i++;
+            console.log(error);
+          }
         );
       }
     } else {
@@ -2519,7 +2522,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
         validatedName:     this.validationList.table.validation.consolidedValidation.name,
         validName:         this.validationList.table.validation.consolidedValidation.name
       } : null;
-      newTable.validations = tableValidation ? [tableValidation] : null;
+      if (tableValidation !== null) { newTable.validations = [tableValidation]; }
     }
 
     // table synthetic column validation
@@ -2543,7 +2546,7 @@ export class TableImportComponent implements OnInit, OnDestroy {
             validatedName:     sye.validation.consolidedValidation.name,
             validName:         sye.validation.consolidedValidation.name
           } : null;
-          syeToBind.validations = syeValidation ? [syeValidation] : null;
+          if (syeValidation !== null) { syeToBind.validations = [syeValidation]; }
         }
       }
     }
