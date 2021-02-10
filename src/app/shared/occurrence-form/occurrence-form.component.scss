@@ -21,6 +21,27 @@
       width: 40px;
     }
   }
+
+  .input-section {
+    margin-bottom: 20px;
+    .title {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      margin-bottom: 8px;
+      font-weight: bold;
+      font-variant: all-small-caps;
+      span.spacer {
+        flex: 1;
+        margin-top: 9px;
+        margin-left: 10px;
+        border-top: 1px solid #EDEDED;
+      }
+    }
+    .content {
+      margin-left: 25px;
+    }
+  }
   
   .occurrences-table {
     margin-top: 20px;
