@@ -701,7 +701,7 @@ export class TableService {
     if (tableToDuplicate.isDiagnosis !== null && tableToDuplicate.isDiagnosis !== undefined && tableToDuplicate.isDiagnosis === true) {
       tableToDuplicate.isDiagnosis = false;
     }
-console.log('TABLE TO DUPLICATE END F()', tableToDuplicate);
+
     return tableToDuplicate;
   }
 
