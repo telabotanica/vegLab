@@ -56,7 +56,7 @@ body {
     background-repeat: no-repeat;
     background-position-x: right;
     background-position-y: top;
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: $vl-table-bg-color;
   }
   td.group.name {
     padding-left: 10px;
@@ -87,9 +87,10 @@ body {
   }
   td.synthetic {
     text-align: center;
-    &:not(.syntheticSye) {
+    background-color: $vl-table-bg-color;
+    /*&:not(.syntheticSye) {
       background-color: rgba(0, 0, 0, 0.1);
-    }
+    }*/
 
     // &.sye-0 {background-color: rgba($cell-color-0, $cell-color-transparency); }
     // &.sye-1 {background-color: rgba($cell-color-1, $cell-color-transparency); }
@@ -101,13 +102,13 @@ body {
 
   td.titleRowValue {
     text-align: center;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: $vl-table-bg-color;
 
-    // &.sye-0 {background-color: rgba(0, 0, 0, 0.05); }
-    // &.sye-1 {background-color: rgba(0, 0, 0, 0.05); }
-    // &.sye-2 {background-color: rgba(0, 0, 0, 0.05); }
-    // &.sye-3 {background-color: rgba(0, 0, 0, 0.05); }
-    // &.sye-4 {background-color: rgba(0, 0, 0, 0.05); }
+    // &.sye-0 {background-color: $vl-table-bg-color; }
+    // &.sye-1 {background-color: $vl-table-bg-color; }
+    // &.sye-2 {background-color: $vl-table-bg-color; }
+    // &.sye-3 {background-color: $vl-table-bg-color; }
+    // &.sye-4 {background-color: $vl-table-bg-color; }
 
   }
 
