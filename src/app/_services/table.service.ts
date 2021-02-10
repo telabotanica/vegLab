@@ -1903,6 +1903,11 @@ export class TableService {
       const syeSource = _.find(this.currentTable.sye, sye => sye.syeId === sourceSyeColumnsDef.id);
       const syeTarget = _.find(this.currentTable.sye, sye => sye.syeId === destinationSyeColumnsDef.id);
 
+      if (syeTarget.syntheticSye === true) {
+        this.notificationService.warn('Vous ne pouvez pas déplacer un ou des relevés dans une colonne synthétique');
+        return false;
+      }
+
       // move occurrences
       syeTarget.occurrences.splice(targetIndex, 0, ...syeSource.occurrences.splice(sourceIndex, nbColumnsToMove));
 
