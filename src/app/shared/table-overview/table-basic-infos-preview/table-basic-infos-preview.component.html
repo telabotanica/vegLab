@@ -23,6 +23,10 @@
       <td class="item-content">{{ table.description }}</td>
     </tr>
     <tr>
+      <td class="item-header">Identifications</td>
+      <td class="item-content"><vl-identification-inline [element]="table"></vl-identification-inline></td>
+    </tr>
+    <tr>
       <td class="item-header">Diagnose</td>
       <td class="item-content">{{ table.isDiagnosis ? 'oui' : 'non' }}</td>
     </tr>
