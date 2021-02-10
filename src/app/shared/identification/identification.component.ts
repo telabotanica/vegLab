@@ -35,7 +35,7 @@ export class IdentificationComponent implements OnInit, OnDestroy {
   currentTableIsEmpty = false;
   currentTableSubscriber: Subscription;
   tableSelectionSubscriber: Subscription;
-  tableSelectedOccurrencesSubscriber: Subscription;
+  // tableCellSelectionSubscriber: Subscription;
 
   // VARS selected elements
   columnElements: Array<OccurrenceModel> = [];  // Selected Columns
@@ -100,22 +100,21 @@ export class IdentificationComponent implements OnInit, OnDestroy {
       this.columnElements = [];
       this.syeElement = null;
 
-      if (selectedElement.element === 'column') {
-        // column
-        if (selectedElement.occurrenceIds.length > 0 && selectedElement.occurrenceIds[0] !== null) {
-          for (const occurrenceId of selectedElement.occurrenceIds) {
-            const occurrence = this.tableService.getReleveById(occurrenceId);
-            if (occurrence) { this.columnElements.push(occurrence); }
-          }
-        } else if (selectedElement.occurrenceIds.length === 0 || selectedElement.occurrenceIds[0] == null) {
-          this.syeElement = this.tableService.getSyeById(this.tableService.getCurrentTable(), selectedElement.syeId);
+      // one or several occurrences selected
+      if (selectedElement.occurrenceIds.length > 0 && selectedElement.occurrenceIds[0] !== null) {
+        for (const occurrenceId of selectedElement.occurrenceIds) {
+          const occurrence = this.tableService.getReleveById(occurrenceId);
+          if (occurrence) { this.columnElements.push(occurrence); }
         }
+      } else if (selectedElement.occurrenceIds.length === 0 || selectedElement.occurrenceIds[0] == null) {
+        // Sye selected
+        this.syeElement = this.tableService.getSyeById(this.tableService.getCurrentTable(), selectedElement.syeId);
       }
 
       if (this.columnElements && this.columnElements.length > 0) {
         _.map(this.columnElements, ce => this.selectedRelevesIds.push(ce.id));
       }
-      if (this.syeElement !== null) {
+      if (this.syeElement !== null && this.syeElement !== undefined) {
         this.selectedSyeIds = [this.syeElement.id];
       }
     }, error => {

@@ -386,7 +386,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         // Set selected element ids
         const occurrenceId = this.tableInstance.getCellMeta(1, startColPosition)._occurrenceId;
         const occurrenceIds: Array<any> = [];
-        const syeId = this.tableInstance.getCellMeta(1, startColPosition)._syeId;
+        const syeId = this.tableInstance.getCellMeta(1, endColPosition)._syeId;
         const rowId = null;
         const groupId = null;
 
@@ -419,7 +419,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
           this.tableService.selectedOccurrences.next(occurrenceIds);
 
           // Emit selection
-          if (startRowPosition !== endRowPosition) {
+          if (startRowPosition !== endRowPosition) {  // Entire column selection (= all rows)
             const iterations = endColPosition - startColPosition + 1;
             for (let index = 0; index < iterations; index++) {
               occurrenceIds.push(this.tableInstance.getCellMeta(1, startColPosition + index)._occurrenceId);
@@ -428,9 +428,9 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
             this.tableService.tableSelectionElement.next({
               element: 'column',
               occurrenceIds,
-              syeId: null,
-              rowId: null,
-              groupId: null,
+              syeId,
+              rowId,
+              groupId,
               multipleSelection: true,
               startPosition: colSelectionStartToEmit,
               endPosition: colSelectionEndToEmit
@@ -453,9 +453,9 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
             this.tableService.tableSelectionElement.next({
               element: 'column',
               occurrenceIds,
-              syeId: null,
-              rowId: null,
-              groupId: null,
+              syeId,
+              rowId,
+              groupId,
               multipleSelection: true,
               startPosition: colSelectionStartToEmit,
               endPosition: colSelectionEndToEmit
