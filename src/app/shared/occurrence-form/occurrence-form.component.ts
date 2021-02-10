@@ -12,7 +12,6 @@ import { MetadataService } from 'src/app/_services/metadata.service';
 import { OccurrenceFormBindingService } from './occurrence-form-binding.service';
 import { PhotoService } from '../../_services/photo.service';
 import { LocationService } from 'src/app/_services/location.service';
-import { RepositoryService } from 'tb-tsb-lib';
 
 import { UserModel } from 'src/app/_models/user.model';
 import { OccurrenceModel } from '../../_models/occurrence.model';
@@ -103,8 +102,7 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private occurenceFormBinding: OccurrenceFormBindingService,
     private photoService: PhotoService,
-    private locationService: LocationService,
-    private repoService: RepositoryService) { }
+    private locationService: LocationService) { }
 
   ngOnInit() {
     // App config
@@ -152,8 +150,6 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
         startWith(''),
         map(value => this._filterMetadata(value))
       );
-
-    console.log('AV repo: ', this.repoService.listAllRepositories());
   }
 
   ngOnDestroy() {
