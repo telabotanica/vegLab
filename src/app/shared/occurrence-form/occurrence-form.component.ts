@@ -12,6 +12,7 @@ import { MetadataService } from 'src/app/_services/metadata.service';
 import { OccurrenceFormBindingService } from './occurrence-form-binding.service';
 import { PhotoService } from '../../_services/photo.service';
 import { LocationService } from 'src/app/_services/location.service';
+import { RepositoryService } from '../../_services/repository.service';
 
 import { UserModel } from 'src/app/_models/user.model';
 import { OccurrenceModel } from '../../_models/occurrence.model';
@@ -37,6 +38,12 @@ import { environment } from 'src/environments/environment';
 export class OccurrenceFormComponent implements OnInit, OnDestroy {
   @ViewChild('coef') coefEl: ElementRef<HTMLElement>;
   // @ViewChild('tsboccurrence') tsbOccEl: ElementRef<HTMLElement>;
+
+  // ----------------
+  // Var repositories
+  // ----------------
+  defaultIdiotaxonRepository: string;
+  defaultSyntaxonRepository: string;
 
   // --------
   // Var user
@@ -82,8 +89,6 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
   currentLocation: LocationModel = null;
   currentCitedSyntaxon: RepositoryItemModel = null;
 
-  tbRepositoriesConfig = environment.tbRepositoriesConfig;
-
   // -----------
   // SUBSCRIBERS
   // -----------
@@ -102,7 +107,8 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private occurenceFormBinding: OccurrenceFormBindingService,
     private photoService: PhotoService,
-    private locationService: LocationService) { }
+    private locationService: LocationService,
+    private repoService: RepositoryService) { }
 
   ngOnInit() {
     // App config
@@ -110,6 +116,10 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
       this.appConfig.setTableViewable();
       this.appConfig.disableInfoPanel();
     });
+
+    // Get default repositories
+    this.defaultIdiotaxonRepository = this.repoService.defaultIdiotaxonRepository.getValue();
+    this.defaultSyntaxonRepository = this.repoService.defaultSyntaxonRepository.getValue();
 
     // Get current user
     this.currentUser = this.userService.currentUser.getValue();
@@ -163,7 +173,7 @@ export class OccurrenceFormComponent implements OnInit, OnDestroy {
       observerInstitution: new FormControl(''),
       dateObserved: new FormControl({value: '', disabled: false}, [Validators.required]),
       level: new FormControl(Level.SYNUSY),
-      repo: new FormControl('bdtfx'),
+      repo: new FormControl(this.defaultIdiotaxonRepository),
       layer: new FormControl({value: 'h', disabled: false}),
       coef: new FormControl(''),
       addMetadataInput: new FormControl('')

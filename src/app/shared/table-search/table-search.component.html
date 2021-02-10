@@ -45,7 +45,7 @@
                       level="synusy"
                       placeholder="Nom de végétation"
                       autoResetWhenSelected="true"
-                      defaultRepository="baseveg"
+                      [defaultRepository]="defaultSyntaxonRepository"
                       [showRepositoryInput]="false"
                       (newData)="setTableValidationFilter($event)">
                     </tb-tsb-search-box>
@@ -122,7 +122,7 @@
                             level="synusy"
                             placeholder="Nom de végétation"
                             autoResetWhenSelected="true"
-                            defaultRepository="baseveg"
+                            [defaultRepository]="defaultSyntaxonRepository"
                             [showRepositoryInput]="false"
                             (newData)="addColOccurrenceToFilter($event)">
                           </tb-tsb-search-box>
@@ -185,10 +185,9 @@
                         <th class="taxo-input">
                           <tb-tsb-search-box
                             level="idiotaxon"
-                            [tbRepositoriesConfig]="tbRepositoriesConfig"
                             placeholder="Ajouter une espèce au filtre"
                             autoResetWhenSelected="true"
-                            defaultRepository="bdtfx"
+                            [defaultRepository]="defaultIdiotaxonRepository"
                             [showRepositoryInput]="true"
                             (newData)="addRowOccurrenceToFilter($event)">
                           </tb-tsb-search-box>

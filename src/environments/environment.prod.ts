@@ -25,17 +25,8 @@ export const environment = {
     }
   },
   mapQuestApiKey: 'ApIFfQWsb8jW6bkYDD2i0Sq5BD9moJ3l',
-  tbRepositoriesConfigVegetation: [
-    {
-      id: 'baseveg',
-      label: 'Baseveg',
-      levels: ['synusy', 'microcenosis'],
-      apiUrl: 'https://api.tela-botanica.org/service:cel/NameSearch/baseveg/',
-      apiUrl2: '',
-      apiUrlValidOccurence: 'https://api.tela-botanica.org/service:eflore:0.1/baseveg/noms/',
-      description_fr: ''
-    }
-  ],
-  tbRepositoriesConfig: [
-  ],
+  repo: {
+    defaultIdiotaxonRepository: 'bdtfx',
+    defaultSyntaxonRepository: 'baseveg'
+  }
 };

@@ -23,6 +23,7 @@ import { OccurrenceService } from 'src/app/_services/occurrence.service';
 import { TableService } from 'src/app/_services/table.service';
 import { UserService } from 'src/app/_services/user.service';
 import { NotificationService } from 'src/app/_services/notification.service';
+import { RepositoryService } from '../../_services/repository.service';
 
 import { RepositoryItemModel } from 'tb-tsb-lib';
 import { OccurrenceModel } from 'src/app/_models/occurrence.model';
@@ -48,12 +49,15 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
 
   occurrenceInfo: EsOccurrenceModel = null;     // occurrence to preview
 
+  // VAR repositories
+  defaultIdiotaxonRepository: string;
+  defaultSyntaxonRepository: string;
+
   // VAR user
   currentUser: UserModel;
   userSubscription: Subscription;
 
   // VAR Occurrence Filters
-  tbRepositoriesConfig = environment.tbRepositoriesConfig;
   mustContainOccurrences: Array<RepositoryItemModel> = [];
   mustNotContainOccurrences: Array<RepositoryItemModel> = [];
   // mustOrShouldContain: 'must' | 'should' = 'must';
@@ -168,7 +172,8 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
     private tableService: TableService,
     public dialog: MatDialog,
     private userService: UserService,
-    private notificationService: NotificationService) { }
+    private notificationService: NotificationService,
+    private repoService: RepositoryService) { }
 
   ngOnInit() {
     // App config
@@ -176,6 +181,10 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
       this.appConfig.setTableEditable();
       this.appConfig.enableInfoPanel();
     });
+
+    // Get default repositories
+    this.defaultIdiotaxonRepository = this.repoService.defaultIdiotaxonRepository.getValue();
+    this.defaultSyntaxonRepository = this.repoService.defaultSyntaxonRepository.getValue();
 
     // Get current user
     this.currentUser = this.userService.currentUser.getValue();

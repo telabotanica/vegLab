@@ -12,6 +12,7 @@ import { TableActionEnum } from 'src/app/_enums/table-action-enum';
 
 import { TableService } from 'src/app/_services/table.service';
 import { UserService } from 'src/app/_services/user.service';
+import { RepositoryService } from '../../_services/repository.service';
 
 import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
@@ -22,6 +23,10 @@ import * as _ from 'lodash';
   styleUrls: ['./identification.component.scss']
 })
 export class IdentificationComponent implements OnInit, OnDestroy {
+
+  // Var repositories
+  defaultIdiotaxonRepository: string;
+  defaultSyntaxonRepository: string;
 
   // VARS
   currentUser: UserModel;
@@ -60,9 +65,14 @@ export class IdentificationComponent implements OnInit, OnDestroy {
   selectedEditAs = this.editAs[0];
 
   constructor(private tableService: TableService,
-              private userService: UserService) { }
+              private userService: UserService,
+              private repoService: RepositoryService) { }
 
   ngOnInit() {
+    // Get default repositories
+    this.defaultIdiotaxonRepository = this.repoService.defaultIdiotaxonRepository.getValue();
+    this.defaultSyntaxonRepository = this.repoService.defaultSyntaxonRepository.getValue();
+
     // Get current user
     this.currentUser = this.userService.currentUser.getValue();
     this.currentVlUser = this.userService.currentVlUser.getValue();

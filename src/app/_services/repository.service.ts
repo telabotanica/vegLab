@@ -1,16 +1,42 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RepositoryService {
 
+  public defaultIdiotaxonRepository = new BehaviorSubject<string>(null);
+  public defaultSyntaxonRepository = new BehaviorSubject<string>(null);
+
   constructor(private http: HttpClient) { }
 
-  getByIdNomen(repository: string, idNomen: number): Observable<EFloreResponse> {
+  public getByIdNomen(repository: string, idNomen: number): Observable<EFloreResponse> {
     return this.http.get<EFloreResponse>(`https://api.tela-botanica.org/service:eflore:0.1/${repository}/taxons/${idNomen}`);
+  }
+
+  public initRepositories(): void {
+    this.initDefaultIdiotaxonRepository();
+    this.inirDefaultSyntaxonRepository();
+  }
+
+  private initDefaultIdiotaxonRepository(): void {
+    this.defaultIdiotaxonRepository.next(environment.repo.defaultIdiotaxonRepository);
+  }
+
+  private inirDefaultSyntaxonRepository(): void {
+    this.defaultSyntaxonRepository.next(environment.repo.defaultSyntaxonRepository);
+  }
+
+  public setDefaultIdiotaxonRepository(repo: string): void {
+    this.defaultIdiotaxonRepository.next(repo);
+  }
+
+  public setDefaultSyntaxonRepository(repo: string): void {
+    this.defaultSyntaxonRepository.next(repo);
   }
 }
 

@@ -9,6 +9,7 @@ import { NotificationService } from 'src/app/_services/notification.service';
 import { UserService } from 'src/app/_services/user.service';
 import { SyeService } from 'src/app/_services/sye.service';
 import { SyntheticColumnService } from 'src/app/_services/synthetic-column.service';
+import { RepositoryService } from '../../_services/repository.service';
 
 import { RepositoryItemModel } from 'tb-tsb-lib';
 import { EsTableModel } from 'src/app/_models/es-table.model';
@@ -43,6 +44,10 @@ export class TableSearchComponent implements OnInit, OnDestroy {
   tables: Array<EsTableModel> = [];
   tableInfo: EsTableModel = null;     // table to preview
 
+  // VAR repositories
+  defaultIdiotaxonRepository: string;
+  defaultSyntaxonRepository: string;
+
   // VAR Table filters
   tableValidation: RepositoryItemModel = null;
   tableMustBeADiagnosis = false;
@@ -65,7 +70,6 @@ export class TableSearchComponent implements OnInit, OnDestroy {
   selectedTablesIds: Array<number> = [];
 
   // VAR other
-  tbRepositoriesConfig = environment.tbRepositoriesConfig;
   isSearching = false;
   showResultsDiv = true;
   currentTableSetAndNotEmpty: boolean;          // Is there a current non empty table ? (be carefull : ther is ALWAYS a current table but it's empty at startup : it only contains one empty sye)
@@ -79,7 +83,8 @@ export class TableSearchComponent implements OnInit, OnDestroy {
   constructor(private appConfig: AppConfigService,
               private tableService: TableService,
               private notificationService: NotificationService,
-              private userService: UserService) { }
+              private userService: UserService,
+              private repoService: RepositoryService) { }
 
   ngOnInit() {
     // App config
@@ -87,6 +92,10 @@ export class TableSearchComponent implements OnInit, OnDestroy {
       this.appConfig.setTableEditable();
       this.appConfig.enableInfoPanel();
     });
+
+    // Get default repositories
+    this.defaultIdiotaxonRepository = this.repoService.defaultIdiotaxonRepository.getValue();
+    this.defaultSyntaxonRepository = this.repoService.defaultSyntaxonRepository.getValue();
 
     // get current table id
     let ct = this.tableService.getCurrentTable();

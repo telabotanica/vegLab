@@ -34,12 +34,11 @@
                         <th class="title"></th>
                         <th class="taxo-input">
                           <tb-tsb-search-box
-                            [tbRepositoriesConfig]="tbRepositoriesConfig"
                             level="idiotaxon"
                             placeholder="Ajouter une espèce au filtre"
                             autoResetWhenSelected="true"
-                            defaultRepository="bdtfx"
-                            [showRepositoryInput]="false"
+                            [defaultRepository]="defaultIdiotaxonRepository"
+                            [showRepositoryInput]="true"
                             (newData)="addOccurrenceToFilter($event)">
                           </tb-tsb-search-box>
                         </th>
@@ -100,11 +99,10 @@
                         <th class="title"></th>
                         <th class="taxo-input">
                           <tb-tsb-search-box
-                            [tbRepositoriesConfig]="tbRepositoriesConfig"
                             level="synusy"
                             placeholder="Ajouter un syntaxon au filtre"
                             autoResetWhenSelected="true"
-                            defaultRepository="baseveg"
+                            [defaultRepository]="defaultSyntaxonRepository"
                             [showRepositoryInput]="false"
                             (newData)="addReleveToFilter($event)">
                           </tb-tsb-search-box>

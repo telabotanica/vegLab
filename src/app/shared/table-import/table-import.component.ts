@@ -171,8 +171,6 @@ export class TableImportComponent implements OnInit, OnDestroy {
   ignoreFirstXCols = 4;
 
   // Taxonomic vars
-  tbRepositoriesConfig = environment.tbRepositoriesConfig;
-  tbRepositoriesConfigVegetation = environment.tbRepositoriesConfigVegetation;
   availableRepository: Array<any> = [];
   taxonomicList: Array<Taxo> = [];
   displayedTaxonomicColumns = ['customColumn1', 'repository', 'name'];
@@ -295,7 +293,6 @@ export class TableImportComponent implements OnInit, OnDestroy {
       }, error => { console.log(error); }
     );
 
-    this.availableRepository = environment.tbRepositoriesConfig;
     // Get metadata list
     if (this.metadataService.metadataList.getValue().length === 0) {
       this.metadataService.refreshMetadataList();

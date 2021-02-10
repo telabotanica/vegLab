@@ -6,7 +6,7 @@ import { interval } from 'rxjs';
 
 import { environment } from '../environments/environment';
 
-import { UserService } from './_services/user.service';
+import { RepositoryService } from './_services/repository.service';
 import { MetadataService } from './_services/metadata.service';
 import { TableService } from './_services/table.service';
 import { ObserverService } from './_services/observer.service';
@@ -22,7 +22,7 @@ import { SsoService } from './_services/sso.service';
 })
 export class AppComponent implements OnInit {
 
-  constructor(private userService: UserService,
+  constructor(private repoService: RepositoryService,
               private metadataService: MetadataService,
               private tableService: TableService,
               private observerService: ObserverService,
@@ -31,6 +31,7 @@ export class AppComponent implements OnInit {
               private ssoService: SsoService) { }
 
   ngOnInit() {
+    this.repoService.initRepositories();
     this.wsService.currentWS.next('none');
     this.metadataService.retrieveMetadataList();  // Retrieve metadatas from local storage
     this.metadataService.refreshMetadataList();   // Get metadatas from API
