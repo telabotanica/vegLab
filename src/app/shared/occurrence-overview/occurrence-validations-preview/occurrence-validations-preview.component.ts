@@ -15,17 +15,16 @@ import * as _ from 'lodash';
   styleUrls: ['./occurrence-validations-preview.component.scss']
 })
 export class OccurrenceValidationsPreviewComponent implements OnInit {
-  @Input() set occurrence(value: EsOccurrenceModel) {
-    this.validations = this.getValidations(value);
-    this.emptyValidations = this.isValidationsEmpty(value);
-  }
+  @Input() occurrence: EsOccurrenceModel;
 
   validations: Array<OccurrenceValidationModel> = [];
   emptyValidations: boolean;
 
   constructor(private datePipe: MomentLocalDatePipe) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    console.log('OCC VALIDATION', this.occurrence);
+  }
 
   private getValidations(occurrence: EsOccurrenceModel): Array<OccurrenceValidationModel> {
     let validations: Array<OccurrenceValidationModel> = null;
