@@ -21,6 +21,14 @@
 
   .top-content {
     overflow-x: hidden;
+    .options {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
     .elements {
       display: flex;
       flex-direction: column;

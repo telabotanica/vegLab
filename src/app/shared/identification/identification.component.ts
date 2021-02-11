@@ -64,6 +64,8 @@ export class IdentificationComponent implements OnInit, OnDestroy {
   ];                                                                      // The context is used to select one or several "Preferred identifications" depending on the user
   selectedEditAs = this.editAs[0];
 
+  showSynusies = false;
+
   constructor(private tableService: TableService,
               private userService: UserService,
               private repoService: RepositoryService) { }

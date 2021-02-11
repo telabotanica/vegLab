@@ -9,6 +9,9 @@
   <!-- --------------- -->
   <h1>Identifications</h1>
   <div class="top-content">
+    <div class="options">
+      <mat-slide-toggle class="example-margin" [(ngModel)]="showSynusies">Afficher les synusies</mat-slide-toggle>
+    </div>
     <div *ngIf="currentTable && currentTable.sye && currentTable.sye.length > 0">
       <div class="elements">
 
@@ -42,7 +45,7 @@
             </div>
 
             <!-- Are nested occurrences for a microcenosis ? -->
-            <div *ngIf="occ.level === 'microcenosis' && occ.children && occ.children.length > 0">
+            <div *ngIf="showSynusies && occ.level === 'microcenosis' && occ.children && occ.children.length > 0">
               <div *ngFor="let child of occ.children">
                 <div class="element child-occurrence" [class.selected]="isSelectedReleve(child)">
                   <div class="title"><span>Rel. </span><span class="id">n° {{ child.id }}</span></div>
