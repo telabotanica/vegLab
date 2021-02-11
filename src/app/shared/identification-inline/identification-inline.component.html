@@ -5,6 +5,7 @@
         <span class="level" *ngIf="_element.level && _element.level === 'synusy'">σ</span>
         <span class="level" *ngIf="_element.level && _element.level === 'microcenosis'">µC</span>
         <span class="level" *ngIf="_element.level && _element.level === 'phytocenosis'">φ</span>
+        <span class="layer" *ngIf="_element.layer && _element.layer !== null">{{ _element.layer }}</span>
         <span class="text no-identification">Aucune identification</span>
       </span>
     </li>
@@ -19,6 +20,7 @@
         <span class="level" *ngIf="_element.level && _element.level === 'synusy'">σ</span>
         <span class="level" *ngIf="_element.level && _element.level === 'microcenosis'">µC</span>
         <span class="level" *ngIf="_element.level && _element.level === 'phytocenosis'">φ</span>
+        <span class="layer" *ngIf="_element.layer && _element.layer !== null">{{ _element.layer }}</span>
         <span class="text" [class.delete-icon]="allowDelete">
           <span>[{{ myValidation.repository }}] {{ myValidation.validatedName }}</span>
           <span class="delete-icon" *ngIf="allowDelete">
@@ -46,6 +48,7 @@
           <span class="level" *ngIf="_element.level && _element.level === 'synusy'">σ</span>
           <span class="level" *ngIf="_element.level && _element.level === 'microcenosis'">µC</span>
           <span class="level" *ngIf="_element.level && _element.level === 'phytocenosis'">φ</span>
+          <span class="layer" *ngIf="_element.layer && _element.layer !== null">{{ _element.layer }}</span>
           <span class="text">[{{ validation.repository }}] {{ validation.validatedName }}</span>
         </span>
       </li>
@@ -61,6 +64,7 @@
         <span class="level" *ngIf="_element.level && _element.level === 'synusy'">σ</span>
         <span class="level" *ngIf="_element.level && _element.level === 'microcenosis'">µC</span>
         <span class="level" *ngIf="_element.level && _element.level === 'phytocenosis'">φ</span>
+        <span class="layer" *ngIf="_element.layer && _element.layer !== null">{{ _element.layer }}</span>
         <span class="text">[{{ otherValidations[0].repository }}] {{ otherValidations[0].validatedName }}</span>
       </span>
       <!--<mat-icon *ngIf="!showAllValidations" [class.disabled]="otherValidations.length === 1" (click)="toggleShowAllValidations()">keyboard_arrow_up</mat-icon>
@@ -83,6 +87,7 @@
           <span class="level" *ngIf="_element.level && _element.level === 'synusy'">σ</span>
           <span class="level" *ngIf="_element.level && _element.level === 'microcenosis'">µC</span>
           <span class="level" *ngIf="_element.level && _element.level === 'phytocenosis'">φ</span>
+          <span class="layer" *ngIf="_element.layer && _element.layer !== null">{{ _element.layer }}</span>
           <span class="text">[{{ validation.repository }}] {{ validation.validatedName }}</span>
         </span>
       </li>
