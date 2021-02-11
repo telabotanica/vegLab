@@ -1144,18 +1144,15 @@ export class OccurrenceSearchComponent implements OnInit, OnDestroy {
     return parts;
   }
 
+  /**
+   * Constructs the ElasticSearch query part "MUST be a biblio ref with Id=X".
+   * Output example :
+   * `
+   *   { "term": { "bibliographySourceId": "7" } }
+   * `
+   */
   esBibliosQueryPart(): Array<string> {
-    const parts = [];
-    for (const filteredBiblio of this.filteredBiblios) {
-      parts.push(`
-      {
-        "match": {
-          "vlBiblioSource": "${filteredBiblio.id}~${filteredBiblio.title}"
-        }
-      }
-      `);
-    }
-    return parts;
+    return this.filteredBiblios[0] ? [`{ "term": { "bibliographySourceId": "${this.filteredBiblios[0].id}" } }`] : [];
   }
 
   /**
