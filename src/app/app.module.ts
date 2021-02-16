@@ -128,6 +128,7 @@ import { CreateUserFormComponent } from './user/create-user-form/create-user-for
 import { AdminCreateUserComponent } from './admin/user/admin-create-user/admin-create-user.component';
 
 import * as Sentry from '@sentry/browser';
+import { DeterminationComponent } from './admin/determination/determination.component';
 
 Sentry.init({
   dsn: 'https://3cd3bcc6591d450d9f0808b78675a4b0@sentry.io/1542725'
@@ -163,7 +164,7 @@ export class SentryErrorHandler implements ErrorHandler {
     TablePreviewComponent, TableBasicInfosPreviewComponent, TableValidationsPreviewComponent, TableRenderPreviewComponent,
     OccurrenceBasicInfosPreviewComponent, OccurrencePreviewComponent, OccurrenceRenderPreviewComponent, SimpleGeojsonMapComponent,
     OccurrenceValidationsPreviewComponent, OccurrenceMetadataPreviewComponent, TbUserLabelComponent, SophyImportAndSplitCsvComponent, CreateUserFormComponent,
-    TableSimpleComponent, WsLabelPipe, SophyImportComponent,  DataSourcesPageComponent, IdentificationComponent, IdentificationInlineComponent, AdminCreateUserComponent// admin
+    TableSimpleComponent, WsLabelPipe, SophyImportComponent,  DataSourcesPageComponent, IdentificationComponent, IdentificationInlineComponent, AdminCreateUserComponent, DeterminationComponent// admin
   ],
   entryComponents: [
     OccurrenceSearchMetadataModal1Component

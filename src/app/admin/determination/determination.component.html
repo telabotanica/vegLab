@@ -1,0 +1,42 @@
+<div class="determination-wrapper">
+  <h1>Identifier une végétation</h1>
+  <p>Par sa composition floristique</p>
+  <mat-slide-toggle
+      (checked)="useFrequency"
+      (change)="useFrequency = $event.source.checked; search();">
+    Utiliser la fréquence
+  </mat-slide-toggle>
+  
+  <tb-tsb-search-box
+    level="idiotaxon"
+    placeholder="Ajouter une espèce au filtre"
+    autoResetWhenSelected="true"
+    defaultRepository="taxref"
+    showRepositoryInput="true"
+    (newData)="addOccurrenceToFilter($event)">
+  </tb-tsb-search-box>
+
+  <mat-chip-list #chipList>
+    <mat-chip *ngFor="let occurrenceFilter of occurrencesFilter" [selectable]="false"
+              [removable]="true" (removed)="removeOccurrenceFilter(occurrenceFilter)">
+      {{occurrenceFilter.name}}
+      <mat-icon matChipRemove>cancel</mat-icon>
+    </mat-chip>
+  </mat-chip-list>
+
+  <button mat-button (click)="clearFilter()">Tout effacer</button>
+
+  <div class="results" *ngIf="results && results.count > 0">
+    <p>{{ results.count }} résultats</p>
+    <div *ngFor="let result of results.source">
+      <!-- result.score & result.source : result.source.validations & result.sources.items -->
+      <div *ngIf="result.source.validations.length > 0">
+        [{{ result.score }}] {{ result.source.validations[0].repository }} : {{ result.source.validations[0].validatedName }}
+      </div>
+
+      <!--<div *ngIf="result.source.validations.length === 0">
+        Aucune identification pour cet élément
+      </div>-->
+    </div>
+  </div>
+</div>

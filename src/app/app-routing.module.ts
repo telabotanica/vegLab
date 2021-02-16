@@ -27,6 +27,7 @@ import { MyDataPageComponent } from './user/my-data-page/my-data-page.component'
 
 import { AuthGuard } from './_guards/auth.guard';
 import { CanDeactivateTableGuard } from './_guards/can-deactivate-table.guard';
+import { DeterminationComponent } from './admin/determination/determination.component';
 
 
 const routes: Routes = [
@@ -58,7 +59,8 @@ const routes: Routes = [
     { path: 'sophy-import', component: SophyImportComponent },
     { path: 'data-sources', component: DataSourcesPageComponent },
     { path: 'create-user', component: AdminCreateUserComponent },
-    { path: 'list-users', component: AdminCreateUserComponent }
+    { path: 'list-users', component: AdminCreateUserComponent },
+    { path: 'determination', component: DeterminationComponent }
   ]},
   { path: '**', component: FatalErrorPageComponent, data: { error: 404 } },
 ];
