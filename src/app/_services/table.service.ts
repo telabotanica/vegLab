@@ -993,7 +993,7 @@ export class TableService {
                 // synthetic column value to show
                 // syeItem.value = syeCellItem.occurrencesCount + ' / ' + sye.occurrencesCount;
                 if (sye.syntheticSye == null || sye.syntheticSye === false) {
-                  syeItem.value = this.syntheticColumnService.getReadableCoef('roman', sye.occurrencesCount, syeCellItem.occurrencesCount, minRowCoef, maxRowCoef);     //
+                  syeItem.value = syeCellItem.coef; // this.syntheticColumnService.getReadableCoef('roman', sye.occurrencesCount, syeCellItem.occurrencesCount, minRowCoef, maxRowCoef);     //
                 } else {
                   // For a synthetic Sye, just set the existing coef value
                   syeItem.value = syeCellItem.coef;
@@ -1049,7 +1049,7 @@ export class TableService {
                 // synthetic column value to show
                 // syeItem.value = syeCellItem.occurrencesCount + ' / ' + sye.occurrencesCount;
                 if (sye.syntheticSye == null || sye.syntheticSye === false) {
-                  syeItem.value = this.syntheticColumnService.getReadableCoef('roman', sye.occurrencesCount, syeCellItem.occurrencesCount, minRowCoef, maxRowCoef);
+                  syeItem.value = syeCellItem.coef; // syeItem.value = this.syntheticColumnService.getReadableCoef('roman', sye.occurrencesCount, syeCellItem.occurrencesCount, minRowCoef, maxRowCoef);
                 } else {
                   // For a synthetic Sye, just set the existing coef value
                   syeItem.value = syeCellItem.coef;
@@ -2423,7 +2423,7 @@ export class TableService {
       }
       syntheticItem.occurrencesCount = occCount !== undefined ? occCount : occurrencesCount;
       syntheticItem.frequency =  occCount !== undefined ? this.getFrequencyBySyntheticCoef(minCoef) : occurrencesCount === 0 ?  0 : (occurrencesCount * 100) / occurrences.length;
-      syntheticItem.coef = occCount !== undefined ? minCoef : this.syntheticColumnService.getSyntheticCoef(syntheticItem.frequency, occurrencesCount);
+      syntheticItem.coef = this.syntheticColumnService.getSyntheticCoef(syntheticItem.frequency, occurrences.length, syntheticItem.occurrencesCount);
       syntheticItem.displayName = displayName;
       syntheticItem.minCoef = minCoef;
       syntheticItem.maxCoef = maxCoef;

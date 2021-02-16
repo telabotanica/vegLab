@@ -10,7 +10,7 @@ export class SyntheticColumnService {
 
   constructor() { }
 
-  getReadableCoef(type: string, sum: number, nbItems: number, minCoef: string, maxCoef: string): string {
+  /*getReadableCoef(type: string, sum: number, nbItems: number, minCoef: string, maxCoef: string): string {
     const freq = (nbItems * 100) / sum;
 
     switch (type) {
@@ -23,11 +23,11 @@ export class SyntheticColumnService {
       default:
         return nbItems.toString();
     }
-  }
+  }*/
 
-  getSyntheticCoef(frequency: number, count: number): string {
-    if (count <= 5) {
-      return count.toString();
+  getSyntheticCoef(frequency: number, countTotalOccurrences: number, countRealOccurrences: number): string {
+    if (countTotalOccurrences <= 5) {
+      return countRealOccurrences.toString();
     } else {
       return this.getRomanCoef(frequency);
     }
