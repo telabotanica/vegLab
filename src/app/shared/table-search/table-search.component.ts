@@ -239,7 +239,7 @@ export class TableSearchComponent implements OnInit, OnDestroy {
   // ------
   search(from?: number) {
     // At less one of the filters (occurrence, geolocation, ...) must be applied
-    if (this.noFilterApplied()) { this.tables = []; return; }
+    if (this.noFilterApplied()) { this.tables = [], this.resultCount = 0; return; }
 
     this.isSearching = true;
 
