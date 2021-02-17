@@ -581,7 +581,7 @@ export class TableSearchComponent implements OnInit, OnDestroy {
     colOccurrenceValidations.forEach(colOccurrenceValidation => {
       let idTaxo: any = null;
       if (colOccurrenceValidation.idTaxo !== null) { idTaxo = colOccurrenceValidation.idTaxo; } else if (colOccurrenceValidation.validOccurence.idNomen !== null) { idTaxo = colOccurrenceValidation.validOccurence.idNomen; } else { throw new Error(`We can't retrieve a (syn)taxonomic ID for the [${colOccurrenceValidation.idTaxo}]${colOccurrenceValidation.idNomen} (syn)taxonomic nomenclatural ID.`); }
-      const matchPhrase = `{ "match_phrase": { "occurrencesValidations": "${colOccurrenceValidation.repository}~${idTaxo}" } }`;
+      const matchPhrase = `{ "match_phrase": { "occurrencesAndSyeValidations": "${colOccurrenceValidation.repository}~${idTaxo}" } }`;
       parts.push(matchPhrase);
     });
     return parts;
