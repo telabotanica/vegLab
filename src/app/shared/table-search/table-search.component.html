@@ -56,7 +56,7 @@
                           <mat-chip
                             [removable]="true"
                             (removed)="removeTableValidationFilter()">
-                            {{ tableValidation.name }}
+                            <div class="chip-text-nowrap">{{ tableValidation.name }}</div>
                             <mat-icon matChipRemove>cancel</mat-icon>
                           </mat-chip>
                         </mat-chip-list>
@@ -74,7 +74,20 @@
                   <vl-biblio-search
                     fuzzySearch="true"
                     placeholder="Référence bibliographique"
+                    clearAfterEmit="true"
+                    (selectedBiblio)="tableBiblioChange($event)"
                     ></vl-biblio-search>
+
+                  <div class="biblio-filter" *ngIf="tableBiblioFilter !== null">
+                    <mat-chip-list>
+                      <mat-chip
+                        [removable]="true"
+                        (removed)="resetTableBiblioFilter()">
+                        <div class="chip-text-nowrap">{{ tableBiblioFilter.title }}</div>
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                      </mat-chip>
+                    </mat-chip-list>
+                  </div>
                 </div>
               </div>
 

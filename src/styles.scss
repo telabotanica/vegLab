@@ -136,3 +136,11 @@ body {
   padding-left: 10px !important;
   padding-right: 10px !important;
 }
+
+.mat-chip {
+  .chip-text-nowrap {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

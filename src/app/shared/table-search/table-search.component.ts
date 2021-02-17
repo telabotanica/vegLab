@@ -17,6 +17,7 @@ import { Sye } from 'src/app/_models/sye.model';
 import { Table } from 'src/app/_models/table.model';
 import { OccurrenceModel } from 'src/app/_models/occurrence.model';
 import { UserModel } from 'src/app/_models/user.model';
+import { Biblio } from 'src/app/_models/biblio.model';
 import { environment } from 'src/environments/environment';
 
 import { TableActionEnum } from 'src/app/_enums/table-action-enum';
@@ -53,6 +54,7 @@ export class TableSearchComponent implements OnInit, OnDestroy {
   tableMustBeADiagnosis = false;
   tableMustHaveAPdf = false;
   tableMustBeMine = false;
+  tableBiblioFilter: Biblio = null;
 
   // VAR Col Occurrence filters
   mustContainColOccurrences: Array<RepositoryItemModel> = [];
@@ -269,7 +271,8 @@ export class TableSearchComponent implements OnInit, OnDestroy {
       this.mustContainColOccurrences.length === 0 &&
       this.mustNotContainColOccurrences.length === 0 &&
       this.mustContainRowOccurrences.length === 0 &&
-      this.mustNotContainRowOccurrences.length === 0
+      this.mustNotContainRowOccurrences.length === 0 &&
+      this.tableBiblioFilter == null
     ) {
       return true;
     }
@@ -288,6 +291,16 @@ export class TableSearchComponent implements OnInit, OnDestroy {
 
   tableMustBeMineChange(event: any): void {
     this.tableMustBeMine = event.checked;
+    this.search();
+  }
+
+  tableBiblioChange(biblioRef: Biblio): void {
+    this.tableBiblioFilter = biblioRef;
+    this.search();
+  }
+
+  resetTableBiblioFilter(): void {
+    this.tableBiblioFilter = null;
     this.search();
   }
 
@@ -536,13 +549,14 @@ export class TableSearchComponent implements OnInit, OnDestroy {
    */
   esMustClauseAssembler(): string {
     const tableValidation: Array<string> = this.esMustTableValidationQueryPart();
+    const tableBiblio: Array<string> = this.esMustTableBiblioQueryPart();
     const tableMustBeADiagnosis: Array<string> = this.esMustTableBeDiagnosisPart();
     const tableMustHaveAPdf: Array<string> = this.esMustTableHaveAPdfPart();
     const tableMustBeMine: Array<string> = this.esTableMustBeMineQueryPart();
     const rowOcc: Array<string> = this.esRowOccurrencesMustQueryPart(this.mustContainRowOccurrences);
     const colOcc: Array<string> = this.esColOccurrencesMustQueryPart(this.mustContainColOccurrences);
 
-    const parts = [].concat(...tableValidation, ...tableMustBeADiagnosis, ...tableMustHaveAPdf, ...tableMustBeMine, ...colOcc, ...rowOcc);
+    const parts = [].concat(...tableValidation, ...tableBiblio, ...tableMustBeADiagnosis, ...tableMustHaveAPdf, ...tableMustBeMine, ...colOcc, ...rowOcc);
 
     let stringParts = '';
     let i = 0;
@@ -660,6 +674,15 @@ export class TableSearchComponent implements OnInit, OnDestroy {
     const parts: Array<string> = [];
     if (this.tableValidation) {
       const matchPhrase = `{ "match_phrase": { "tableValidation": "${this.tableValidation.repository}~${this.tableValidation.idTaxo}" } }`;
+      parts.push(matchPhrase);
+    }
+    return parts;
+  }
+
+  esMustTableBiblioQueryPart(): Array<string> {
+    const parts: Array<string> = [];
+    if (this.tableBiblioFilter) {
+      const matchPhrase = `{ "term": { "bibliographySourceId": "${this.tableBiblioFilter.id}" } }`;
       parts.push(matchPhrase);
     }
     return parts;
