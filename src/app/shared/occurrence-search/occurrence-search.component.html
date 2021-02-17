@@ -224,7 +224,7 @@
                             (selectedObserver)="authorChange($event)"></vl-observer-search>
                           <mat-chip-list>
                             <mat-chip *ngFor="let filteredAuthor of filteredAuthors" [removable]="true">
-                              {{ filteredAuthor.name }}
+                              <div class="chip-text-nowrap">{{ filteredAuthor.name }}</div>
                               <mat-icon matChipRemove (click)="removeFilteredAuthor(filteredAuthor)">cancel</mat-icon>
                             </mat-chip>
                           </mat-chip-list>
@@ -264,7 +264,7 @@
                             (selectedBiblio)="biblioChange($event)"></vl-biblio-search>
                           <mat-chip-list>
                             <mat-chip *ngFor="let filteredBiblio of filteredBiblios" [removable]="true">
-                              {{ filteredBiblio.title }}
+                              <div class="chip-text-nowrap">{{ filteredBiblio.title }}</div>
                               <mat-icon matChipRemove (click)="removeFilteredBiblio(filteredBiblio)">cancel</mat-icon>
                             </mat-chip>
                           </mat-chip-list>
