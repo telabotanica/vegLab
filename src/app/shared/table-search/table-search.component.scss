@@ -138,10 +138,10 @@ table.must-not-table {
   .result-item {
     margin-top: 10px;
     padding: 5px;
-    background-color: #D3D3D330;
     display: flex;
     flex-direction: row;
-    align-items: baseline;
+    align-items: center;
+    justify-content: center;
     .display-name {
       flex: 2;
     }

@@ -46,14 +46,20 @@
                       placeholder="Nom de végétation"
                       autoResetWhenSelected="true"
                       [defaultRepository]="defaultSyntaxonRepository"
-                      [showRepositoryInput]="false"
+                      [showRepositoryInput]="true"
                       (newData)="setTableValidationFilter($event)">
                     </tb-tsb-search-box>
             
                     <div class="table-filter" *ngIf="tableValidation">
-                      <div class="result-item" *ngIf="tableValidation">
-                        <div class="display-name">{{ tableValidation.name }}</div>
-                        <div class="actions"><mat-icon (click)="removeTableValidationFilter()">delete</mat-icon></div>
+                      <div class="result-item">
+                        <mat-chip-list #chipList>
+                          <mat-chip
+                            [removable]="true"
+                            (removed)="removeTableValidationFilter()">
+                            {{ tableValidation.name }}
+                            <mat-icon matChipRemove>cancel</mat-icon>
+                          </mat-chip>
+                        </mat-chip-list>
                       </div>
                     </div>
                 </div>
