@@ -263,7 +263,7 @@
                             clearAfterEmit="true"
                             (selectedBiblio)="biblioChange($event)"></vl-biblio-search>
                           <mat-chip-list>
-                            <mat-chip *ngFor="let filteredBiblio of filteredBiblios" [removable]="true">
+                            <mat-chip *ngFor="let filteredBiblio of filteredBiblios" [removable]="true" style="max-width: 500px;">
                               <div class="chip-text-nowrap">{{ filteredBiblio.title }}</div>
                               <mat-icon matChipRemove (click)="removeFilteredBiblio(filteredBiblio)">cancel</mat-icon>
                             </mat-chip>
