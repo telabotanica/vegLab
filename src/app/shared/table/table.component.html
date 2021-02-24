@@ -48,7 +48,7 @@
 
     <div class="separator"></div>
 
-    <div class="button">
+    <!--<div class="button">
       <button mat-button class="button">
         <mat-icon>undo</mat-icon>
       </button>
@@ -57,9 +57,21 @@
       <button mat-button class="button">
         <mat-icon>redo</mat-icon>
       </button>
-    </div>
+    </div>-->
 
-    <div class="separator"></div>
+    <div class="button">
+      <button mat-button
+        [matMenuTriggerFor]="menuSortAction"
+        matTooltip=""
+        [disabled]="isSavingTable || !currentTableOwnedByCurrentUser"
+        [class.spinner]="isSavingTable">
+        <mat-icon>sort</mat-icon>
+        <span> Trier</span>
+      </button>
+    </div>
+    <mat-menu #menuSortAction="matMenu">
+      <button mat-menu-item (click)="sortTableByLayers()">Par strate</button>
+    </mat-menu>
 
     <div class="button">
       <button mat-button class="button" disabled>

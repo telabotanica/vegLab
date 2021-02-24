@@ -10,9 +10,10 @@ import { NotificationService } from 'src/app/_services/notification.service';
 import { SyeService } from 'src/app/_services/sye.service';
 import { SyntheticColumnService } from 'src/app/_services/synthetic-column.service';
 import { ValidationService } from 'src/app/_services/validation.service';
+import { EcologicalTraitsService } from 'src/app/_services/ecological-traits.service';
+import { WorkspaceService } from 'src/app/_services/workspace.service';
 
-import { Subscription, throwError } from 'rxjs';
-import { TableRow } from 'src/app/_models/table-row-definition.model';
+import { TableRow, TableRowDefinition } from 'src/app/_models/table-row-definition.model';
 import { Sye } from 'src/app/_models/sye.model';
 import { UserModel } from 'src/app/_models/user.model';
 import { Table } from 'src/app/_models/table.model';
@@ -21,6 +22,9 @@ import { TableAction } from 'src/app/_models/table-action.model';
 import { TableActionEnum } from 'src/app/_enums/table-action-enum';
 
 import * as _ from 'lodash';
+
+import { Subscription, throwError } from 'rxjs';
+import { first } from 'rxjs/internal/operators/first';
 
 @Component({
   selector: 'vl-table',
@@ -35,6 +39,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   manuallyMoveColumnsAt = null;
   currentSyes: Array<Sye> = [];
   currentTableOwnedByCurrentUser: boolean;
+  currentWs: string;
 
   // VAR user
   userSubscription: Subscription;
@@ -48,6 +53,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   currentTableDataViewSubscription: Subscription;
   currentTableActionsSubscription: Subscription;
   selectedOccurrencesSubscriber: Subscription;
+  ecoTraitsSubscriber: Subscription;
 
   // VAR selected occurrences
   selectedOccurrencesIds: Array<number> = [];
@@ -233,6 +239,9 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
   // VAR saving / duplicating table
   isSavingTable: boolean;
   isDuplicatingTable: boolean;
+
+  // Var ecological traits
+  traits: any;
 
   // ------------------
   // HANDSONTABLE HOOKS
@@ -766,7 +775,9 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
               private cdr: ChangeDetectorRef,
               public router: Router,
               private userService: UserService,
-              private notificationService: NotificationService) { }
+              private notificationService: NotificationService,
+              private ecoTraitsService: EcologicalTraitsService,
+              private wsService: WorkspaceService) { }
 
   ngOnInit() {
     // Get current table
@@ -827,12 +838,41 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // this.tableInstance.selectColumns(1, 2);
     });
+
+    // Get current Workspace
+    const ws = this.wsService.currentWS.getValue();
+    if (ws) { this.currentWs = ws; } else {
+      // Can't do anything
+      // @Todo inform user
+      this.notificationService.warn('Nous ne parvenons pas à récupérer les informations nécessaires à l\'affichage du module \'Diagramme écologique\'');
+      return;
+    }
+
+    // Subscribe to ecological traits change
+    /*this. ecoTraitsSubscriber = this.ecoTraitsService.currentTraitsValues.subscribe(
+      traits => {
+        // this.resetTraits();
+        this.traits = traits;
+        if (traits) {
+          // // this.totalItems = traits.length;
+          // // this.baseflorTraitsItems = _.filter(traits, t => t.traitsRepo && t.traitsRepo.repository === 'baseflor');
+          // // this.setBaseflorTraitsValues();
+          // get baseflor items
+        } else {
+          // console.log('no traits...');
+        }
+      }, error => {
+        // @Todo manage error
+        console.log(error);
+      }
+    );*/
   }
 
   ngOnDestroy() {
     if (this.currentTableDataViewSubscription) { this.currentTableDataViewSubscription.unsubscribe(); }
     if (this.currentTableActionsSubscription) { this.currentTableActionsSubscription.unsubscribe(); }
     if (this.selectedOccurrencesSubscriber) { this.selectedOccurrencesSubscriber.unsubscribe(); }
+    // if (this.ecoTraitsSubscriber) { this.ecoTraitsSubscriber.unsubscribe(); }
 
     this.tableService.resetCurrentTable();
   }
@@ -1345,6 +1385,79 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     return false;
+  }
+
+
+  // -----------------------
+  // ATOMATICALLY SORT TABLE
+  // -----------------------
+  sortTableByLayers(): void {
+    const sortedRowsDef: Array<TableRowDefinition> = [];
+    const actualRowsDef = _.filter(this._currentTable.rowsDefinition, rd => rd.type === 'data');
+    console.log('actualRowsDef', actualRowsDef);
+
+    const groupedTr = _.groupBy(actualRowsDef, ard => ard.layer);
+
+    let i = 0;
+    let groupId = 0;
+    Object.entries(groupedTr).forEach(
+      ([key, value]) => {
+        sortedRowsDef.push({
+          id:                null,
+          rowId:             i,
+          type:              'group',
+          groupId,
+          groupTitle:        `Strate ${key}`,
+          layer:             key,
+          displayName:       `Strate ${key}`,
+          repository:        '',
+          repositoryIdNomen: null,
+          repositoryIdTaxo:  ''
+        });
+        i++;
+
+        for (const v of value) {
+          sortedRowsDef.push({
+            id:                null,
+            rowId:             i,
+            type:              'data',
+            groupId,
+            groupTitle:        `Strate ${key}`,
+            layer:             key,
+            displayName:       v.displayName,
+            repository:        v.repository,
+            repositoryIdNomen: v.repositoryIdNomen,
+            repositoryIdTaxo:  v.repositoryIdTaxo
+          });
+          i++;
+        }
+        groupId++;
+      }
+    );
+
+    console.log('sortedRowsDef', sortedRowsDef);
+
+    // ADD TABLE ACTION
+    const duplicatedTable = _.cloneDeep(this._currentTable);
+    duplicatedTable.rowsDefinition = _.cloneDeep(sortedRowsDef);
+    this.tableService.setCurrentTable(duplicatedTable, true);
+  }
+
+  // -----------------------------
+  // ATOMATICALLY GROUP TABLE ROWS
+  // -----------------------------
+  groupTableRowsByFamily(): void {
+    // Init ecological traits service (load initial values)
+    // Get table value from table.rowDefinitions
+    const rowDef = this.tableService.getCurrentTable().rowsDefinition;
+    if (rowDef && rowDef.length > 0) {
+      this.ecoTraitsService.setCurrentTraitsRepoValuesFromTableRowDefinition(rowDef, this.currentWs);
+      this.ecoTraitsService.currentTraitsValues.pipe(first()).subscribe(ecoTraits => {
+        console.log('ECO TRAITS', ecoTraits);
+      }, error => {
+        console.log(error);
+      });
+    }
   }
 
   // ------------
