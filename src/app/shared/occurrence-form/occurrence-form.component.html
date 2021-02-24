@@ -144,7 +144,7 @@
                   level="idiotaxon"
                   placeholder="Ajouter une espèce"
                   [reset]="_resetTaxoInput"
-                  [(fixedRepository)]="occurrenceForm.controls.repo.value"
+                  [fixedRepository]="occurrenceForm.controls.repo.value"
                   [autoResetWhenSelected]="false"
                   [showRepositoryInput]="false"
                   (newData)="addTaxa($event)">
