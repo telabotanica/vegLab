@@ -1,7 +1,7 @@
 <div id="homepage-container" fxLayout="column" fxLayoutAlign="start none">
   <div class="header">
     <h1>VegLab</h1>
-    <h2>Traitement et analyse de données<br />pour les végétations et les habitats</h2>
+    <!--<h2>Traitement et analyse de données<br />pour les végétations et les habitats</h2>-->
     <div class="quick-access">
       <div class="wrapper">
         <div class="item app" (click)="router.navigate(['/phyto/app'])">Accéder à l'application</div>
@@ -11,15 +11,16 @@
   </div>
 
   <div class="flux">
-    <h3>Flux de travail pour la phytosociologie</h3>
+    <!--<h3>Flux de travail pour la phytosociologie</h3>-->
+    <h3>Traitement et analyse de données pour les végétations et les habitats naturels</h3>
     <div class="items">
       <div class="list">
-        <div class="item" [class.selected]="selectedWorkflowItem === 1" (click)="selectedWorkflowItem = 1">Importer / exporter</div>
         <div class="item" [class.selected]="selectedWorkflowItem === 2" (click)="selectedWorkflowItem = 2">Rechercher</div>
         <div class="item" [class.selected]="selectedWorkflowItem === 3" (click)="selectedWorkflowItem = 3">Élaborer un tableau</div>
         <div class="item" [class.selected]="selectedWorkflowItem === 4" (click)="selectedWorkflowItem = 4">Cartes, documents et indicateurs</div>
         <div class="item" [class.selected]="selectedWorkflowItem === 5" (click)="selectedWorkflowItem = 5">Identifier</div>
         <div class="item" [class.selected]="selectedWorkflowItem === 6" (click)="selectedWorkflowItem = 6">Partagez votre travail</div>
+        <div class="item" [class.selected]="selectedWorkflowItem === 1" (click)="selectedWorkflowItem = 1">Importer / exporter</div>
       </div>
       <div class="divider">
         <div class="blank left"></div>
@@ -55,13 +56,13 @@
     <div class="details" fxLayout="row wrap" fxLayoutAlign="center center" *ngIf="selectedWorkflowItem === 5">
       <div class="text">
         Identifiez vos relevés et tableaux avec différents référentiels (PVF2, baseveg, etc.)<br />
-        Vous pouvez remplacer (sans les supprimer) les identifications des autres utilisateurs et confronter vos points de vus.
+        Vous pouvez apposer vos propres identifications sans modifier celles des autres utilisateurs.
       </div>
     </div>
     <div class="details" fxLayout="row wrap" fxLayoutAlign="center center" *ngIf="selectedWorkflowItem === 6">
       <div class="text">
         VegLab dispose de sa propre base de données.<br />
-        Le travail que vous réalisez au sein de l'application est réutilisable pour les autres utilisateurs.
+        Le travail que vous réalisez au sein de l'application est réutilisable par les autres utilisateurs.
       </div>
     </div>
   </div>

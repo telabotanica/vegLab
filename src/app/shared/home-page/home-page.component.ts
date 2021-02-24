@@ -13,7 +13,7 @@ import { TableService } from 'src/app/_services/table.service';
 })
 export class HomePageComponent implements OnInit {
   homeMenu = [];
-  selectedWorkflowItem = 1;
+  selectedWorkflowItem = 2;
 
   countReleves: number;
   countRelevesMicrocenosis: number;
