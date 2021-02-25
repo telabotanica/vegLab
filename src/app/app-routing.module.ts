@@ -33,6 +33,7 @@ import { DeterminationComponent } from './admin/determination/determination.comp
 const routes: Routes = [
   { path: '', component: HomePageComponent },
   { path: 'login', component: LoginPageComponent },
+  { path: 'create-user', component: AdminCreateUserComponent },
   { path: 'phyto', component: PhytoHomePageComponent},
   { path: 'phyto/app', component: PhytoAppPageComponent,
     canActivate: [AuthGuard],
