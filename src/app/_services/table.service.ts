@@ -2423,7 +2423,12 @@ export class TableService {
       }
       syntheticItem.occurrencesCount = occCount !== undefined ? occCount : occurrencesCount;
       syntheticItem.frequency =  occCount !== undefined ? this.getFrequencyBySyntheticCoef(minCoef) : occurrencesCount === 0 ?  0 : (occurrencesCount * 100) / occurrences.length;
-      syntheticItem.coef = this.syntheticColumnService.getSyntheticCoef(syntheticItem.frequency, occurrences.length, syntheticItem.occurrencesCount);
+      if (occCount !== undefined) {
+        // Synthetic Sye column
+        syntheticItem.coef = this.syntheticColumnService.getRomanCoef(syntheticItem.frequency);
+      } else {
+        syntheticItem.coef = this.syntheticColumnService.getSyntheticCoef(syntheticItem.frequency, occurrences.length, syntheticItem.occurrencesCount);
+      }
       syntheticItem.displayName = displayName;
       syntheticItem.minCoef = minCoef;
       syntheticItem.maxCoef = maxCoef;
@@ -2480,13 +2485,13 @@ export class TableService {
     const _coef = coef.slice(0, 1);
     switch (_coef) {
       case '0':
-        return 1;
-      case '+':
-        return 1;
-      case '1':
         return 3;
+      case '+':
+        return 3;
+      case '1':
+        return 7.5;
       case '2':
-        return 15;
+        return 17.5;
       case '3':
         return 37.5;
       case '4':
@@ -2497,9 +2502,9 @@ export class TableService {
 
     switch (coef) {
       case 'I':
-        return 3;
+        return 7.5;
       case 'II':
-        return 15;
+        return 17.5;
       case 'III':
         return 37.5;
       case 'IV':

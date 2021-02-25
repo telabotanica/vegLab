@@ -36,18 +36,16 @@ export class SyntheticColumnService {
   getRomanCoef(frequency: number): string {
     switch (true) {
       case (frequency < 5):
-        return '.';
-      case (frequency >= 5 && frequency < 10):
         return '+';
-      case (frequency >= 10 && frequency < 20):
+      case (frequency >= 5 && frequency < 10):
         return 'I';
-      case (frequency >= 20 && frequency < 40):
+      case (frequency >= 10 && frequency < 25):
         return 'II';
-      case (frequency >= 40 && frequency < 60):
+      case (frequency >= 25 && frequency < 50):
         return 'III';
-      case (frequency >= 60 && frequency < 80):
+      case (frequency >= 50 && frequency < 75):
         return 'IV';
-      case (frequency >= 80 && frequency <= 100):
+      case (frequency >= 75):
         return 'V';
       default:
         return '?';
