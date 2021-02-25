@@ -2423,9 +2423,11 @@ export class TableService {
       }
       syntheticItem.occurrencesCount = occCount !== undefined ? occCount : occurrencesCount;
       syntheticItem.frequency =  occCount !== undefined ? this.getFrequencyBySyntheticCoef(minCoef) : occurrencesCount === 0 ?  0 : (occurrencesCount * 100) / occurrences.length;
-      if (occCount !== undefined) {
+      if (occCount !== undefined && occCount > 5) {
         // Synthetic Sye column
         syntheticItem.coef = this.syntheticColumnService.getRomanCoef(syntheticItem.frequency);
+      } else if (occCount !== undefined && occCount <= 5) {
+        syntheticItem.coef = minCoef;
       } else {
         syntheticItem.coef = this.syntheticColumnService.getSyntheticCoef(syntheticItem.frequency, occurrences.length, syntheticItem.occurrencesCount);
       }
