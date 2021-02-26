@@ -2427,6 +2427,7 @@ export class TableService {
         // Synthetic Sye column
         syntheticItem.coef = this.syntheticColumnService.getRomanCoef(syntheticItem.frequency);
       } else if (occCount !== undefined && occCount <= 5) {
+        // Synthetic Sye column
         syntheticItem.coef = minCoef;
       } else {
         syntheticItem.coef = this.syntheticColumnService.getSyntheticCoef(syntheticItem.frequency, occurrences.length, syntheticItem.occurrencesCount);
