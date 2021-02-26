@@ -57,7 +57,7 @@ h2 {
     color: #444444;
     text-align: center;
     span.color-tb-orange-light {
-      background-color: $vl-color-2-light;
+      background-color: $orange-bg;
     }
   }
 
@@ -180,9 +180,9 @@ h2 {
       cursor: default;
       padding: 5px;
       border-radius: 3px;
-      background-color: $vl-color-1-light;
+      background-color: $green-bg;
       &:hover {
-        background-color: $vl-color-1;
+        background-color: $green-bg;
       }
     }
 
@@ -190,9 +190,9 @@ h2 {
       cursor: default;
       padding: 5px;
       border-radius: 3px;
-      background-color: $vl-color-2-light;
+      background-color: $red-bg;
       &:hover {
-        background-color: $vl-color-2;
+        background-color: $red-bg;
       }
     }
     
@@ -280,62 +280,62 @@ h2 {
   
     &.complete {
       .tick {
-        border: 1px solid $vl-color-1-dark;
+        border: 1px solid $green;
         mat-icon {
-          color: $vl-color-1;
+          color: $green;
         }
       }
       .content {
-        background-color: $vl-color-1-lighter;
+        background-color: $green-bg;
         .title {
-          color: $vl-color-1-dark;
+          color: $green;
         }
         .sub-title {
-          color: $vl-color-1-dark;
+          color: $green;
         }
       }
       .actions {
-        background-color: $vl-color-1-lighter;
+        background-color: $green-bg;
       }
     }
     &.warning {
       .tick {
-        border: 1px solid $vl-color-2-dark;
+        border: 1px solid $orange;
         mat-icon {
-          color: $vl-color-2;
+          color: $orange;
         }
       }
       .content {
-        background-color: $vl-color-2-lighter;
+        background-color: $orange-bg;
         .title {
-          color: $vl-color-2-dark;
+          color: $orange;
         }
         .sub-title {
-          color: $vl-color-2-dark;
+          color: $orange;
         }
       }
       .actions {
-        background-color: $vl-color-2-lighter;
+        background-color: $orange-bg;
       }
     }
     &.error {
       .tick {
-        border: 1px solid red;
+        border: 1px solid $red;
         mat-icon {
-          color: red;
+          color: $red;
         }
       }
       .content {
-        background-color: rgba(255, 0, 0, .2);
+        background-color: $red-bg;
         .title {
-          color: red;
+          color: $red;
         }
         .sub-title {
-          color: red;
+          color: $red;
         }
       }
       .actions {
-        background-color: rgba(255, 0, 0, .2);
+        background-color: red-bg;
       }
     }
     &.pending {
@@ -368,10 +368,10 @@ h2 {
   }
   .data-type-value-error {
     font-size: .8em;
-    color: $vl-color-2-dark;
+    color: $red;
     padding-top: 5px;
     padding-bottom: 5px;
-    background-color: $vl-color-2-lighter;
+    background-color: $red-bg;
     margin-bottom: 10px;
   }
   .min-max-value {
@@ -482,16 +482,16 @@ mat-icon {
     width: 30px;
     height: 30px;
     &.valid {
-      color: $vl-color-1-dark;
-      background-color: $vl-color-1-lighter;
+      color: $green;
+      background-color: $green-bg;
     }
     &.warning {
-      color: $vl-color-2-dark;
-      background-color: $vl-color-2-lighter;
+      color: $orange;
+      background-color: $orange-bg;
     }
     &.error {
-      color: red;
-      background-color: rgb(248, 82, 82);
+      color: $red;
+      background-color: $red-bg;
     }
   }
 }
