@@ -200,7 +200,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
               },
               {
                 key: 'columns:toggle_only_show_synthetic_column',
-                name: 'Afficher / masquer les relevés [ctrl + t]',
+                name: 'Afficher / masquer les relevés [ctrl + espace]',
                 callback: () => { this.toggleCurrentSyeOnlyShowSyntheticColumn(); },
                 disabled: () => {
                   if (this.isCurrentTableContainsNoOneOrOnlyOneSye()) { return true; } else { return false; }
@@ -758,8 +758,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
 
-    // Ctrl + t
-    if (event.ctrlKey && !event.shiftKey && !event.altKey && event.keyCode === 84) {
+    // Ctrl + Space
+    if (event.ctrlKey && !event.shiftKey && !event.altKey && event.keyCode === 32) {
       this.toggleCurrentSyeOnlyShowSyntheticColumn();
     }
   }
