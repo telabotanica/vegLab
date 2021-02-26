@@ -159,11 +159,6 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
                   || this.isEntireRowsGroupWithoutTitleSelected()
                   || this.isEntireRowsGroupWithTitleSelected()) { return true; } else { return false; }
                 }
-              },
-              {
-                key: 'rows:delete_all',
-                name: 'Suprimer tous les groupes',
-                callback: () => { console.log('Supprimer tous les groupes...'); }
               }
             ]
           }
@@ -205,15 +200,16 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
                 disabled: () => {
                   if (this.isCurrentTableContainsNoOneOrOnlyOneSye()) { return true; } else { return false; }
                 }
-              }/*,
+              },
               {
-                key: 'columns:delete_all',
-                name: 'Supprimer tous les groupes',
-                callback: () => { console.log('Supprimer tous les sye...'); },
+                key: 'columns:remove',
+                name: 'Supprimer les relevés',
+                callback: () => { this.deleteOccurrences(); },
                 disabled: () => {
-                  if (this.isCurrentTableContainsNoOneOrOnlyOneSye()) { return true; } else { return false; }
+                  if (this.isMultipleSyeGroupsSelected()
+                  || this.isEntireSyeSelected()) { return true; } else { return false; }
                 }
-              }*/
+              }
             ]
           }
         },
@@ -1123,6 +1119,15 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       // @Todo manage creation fail
     }
+  }
+
+  deleteOccurrences() {
+    const selected = this.tableInstance.getSelected(); // [[startRow, startCol, endRow, endCol], ...]
+    const columnsVisulaIndexes = [selected[0][1], selected[0][3]];
+    const startCol = _.min(columnsVisulaIndexes); // if we select in rtl direction, "startCol" > "endCol"
+    const endCol = _.max(columnsVisulaIndexes);
+
+    this.tableService.deleteColumns(startCol, endCol);
   }
 
   sortSelectedColumnsByFrequency(order: 'asc' | 'desc', coefArrayToSort?: Array<Array<any>>): void {

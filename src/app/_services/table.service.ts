@@ -1935,6 +1935,28 @@ export class TableService {
     return false;
   }
 
+  public deleteColumns(startColPosition: number, endColPosition: number): {success: boolean} {
+    // get source sye, source index and source columns whithin this sye
+    const targetObj = this.getSyeIndexPositionsColumnsFromVisualColumn(this.currentTable, startColPosition);
+    const sourceSye = targetObj.sye;
+    // const syeIndexInTable = targetObj.syeIndexInTable;
+    const sourceIndex = targetObj.index;
+    const sourceColPositions = targetObj.columnPositions;
+
+    if (sourceSye !== null && sourceIndex !== null && sourceColPositions !== null) {
+      // splice occurrences
+      const splicedOccurrences = sourceSye.occurrences.splice(sourceIndex, (endColPosition - startColPosition + 1));
+    }
+
+    // @Action
+    this.createAction(TableActionEnum.removeReleve);
+
+    // emit new dataView
+    this.tableDataView.next(this.createDataView(this.currentTable));
+
+    return { success: true };
+  }
+
   public moveRangeColumnsToNewSye(startColPosition: number, endColPosition: number, currentUser: UserModel): {success: boolean, newSyeId: number} {
     if (this.columnsPositions.length === 0) { this.updateColumnsPositions(this.currentTable); }
 
