@@ -205,7 +205,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
                 disabled: () => {
                   if (this.isCurrentTableContainsNoOneOrOnlyOneSye()) { return true; } else { return false; }
                 }
-              },
+              }/*,
               {
                 key: 'columns:delete_all',
                 name: 'Supprimer tous les groupes',
@@ -213,7 +213,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
                 disabled: () => {
                   if (this.isCurrentTableContainsNoOneOrOnlyOneSye()) { return true; } else { return false; }
                 }
-              }
+              }*/
             ]
           }
         },
