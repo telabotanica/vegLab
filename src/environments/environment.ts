@@ -4,24 +4,24 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'http://${HOST}',
-  apiBaseUrl: 'http://${HOST}:${API_PORT}/api',
+  baseUrl: 'http://localhost:4200',
+  apiBaseUrl: 'http://127.0.0.1:8000/api',
   esAuthorizationPassword: '${ELASTIC_PASSWORD}',
-  esBaseUrl: 'http://${HOST}:${ES_PORT}',
+  esBaseUrl: 'http://127.0.0.1:8000/es-proxy',
   esRepoAuthorizationPassword: '${ES_REPO_PASSWORD}',
   esBaseflorTraitsApi: 'http://51.38.37.216:9200/baseflor',
   pdfBaseUrl: 'http://${HOST}:${API_PORT}/media/veglab/pdf/',
-  app : {
-    title:           'VegLab',
+  app: {
+    title:           'VegLab dev',
     unsetTokenValue: 'unset',
     absoluteBaseUrl: '',
   },
   sso: {
-    baseUrl:          'http://${HOST}:${SSO_PORT}/service:annuaire:auth',               // https://beta.tela-botanica.org/service:annuaire:auth
-    loginEndpoint:    'http://${HOST}:${SSO_PORT}/service:annuaire:auth/connexion',
-    logoutEndpoint:   'http://${HOST}:${SSO_PORT}/service:annuaire:auth/deconnexion',
-    identiteEndpoint: 'http://${HOST}:${SSO_PORT}/service:annuaire:auth/identite',
-    refreshEndpoint:  'http://${HOST}:${SSO_PORT}/service:annuaire:auth/rafraichir',
+    baseUrl:          'http://localhost:8080/service:annuaire:auth',               // https://beta.tela-botanica.org/service:annuaire:auth
+    loginEndpoint:    'http://localhost:8080/service:annuaire:auth/connexion',
+    logoutEndpoint:   'http://localhost:8080/service:annuaire:auth/deconnexion',
+    identiteEndpoint: 'http://localhost:8080/service:annuaire:auth/identite',
+    refreshEndpoint:  'http://localhost:8080/service:annuaire:auth/rafraichir',
     refreshInterval:  600000
   },
   mapQuestApiKey: 'ApIFfQWsb8jW6bkYDD2i0Sq5BD9moJ3l',
