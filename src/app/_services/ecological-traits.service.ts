@@ -188,7 +188,7 @@ export class EcologicalTraitsService {
     if (repo !== 'bdtfx') {
       return of(null);
     } else {
-      return this.http.get<any>(`${environment.esBaseflorTraitsApi}/_search?q=bdnff_nomen_id:${bdtfxNomen}`).pipe(
+      return this.http.get<any>(`${environment.esBaseUrl}/baseflor/_search?q=bdnff_nomen_id:${bdtfxNomen}`).pipe(
         map(result => _.map(result.hits.hits, hit => hit._source)[0])
       );
     }

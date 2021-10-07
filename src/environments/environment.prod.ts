@@ -2,10 +2,7 @@ export const environment = {
   production: true,
   baseUrl: 'https://www.tela-botanica.org/appli:veglab',
   apiBaseUrl: 'https://api-veglab.tela-botanica.org/api',
-  esAuthorizationPassword: '${ELASTIC_PASSWORD}',
   esBaseUrl: 'https://api-veglab.tela-botanica.org/es-proxy',
-  esRepoAuthorizationPassword: '${ES_REPO_PASSWORD}',
-  esBaseflorTraitsApi: 'http://51.38.37.216:9200/baseflor',
   pdfBaseUrl: 'http://${HOST}:${API_PORT}/media/veglab/pdf/',
   app : {
     title:           'VegLab',
